@@ -31,7 +31,7 @@ The Kickass Driver Station implements two user interfaces:
 
 ### Why *Kickass* Driver Station?
 
-Because driving FRC robots with your phone is not cool, its *kickass*! You've got to admit it, this name is awesome!
+Because driving FRC robots with your phone is not cool, its *kickass*! Admit it, this name is awesome!
 
 ### License
 
