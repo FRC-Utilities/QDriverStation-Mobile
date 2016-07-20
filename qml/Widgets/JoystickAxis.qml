@@ -35,10 +35,10 @@ Rectangle {
     property int knobY: height / 2
 
     //
-    // Emitted when user moves the thumb
+    // Holds the values of the thumb axes
     //
-    signal xChanged (var value)
-    signal yChanged (var value)
+    property double xValue: 0
+    property double yValue: 0
 
     Behavior on height {NumberAnimation{}}
     Behavior on width  {NumberAnimation{}}
@@ -90,16 +90,16 @@ Rectangle {
         anchors.fill: parent
 
         function press (mouse) {
-            knobX = Math.min (Math.max (mouse.x, parent.width / 4), parent.width * 0.8)
-            knobY = Math.min (Math.max (mouse.y, parent.height / 4), parent.height * 0.8)
+            knobX = Math.min (Math.max (mouse.x, parent.width / 4), parent.width * 0.75)
+            knobY = Math.min (Math.max (mouse.y, parent.height / 4), parent.height * 0.75)
 
-            xChanged ((knobX * 4 / parent.width) - 2)
-            yChanged ((knobY * 4 / parent.height) - 2)
+            xValue = (knobX * 4 / parent.width) - 2
+            yValue = (knobY * 4 / parent.height) - 2
         }
 
         function release (mouse) {
-            xChanged (0)
-            yChanged (0)
+            xValue = 0
+            yValue = 0
             knobX = parent.width / 2
             knobY = parent.height / 2
         }

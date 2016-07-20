@@ -186,8 +186,8 @@ void DriverStation::logger (QtMsgType type,
                             const QMessageLogContext& context,
                             const QString& data) {
     DS_Config::getInstance()->logger()->messageHandler (type,
-            context,
-            data);
+                                                        context,
+                                                        data);
 }
 
 /**
@@ -1199,10 +1199,8 @@ void DriverStation::setControlMode (ControlMode mode) {
  */
 void DriverStation::updatePOV (int id, int pov, int angle) {
     if (joysticks()->count() > abs (id)) {
-        if (joysticks()->at (id)->numPOVs > pov) {
+        if (joysticks()->at (id)->numPOVs > pov)
             joysticks()->at (id)->povs [abs (pov)] = angle;
-            return;
-        }
     }
 }
 
@@ -1225,10 +1223,8 @@ void DriverStation::setEnabled (EnableStatus status) {
  */
 void DriverStation::updateAxis (int id, int axis, qreal value) {
     if (joysticks()->count() > abs (id)) {
-        if (joysticks()->at (id)->numAxes > axis) {
+        if (joysticks()->at (id)->numAxes > axis)
             joysticks()->at (id)->axes [abs (axis)] = value;
-            return;
-        }
     }
 }
 
@@ -1241,10 +1237,8 @@ void DriverStation::updateAxis (int id, int axis, qreal value) {
  */
 void DriverStation::updateButton (int id, int button, bool state) {
     if (joysticks()->count() > abs (id)) {
-        if (joysticks()->at (id)->numButtons > button) {
+        if (joysticks()->at (id)->numButtons > button)
             joysticks()->at (id)->buttons [abs (button)] = state;
-            return;
-        }
     }
 }
 

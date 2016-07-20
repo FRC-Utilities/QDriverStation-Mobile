@@ -108,27 +108,37 @@ ColumnLayout {
             model: numThumbs
 
             function getIndexX (input) {
-                return input === 0 ? 0 : input + 1
+                if (input === 0)
+                    return 0;
+                else if (input === 1)
+                    return 4;
+                else
+                    return input + 1
             }
 
             function getIndexY (input) {
-                return input === 0 ? 1 : input + 2
+                if (input === 0)
+                    return 1;
+                else if (input === 1)
+                    return 5;
+                else
+                    return input + 2
             }
 
             delegate: JoystickAxis {
                 height: width
                 width: Math.min (app.width * 0.38, 156)
 
-                onXChanged: {
+                onXValueChanged: {
                     DriverStation.updateAxis (jsId,
                                               circles.getIndexX (index),
-                                              value)
+                                              xValue)
                 }
 
-                onYChanged: {
+                onYValueChanged: {
                     DriverStation.updateAxis (jsId,
                                               circles.getIndexY (index),
-                                              value)
+                                              yValue)
                 }
             }
         }
@@ -162,7 +172,7 @@ ColumnLayout {
 
             onValueChanged: {
                 DriverStation.updateAxis (jsId,
-                                          numThumbs * 2 + index,
+                                          index + 2,
                                           (value - 0.5) * 2)
             }
         }
