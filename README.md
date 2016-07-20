@@ -10,7 +10,8 @@ The Kickass Driver Station allows the user to:
 
 - Use different communication protocols (2014, 2015 and 2016)
 - Switch between Teleop, Autonomous and Test modes
-- See NetConsole output
+- See NetConsole output 
+- Reboot your robot and restart the robot code
 - See the robot's voltage, CPU usage, RAM usage and Disk usage
 - Use custom robot addresses (e.g. if mDNS is not supported on your mobile OS)
 

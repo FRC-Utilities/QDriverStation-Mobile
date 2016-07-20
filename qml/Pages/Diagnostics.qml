@@ -24,6 +24,87 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
 
-Pane {
+import "../Widgets"
+import "../Globals.js" as Globals
 
+Pane {
+    //
+    // Update the checkboxes automatically
+    //
+    Connections {
+        target: DriverStation
+        onFmsCommStatusChanged: fms.checked = DriverStation.isConnectedToFMS()
+        onRadioCommStatusChanged: radio.checked = DriverStation.isConnectedToRadio()
+        onRobotCommStatusChanged: robot.checked = DriverStation.isConnectedToRobot()
+    }
+
+    ColumnLayout {
+        anchors.fill: parent
+        spacing: Globals.spacing
+
+        //
+        // Network diagnostics label
+        //
+        TitleLabel {
+            spacer: false
+            text: qsTr ("Network Diagnostics")
+        }
+
+        //
+        // FMS Checkbox
+        //
+        CheckBox {
+            id: fms
+            text: qsTr ("FMS")
+        }
+
+        //
+        // Robot Checkbox
+        //
+        CheckBox {
+            id: robot
+            text: qsTr ("Robot")
+        }
+
+        //
+        // Radio Checkbox
+        //
+        CheckBox {
+            id: radio
+            text: qsTr ("Bridge/Radio")
+        }
+
+        //
+        // Actions label
+        //
+        TitleLabel {
+            spacer: false
+            text: qsTr ("Actions")
+        }
+
+        //
+        // Reboot button
+        //
+        Button {
+            Layout.fillWidth: true
+            text: qsTr ("Reboot Robot")
+            onClicked: DriverStation.rebootRobot()
+        }
+
+        //
+        // Restart code button
+        //
+        Button {
+            Layout.fillWidth: true
+            text: qsTr ("Restart Robot Code")
+            onClicked: DriverStation.restartRobotCode()
+        }
+
+        //
+        // Spacer
+        //
+        Item {
+            Layout.fillHeight: true
+        }
+    }
 }
