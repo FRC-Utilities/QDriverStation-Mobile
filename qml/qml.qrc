@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/qml">
+        <file>Dialogs/AboutDialog.qml</file>
+        <file>Pages/Diagnostics.qml</file>
+        <file>Pages/Monitor.qml</file>
+        <file>Pages/NetConsole.qml</file>
+        <file>Pages/Operator.qml</file>
+        <file>Pages/Preferences.qml</file>
+        <file>Widgets/Joystick.qml</file>
+        <file>Widgets/JoystickAxis.qml</file>
+        <file>Globals.js</file>
+        <file>main.qml</file>
+        <file>Widgets/Separator.qml</file>
+        <file>Widgets/Spacer.qml</file>
+        <file>Widgets/TitleLabel.qml</file>
+    </qresource>
+    <qresource prefix="/">
+        <file>qtquickcontrols2.conf</file>
+    </qresource>
+</RCC>

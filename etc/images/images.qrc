@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>dark/battery.svg</file>
+        <file>dark/cpu.svg</file>
+        <file>dark/drawer.svg</file>
+        <file>dark/memory.svg</file>
+        <file>dark/menu.svg</file>
+        <file>dark/netconsole.svg</file>
+        <file>dark/network.svg</file>
+        <file>dark/router.svg</file>
+        <file>dark/settings.svg</file>
+        <file>dark/storage.svg</file>
+        <file>light/battery.svg</file>
+        <file>light/cpu.svg</file>
+        <file>light/drawer.svg</file>
+        <file>light/memory.svg</file>
+        <file>light/menu.svg</file>
+        <file>light/netconsole.svg</file>
+        <file>light/network.svg</file>
+        <file>light/router.svg</file>
+        <file>light/settings.svg</file>
+        <file>light/storage.svg</file>
+    </qresource>
+</RCC>
