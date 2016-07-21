@@ -56,6 +56,7 @@ Pane {
         CheckBox {
             id: fms
             text: qsTr ("FMS")
+            onClicked: checked = !checked
         }
 
         //
@@ -64,6 +65,7 @@ Pane {
         CheckBox {
             id: robot
             text: qsTr ("Robot")
+            onClicked: checked = !checked
         }
 
         //
@@ -72,6 +74,7 @@ Pane {
         CheckBox {
             id: radio
             text: qsTr ("Bridge/Radio")
+            onClicked: checked = !checked
         }
 
         //
