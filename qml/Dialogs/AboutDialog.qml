@@ -73,7 +73,7 @@ Popup {
             Button {
                 Layout.fillWidth: true
                 text: qsTr ("Report a Bug")
-                onClicked: Qt.openUrlExternally ("http://github.com/frc-utilities/kickass/issues")
+                onClicked: Qt.openUrlExternally ("http://github.com/frc-utilities/qdriverstation-mobile/issues")
             }
         }
     }

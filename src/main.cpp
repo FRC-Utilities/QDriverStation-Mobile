@@ -26,11 +26,10 @@
 #include <DriverStation.h>
 #include <QQmlApplicationEngine>
 
-/* They are going to kill me for pulling out this name */
 const QString APP_VERSION = "16.07";
-const QString APP_DSPNAME = "Kickass DS";
 const QString APP_COMPANY = "Alex Spataru";
-const QString APP_WEBSITE = "http://frc-utilities.github.io/kickass";
+const QString APP_DSPNAME = "QDriverStation";
+const QString APP_WEBSITE = "http://frc-utilities.github.io/";
 
 int main (int argc, char* argv[]) {
     QGuiApplication::setApplicationName (APP_DSPNAME);

@@ -1,12 +1,12 @@
-# Kickass Driver Station
+# QDriverStation Mobile
 
-The Kickass Driver Station is an application for mobile devices that allows you to operate FRC robots using [LibDS](https://github.com/frc-utilities/libds). 
+The Mobile QDriverStation is an application for mobile devices that allows you to operate FRC robots using [LibDS](https://github.com/frc-utilities/libds). 
 
 This application uses the latest features provided by Qt, it **requires** Qt 5.7 or greater in order to compile.
 
 ### Features
 
-The Kickass Driver Station allows the user to:
+The Mobile QDriverStation allows the user to:
 
 - Use different communication protocols (2014, 2015 and 2016)
 - Switch between Teleop, Autonomous and Test modes
@@ -23,18 +23,16 @@ This application implements a virtual joystick with the following features:
 - Two triggers
 - Twelve buttons
 
+The joystick mappings are the same as an Xbox 360 controller, so there should be no need to change your robot code for the QDriverStation to work.
+
 #### User Interface
 
-The Kickass Driver Station implements two user interfaces:
+This application implements two user interfaces:
 
 - One following Google's Material Design guidelines
 - Another one following Microsoft's Universal UI guidelines
 
 You are free to use the UI style that best fits your needs.
-
-### Why *Kickass* Driver Station?
-
-Because driving FRC robots with your phone is not cool, its *kickass*! Admit it, this name is awesome!
 
 ### License
 

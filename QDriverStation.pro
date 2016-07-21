@@ -25,7 +25,7 @@
 #-------------------------------------------------------------------------------
 
 TEMPLATE = app
-TARGET = Kickass
+TARGET = QDriverStation
 
 QT += svg
 QT += quick

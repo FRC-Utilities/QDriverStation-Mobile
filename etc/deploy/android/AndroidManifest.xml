@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.frcutilities.kickass" android:versionName="16.07" android:versionCode="16" android:installLocation="auto">
-   <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="Kickass DS">
-      <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="Kickass DS" android:screenOrientation="portrait" android:icon="@mipmap/ic_launcher" android:launchMode="singleInstance">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.frcutilities.qdriverstation" android:versionName="16.07" android:versionCode="16" android:installLocation="auto">
+   <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="QDriverStation">
+      <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="QDriverStation" android:screenOrientation="portrait" android:icon="@mipmap/ic_launcher" android:launchMode="singleInstance">
          <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
          </intent-filter>
-         <meta-data android:name="android.app.lib_name" android:value="Kickass" />
+         <meta-data android:name="android.app.lib_name" android:value="QDriverStation" />
          <meta-data android:name="android.app.qt_sources_resource_id" android:resource="@array/qt_sources" />
          <meta-data android:name="android.app.repository" android:value="default" />
          <meta-data android:name="android.app.qt_libs_resource_id" android:resource="@array/qt_libs" />
