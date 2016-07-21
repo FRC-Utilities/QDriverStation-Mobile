@@ -35,6 +35,9 @@ QT += quickcontrols2
 # Deploy configurations
 #-------------------------------------------------------------------------------
 
+android {
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/etc/deploy/android
+}
 
 #-------------------------------------------------------------------------------
 # Include the libraries

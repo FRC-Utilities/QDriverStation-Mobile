@@ -113,7 +113,7 @@ Pane {
 
         Switch {
             id: darkMode
-            checked: true
+            checked: !IsMaterial
             text: qsTr ("Dark Theme")
             onCheckedChanged: app.setTheme (checked ? Globals.dark :
                                                       Globals.light)
