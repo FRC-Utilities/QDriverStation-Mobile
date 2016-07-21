@@ -34,19 +34,16 @@ const QString APP_DSPNAME = "Kickass Driver Station";
 const QString APP_WEBSITE = "http://frc-utilities.github.io/kickass";
 
 int main (int argc, char* argv[]) {
-    /* This guy comes out of nowhere, kicks our asses! */
     QGuiApplication::setApplicationName (APP_DSPNAME);
     QGuiApplication::setOrganizationName (APP_COMPANY);
     QGuiApplication::setApplicationVersion (APP_VERSION);
     QGuiApplication::setOrganizationDomain (APP_WEBSITE);
     QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 
-    /* - and it looked like Batman - */
     QGuiApplication app (argc, argv);
     QSimpleUpdater* updater = QSimpleUpdater::getInstance();
     DriverStation* driverstation = DriverStation::getInstance();
 
-    /* I didn't say it looked like Batman! */
 #if defined Q_OS_ANDROID
     bool material = true;
     QQuickStyle::setStyle ("Material");
@@ -55,17 +52,14 @@ int main (int argc, char* argv[]) {
     QQuickStyle::setStyle ("Universal");
 #endif
 
-    /* - You did, you said the guy looked like Batman - */
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty ("Updater", updater);
     engine.rootContext()->setContextProperty ("IsMaterial", material);
     engine.rootContext()->setContextProperty ("DriverStation", driverstation);
     engine.load (QUrl (QStringLiteral ("qrc:/qml/main.qml")));
 
-    /* I said like a masked stuff, and with a cape */
     if (engine.rootObjects().isEmpty())
         return EXIT_FAILURE;
 
-    /* Like Batman? I NEVER SAID BATMAN! */
     return app.exec();
 }
