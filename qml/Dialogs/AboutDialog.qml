@@ -20,10 +20,61 @@
  * THE SOFTWARE.
  */
 
-import QtQuick 2.6
-import QtQuick.Layouts 1.3
+import QtQuick 2.0
+import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
 
-Popup {
+import "../Globals.js" as Globals
 
+Popup {
+    id: dialog
+    modal: true
+    focus: true
+    y: app.height / 6
+    x: (app.width - width) / 2
+    contentWidth: column.width * 1.2
+    contentHeight: column.height * 1.2
+
+    Column {
+        id: column
+        spacing: Globals.spacing
+        anchors.centerIn: parent
+
+        Image {
+            fillMode: Image.Pad
+            source: "qrc:/images/logo.png"
+            verticalAlignment: Image.AlignVCenter
+            horizontalAlignment: Image.AlignHCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        Label {
+            font.bold: true
+            text: AppDspName
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        Label {
+            font.pixelSize: 12
+            text: qsTr ("Version") + " " + AppVersion
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
+
+        RowLayout {
+            spacing: Globals.spacing
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            Button {
+                Layout.fillWidth: true
+                text: qsTr ("Visit Website")
+                onClicked: Qt.openUrlExternally ("http://frc-utilities.github.io")
+            }
+
+            Button {
+                Layout.fillWidth: true
+                text: qsTr ("Report a Bug")
+                onClicked: Qt.openUrlExternally ("http://github.com/frc-utilities/kickass/issues")
+            }
+        }
+    }
 }

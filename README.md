@@ -27,8 +27,10 @@ This application implements a virtual joystick with the following features:
 
 The Kickass Driver Station implements two user interfaces:
 
-- One following Google's Material Design guidelines (used only in Android)
-- Another one following Microsoft's Universal UI guidelines (used in non-Android targets)
+- One following Google's Material Design guidelines
+- Another one following Microsoft's Universal UI guidelines
+
+You are free to use the UI style that best fits your needs.
 
 ### Why *Kickass* Driver Station?
 

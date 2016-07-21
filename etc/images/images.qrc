@@ -20,5 +20,6 @@
         <file>light/router.svg</file>
         <file>light/settings.svg</file>
         <file>light/storage.svg</file>
+        <file>logo.png</file>
     </qresource>
 </RCC>

@@ -36,7 +36,7 @@ ApplicationWindow {
     width: 360
     height: 520
     visible: true
-    title: "Kickass Driver Station"
+    title: AppDspName + " " + AppVersion
 
     //
     // Saves the current theme style (dark or light)

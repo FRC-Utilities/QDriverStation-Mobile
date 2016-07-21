@@ -28,8 +28,8 @@
 
 /* They are going to kill me for pulling out this name */
 const QString APP_VERSION = "16.07";
+const QString APP_DSPNAME = "Kickass DS";
 const QString APP_COMPANY = "Alex Spataru";
-const QString APP_DSPNAME = "Kickass Driver Station";
 const QString APP_WEBSITE = "http://frc-utilities.github.io/kickass";
 
 int main (int argc, char* argv[]) {
@@ -42,7 +42,7 @@ int main (int argc, char* argv[]) {
     QGuiApplication app (argc, argv);
     DriverStation* driverstation = DriverStation::getInstance();
 
-#if defined Q_OS_ANDROID
+#if defined Q_OS_ANDROID || defined Q_OS_MAC || defined Q_OS_LINUX
     bool material = true;
 #else
     bool material = false;
@@ -54,6 +54,8 @@ int main (int argc, char* argv[]) {
 
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty ("IsMaterial", material);
+    engine.rootContext()->setContextProperty ("AppDspName", APP_DSPNAME);
+    engine.rootContext()->setContextProperty ("AppVersion", APP_VERSION);
     engine.rootContext()->setContextProperty ("DriverStation", driverstation);
     engine.load (QUrl (QStringLiteral ("qrc:/qml/main.qml")));
 
