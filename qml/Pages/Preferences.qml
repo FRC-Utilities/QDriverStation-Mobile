@@ -41,16 +41,14 @@ Pane {
         robotAddress.placeholderText = DriverStation.defaultRobotAddress()
     }
 
-    Component.onCompleted: {
-        app.setTheme (darkMode.checked ? Globals.dark : Globals.light)
-    }
+    Component.onCompleted: app.setTheme (darkMode.checked ? Globals.dark : Globals.light)
 
     Settings {
         property alias team: team.text
         property alias darkMode: darkMode.checked
+        property alias material: useMaterial.checked
         property alias robotAddress: robotAddress.text
         property alias protocol: protocols.currentIndex
-        property alias autoUpdater: autoUpdater.checked
     }
 
     ColumnLayout {
@@ -120,12 +118,19 @@ Pane {
         }
 
         Switch {
-            id: autoUpdater
-            text: qsTr ("Enable auto-updater")
+            id: useMaterial
+            checked: IsMaterial
+            text: qsTr ("Use Material Style") + "*"
         }
 
         Item {
             Layout.fillHeight: true
+        }
+
+        Label {
+            color: "#666"
+            font.pixelSize: 12
+            text: "* " + qsTr ("Requires application restart")
         }
     }
 }

@@ -22,9 +22,8 @@
 
 #include <QtQml>
 #include <QQuickStyle>
-#include <QApplication>
+#include <QGuiApplication>
 #include <DriverStation.h>
-#include <QSimpleUpdater.h>
 #include <QQmlApplicationEngine>
 
 /* They are going to kill me for pulling out this name */
@@ -41,19 +40,19 @@ int main (int argc, char* argv[]) {
     QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 
     QGuiApplication app (argc, argv);
-    QSimpleUpdater* updater = QSimpleUpdater::getInstance();
     DriverStation* driverstation = DriverStation::getInstance();
 
 #if defined Q_OS_ANDROID
     bool material = true;
-    QQuickStyle::setStyle ("Material");
 #else
     bool material = false;
-    QQuickStyle::setStyle ("Universal");
 #endif
 
+    QSettings settings;
+    material = settings.value ("material", material).toBool();
+    QQuickStyle::setStyle (material ? "Material" : "Universal");
+
     QQmlApplicationEngine engine;
-    engine.rootContext()->setContextProperty ("Updater", updater);
     engine.rootContext()->setContextProperty ("IsMaterial", material);
     engine.rootContext()->setContextProperty ("DriverStation", driverstation);
     engine.load (QUrl (QStringLiteral ("qrc:/qml/main.qml")));
