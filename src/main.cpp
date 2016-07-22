@@ -26,7 +26,7 @@
 #include <DriverStation.h>
 #include <QQmlApplicationEngine>
 
-const QString APP_VERSION = "16.07";
+const QString APP_VERSION = "16.07.2";
 const QString APP_COMPANY = "Alex Spataru";
 const QString APP_DSPNAME = "QDriverStation";
 const QString APP_WEBSITE = "http://frc-utilities.github.io/";

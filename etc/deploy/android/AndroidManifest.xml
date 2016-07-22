@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.frcutilities.qdriverstation" android:versionName="16.07" android:versionCode="16" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="org.frcutilities.qdriverstation" android:versionName="16.07.2" android:versionCode="16" android:installLocation="auto">
    <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="QDriverStation">
       <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="QDriverStation" android:screenOrientation="portrait" android:icon="@mipmap/ic_launcher" android:launchMode="singleInstance">
          <intent-filter>
