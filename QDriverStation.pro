@@ -32,6 +32,15 @@ QT += quick
 QT += quickcontrols2
 
 #-------------------------------------------------------------------------------
+# Make options
+#-------------------------------------------------------------------------------
+
+UI_DIR = uic
+MOC_DIR = moc
+RCC_DIR = qrc
+OBJECTS_DIR = obj
+
+#-------------------------------------------------------------------------------
 # Deploy configurations
 #-------------------------------------------------------------------------------
 
@@ -62,10 +71,5 @@ OTHER_FILES += \
     $$PWD/qml/Widgets/*.qml
 
 DISTFILES += \
-    etc/deploy/android/AndroidManifest.xml \
-    etc/deploy/android/res/values/libs.xml \
-    etc/deploy/android/build.gradle \
-    etc/deploy/android/gradle/wrapper/gradle-wrapper.jar \
-    etc/deploy/android/gradlew \
-    etc/deploy/android/gradle/wrapper/gradle-wrapper.properties \
-    etc/deploy/android/gradlew.bat
+    $$PWD/etc/deploy/android/AndroidManifest.xml \
+    $$PWD/etc/deploy/android/res/values/libs.xml
