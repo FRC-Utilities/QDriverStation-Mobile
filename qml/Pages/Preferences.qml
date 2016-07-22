@@ -68,6 +68,7 @@ Pane {
             TextField {
                 id: team
                 Layout.fillWidth: true
+                inputMethodHints: Qt.ImhNoPredictiveText
                 onTextChanged: {
                     text = text.replace(/\D/g,'');
                     DriverStation.setTeam (text)
@@ -85,6 +86,7 @@ Pane {
                 id: robotAddress
                 Layout.fillWidth: true
                 onTextChanged: DriverStation.setCustomRobotAddress (text)
+                inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
             }
         }
 
