@@ -60,3 +60,12 @@ OTHER_FILES += \
     $$PWD/qml/Pages/*.qml \
     $$PWD/qml/Dialogs/*.qml \
     $$PWD/qml/Widgets/*.qml
+
+DISTFILES += \
+    etc/deploy/android/AndroidManifest.xml \
+    etc/deploy/android/res/values/libs.xml \
+    etc/deploy/android/build.gradle \
+    etc/deploy/android/gradle/wrapper/gradle-wrapper.jar \
+    etc/deploy/android/gradlew \
+    etc/deploy/android/gradle/wrapper/gradle-wrapper.properties \
+    etc/deploy/android/gradlew.bat
