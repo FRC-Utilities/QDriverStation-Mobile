@@ -33,18 +33,24 @@ ColumnLayout {
     spacing: Globals.spacing
 
     property var jsId: 0
-    property var numThumbs: 0
-    property var numButtons: 0
-    property var numTriggers: 0
-    property var numAxes: numThumbs * 2 + numTriggers
-    property bool triggersEnabled: parent.height >  (520 + (18 * numTriggers))
+    property bool triggersEnabled: parent.height > 556
 
     //
     // Register the joystick when created
     //
     Component.onCompleted: {
-        DriverStation.registerJoystick (numAxes, numButtons, 0)
+        DriverStation.registerJoystick (6, 10, 0)
         jsId = DriverStation.joystickCount() - 1
+    }
+
+    //
+    // Do not allow the robot to apply a "surprise madafaka!"
+    //
+    onVisibleChanged: {
+        thumbA.release()
+        thumbB.release()
+        triggerA.value = 0.5
+        triggerB.value = 0.5
     }
 
     //
@@ -61,13 +67,14 @@ ColumnLayout {
     //
     Grid {
         id: buttons
+        property var numButtons: 10
 
         spacing: 2
         Layout.fillWidth: true
         columns: numButtons / (triggersEnabled || IsMaterial ? 2 : 3)
 
         Repeater {
-            model: numButtons
+            model: buttons.numButtons
             delegate: Button {
                 flat: true
                 text: qsTr ("" + (index + 1))
@@ -89,58 +96,133 @@ ColumnLayout {
     }
 
     //
-    // Spacer
-    //
-    Item {
-        Layout.fillHeight: true
-    }
-
-    //
     // Thumbs row
     //
-    Row {
+    Item {
         id: thumbs
-        spacing: Globals.spacing * 2
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        Layout.minimumHeight: thumbA.height
         anchors.horizontalCenter: parent.horizontalCenter
 
-        Repeater {
-            id: circles
-            model: numThumbs
+        //
+        // Moves the appropiate thumbs based on the touch configuration
+        // of the mobile device
+        //
+        function react() {
+            /* Know if one or two fingers are pressing the screen */
+            var aPressed = pointA.pressed
+            var bPressed = pointB.pressed
 
-            function getIndexX (input) {
-                if (input === 0)
-                    return 0;
-                else if (input === 1)
-                    return 4;
-                else
-                    return input + 1
-            }
+            /* Get finger positions */
+            var ax = pointA.x
+            var ay = pointA.y
+            var bx = pointB.x
+            var by = pointB.y
 
-            function getIndexY (input) {
-                if (input === 0)
-                    return 1;
-                else if (input === 1)
-                    return 5;
-                else
-                    return input + 2
-            }
+            /* Get position of each thumb */
+            var posA = (thumbA.x - multitouch.x) + (thumbA.width / 2)
+            var posB = (thumbB.x - multitouch.x) + (thumbB.width / 2)
 
-            delegate: JoystickAxis {
-                height: width
-                width: Math.min (app.width * 0.38, 156)
+            /* Only one finger pressed, decide which thumb to move */
+            if (aPressed !== bPressed) {
+                /* Get distances between the press and each thumb */
+                var distanceA = Math.abs (posA - ax)
+                var distanceB = Math.abs (posB - ax)
 
-                onXValueChanged: {
-                    DriverStation.updateAxis (jsId,
-                                              circles.getIndexX (index),
-                                              xValue)
+                /* Press is closer to first thumb */
+                if (distanceA < distanceB) {
+                    thumbB.release()
+                    thumbA.press (ax, ay)
                 }
 
-                onYValueChanged: {
-                    DriverStation.updateAxis (jsId,
-                                              circles.getIndexY (index),
-                                              yValue)
+                /* Press is closer to second thumb */
+                else {
+                    thumbA.release()
+                    thumbB.press (ax - posB + posA, ay)
                 }
             }
+
+            /* Two fingers pressed, move both thumbs */
+            else if (aPressed && bPressed) {
+                /* Finger A is closer to thumb A */
+                if (ax < bx) {
+                    thumbA.press (ax, ay)
+                    thumbB.press (bx - posB + posA, by)
+                }
+
+                /* Finger B is closer to thumb A (press order matters) */
+                else {
+                    thumbA.press (bx, by)
+                    thumbB.press (ax - posB + posA, ay)
+                }
+            }
+
+            /* No fingers pressed, center thumbs */
+            else {
+                thumbA.release()
+                thumbB.release()
+            }
+        }
+
+        //
+        // Multi-touch panel
+        //
+        MultiPointTouchArea {
+            id: multitouch
+            mouseEnabled: true
+            anchors.top: parent.top
+            anchors.left: thumbA.left
+            anchors.right: thumbB.right
+            anchors.bottom: parent.bottom
+
+            touchPoints: [
+                TouchPoint {
+                    id: pointA
+                    onXChanged: thumbs.react()
+                    onYChanged: thumbs.react()
+                    onPressedChanged: thumbs.react()
+                },
+                TouchPoint {
+                    id: pointB
+                    onXChanged: thumbs.react()
+                    onYChanged: thumbs.react()
+                    onPressedChanged: thumbs.react()
+                }
+            ]
+        }
+
+        //
+        // First thumb
+        //
+        JoystickAxis {
+            id: thumbA
+            height: width
+            anchors.right: center.left
+            anchors.rightMargin: app.width * 0.05
+            width: Math.min (app.width * 0.38, 156)
+            anchors.verticalCenter: parent.verticalCenter
+            onXValueChanged: DriverStation.updateAxis (jsId, 0, xValue)
+            onYValueChanged: DriverStation.updateAxis (jsId, 1, yValue)
+        }
+
+        Item {
+            id: center
+            anchors.centerIn: parent
+        }
+
+        //
+        // Second thumb
+        //
+        JoystickAxis {
+            id: thumbB
+            height: width
+            anchors.left: center.right
+            anchors.leftMargin: app.width * 0.05
+            width: Math.min (app.width * 0.38, 156)
+            anchors.verticalCenter: parent.verticalCenter
+            onXValueChanged: DriverStation.updateAxis (jsId, 4, xValue)
+            onYValueChanged: DriverStation.updateAxis (jsId, 5, yValue)
         }
     }
 
@@ -154,28 +236,41 @@ ColumnLayout {
     }
 
     //
-    // Triggers column
+    // First slider
     //
-    Repeater {
-        model: numTriggers
-        delegate: Slider {
-            value: 0.5
-            Layout.fillWidth: true
-            visible: triggersEnabled
-            Material.accent: Material.Red
-            Universal.accent: Universal.Cobalt
+    Slider {
+        value: 0.5
+        id: triggerA
+        Layout.fillWidth: true
+        visible: triggersEnabled
+        Material.accent: Material.Red
+        Universal.accent: Universal.Cobalt
 
-            onPressedChanged: {
-                if (!pressed)
-                    value = 0.5
-            }
-
-            onValueChanged: {
-                DriverStation.updateAxis (jsId,
-                                          index + 2,
-                                          (value - 0.5) * 2)
-            }
+        onPressedChanged: {
+            if (!pressed)
+                value = 0.5
         }
+
+        onValueChanged: DriverStation.updateAxis (jsId, 2, (value - 0.5) * 2)
+    }
+
+    //
+    // Second slider
+    //
+    Slider {
+        value: 0.5
+        id: triggerB
+        Layout.fillWidth: true
+        visible: triggersEnabled
+        Material.accent: Material.Red
+        Universal.accent: Universal.Cobalt
+
+        onPressedChanged: {
+            if (!pressed)
+                value = 0.5
+        }
+
+        onValueChanged: DriverStation.updateAxis (jsId, 3, (value - 0.5) * 2)
     }
 
     //

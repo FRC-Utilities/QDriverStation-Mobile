@@ -213,11 +213,6 @@ Pane {
                 opacity = visible ? 1 : 0
             }
 
-            jsId: 0
-            numThumbs: 2
-            numButtons: 12
-            numTriggers: 2
-
             opacity: 0
             visible: false
             onOpacityChanged: visible = (opacity !== 0)

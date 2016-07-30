@@ -40,8 +40,26 @@ Rectangle {
     property double xValue: 0
     property double yValue: 0
 
-    Behavior on height {NumberAnimation{}}
-    Behavior on width  {NumberAnimation{}}
+    //
+    // Moves the knob to the x and y values of the touch point
+    //
+    function press (x, y) {
+        knobX = Math.min (Math.max (x, width / 4), width * 0.75)
+        knobY = Math.min (Math.max (y, height / 4), height * 0.75)
+
+        xValue = (knobX * 4 / width) - 2
+        yValue = (knobY * 4 / height) - 2
+    }
+
+    //
+    // Centers the knobs again
+    //
+    function release() {
+        xValue = 0
+        yValue = 0
+        knobX = width / 2
+        knobY = height / 2
+    }
 
     //
     // Center the knobs when the size of the thumb changes
@@ -81,31 +99,5 @@ Rectangle {
             width: js.width * (0.78 - (index / 10))
             opacity: isCenter ? 1 : isBorder ? 0.1 : (index / 8)
         }
-    }
-
-    //
-    // Moves the knobs and calculates the axis values
-    //
-    MouseArea {
-        anchors.fill: parent
-
-        function press (mouse) {
-            knobX = Math.min (Math.max (mouse.x, parent.width / 4), parent.width * 0.75)
-            knobY = Math.min (Math.max (mouse.y, parent.height / 4), parent.height * 0.75)
-
-            xValue = (knobX * 4 / parent.width) - 2
-            yValue = (knobY * 4 / parent.height) - 2
-        }
-
-        function release (mouse) {
-            xValue = 0
-            yValue = 0
-            knobX = parent.width / 2
-            knobY = parent.height / 2
-        }
-
-        onPressed: press (mouse)
-        onReleased: release (mouse)
-        onPositionChanged: press (mouse)
     }
 }
