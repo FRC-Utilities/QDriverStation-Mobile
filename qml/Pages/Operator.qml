@@ -50,15 +50,15 @@ Pane {
         //
         // Update the robot code checkbox automatically
         //
-        onCodeStatusChanged: {
-            robotCode.checked = DriverStation.isRobotCodeRunning()
+        onRobotCodeChanged: {
+            robotCode.checked = DriverStation.hasRobotCode()
         }
 
         //
         // Update the robot communications checkbox automatically
         //
-        onRobotCommStatusChanged: {
-            communications.checked = DriverStation.isConnectedToRobot()
+        onRobotCommunicationsChanged: {
+            communications.checked = DriverStation.connectedToRobot()
         }
 
         //
@@ -189,7 +189,7 @@ Pane {
                 ComboBox {
                     id: station
                     Layout.fillWidth: true
-                    model: DriverStation.teamStations()
+                    model: DriverStation.stations()
                     onCurrentIndexChanged: DriverStation.setTeamStation (currentIndex)
                 }
             }
@@ -276,7 +276,7 @@ Pane {
                 //
                 // Show joysticks if robot is in teleop and enabled
                 //
-                if (DriverStation.isInTeleoperated() && enabled) {
+                if (DriverStation.isTeleoperated() && enabled) {
                     joystick.setVisible (enabled)
                     controls.setVisible (!enabled)
                 }

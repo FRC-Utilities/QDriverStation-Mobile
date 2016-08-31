@@ -39,7 +39,7 @@ ColumnLayout {
     // Register the joystick when created
     //
     Component.onCompleted: {
-        DriverStation.registerJoystick (6, 10, 0)
+        DriverStation.addJoystick (6, 0, 10)
         jsId = DriverStation.joystickCount() - 1
     }
 

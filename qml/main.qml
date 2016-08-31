@@ -49,7 +49,7 @@ ApplicationWindow {
     //
     Component.onCompleted: {
         setTheme (themeId)
-        DriverStation.init()
+        DriverStation.start()
     }
 
     //

@@ -23,15 +23,17 @@
 #include <QtQml>
 #include <QQuickStyle>
 #include <QGuiApplication>
-#include <DriverStation.h>
 #include <QQmlApplicationEngine>
+
+#include "DriverStation.h"
 
 const QString APP_VERSION = "16.08";
 const QString APP_COMPANY = "Alex Spataru";
 const QString APP_DSPNAME = "QDriverStation";
 const QString APP_WEBSITE = "http://frc-utilities.github.io/";
 
-int main (int argc, char* argv[]) {
+int main (int argc, char* argv[])
+{
     QGuiApplication::setApplicationName (APP_DSPNAME);
     QGuiApplication::setOrganizationName (APP_COMPANY);
     QGuiApplication::setApplicationVersion (APP_VERSION);

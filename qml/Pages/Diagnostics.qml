@@ -33,9 +33,9 @@ Pane {
     //
     Connections {
         target: DriverStation
-        onFmsCommStatusChanged: fms.checked = DriverStation.isConnectedToFMS()
-        onRadioCommStatusChanged: radio.checked = DriverStation.isConnectedToRadio()
-        onRobotCommStatusChanged: robot.checked = DriverStation.isConnectedToRobot()
+        onFmsCommunicationsChanged: fms.checked = DriverStation.connectedToFMS()
+        onRadioCommunicationsChanged: radio.checked = DriverStation.connectedToRadio()
+        onRobotCommunicationsChanged: robot.checked = DriverStation.connectedToRobot()
     }
 
     ColumnLayout {

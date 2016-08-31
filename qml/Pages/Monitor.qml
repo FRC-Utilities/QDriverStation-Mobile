@@ -32,8 +32,8 @@ Pane {
     // Changes the status labels to "--.--" if there is no robot comms.
     //
     function reset() {
-        if (!DriverStation.isConnectedToRobot()) {
-            voltage.text = Globals.invalidStr
+        if (!DriverStation.connectedToRobot()) {
+            battery.text = Globals.invalidStr
             cpuUsage.text = Globals.invalidStr
             ramUsage.text = Globals.invalidStr
             diskUsage.text = Globals.invalidStr
@@ -41,13 +41,18 @@ Pane {
     }
 
     //
+    // Load status text on launch
+    //
+    Component.onCompleted: reset()
+
+    //
     // Updates the status labels automatically
     //
     Connections {
         target: DriverStation
         onProtocolChanged: reset()
-        onRobotCommStatusChanged: reset()
-        onVoltageChanged: voltage.text = voltageString
+        onRobotCommunicationsChanged: reset()
+        onVoltageChanged: battery.text = voltage + "V"
         onCpuUsageChanged: cpuUsage.text = usage + "%"
         onRamUsageChanged: ramUsage.text = usage + "%"
         onDiskUsageChanged: diskUsage.text = usage + "%"
@@ -81,7 +86,7 @@ Pane {
                 }
 
                 Label {
-                    id: voltage
+                    id: battery
                 }
             }
         }

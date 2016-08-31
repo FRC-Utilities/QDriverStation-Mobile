@@ -32,9 +32,7 @@ import "../Globals.js" as Globals
 Pane {
     Connections {
         target: DriverStation
-
         onTeamChanged: updatePlaceholders()
-        onProtocolChanged: updatePlaceholders()
     }
 
     function updatePlaceholders() {
@@ -71,7 +69,7 @@ Pane {
                 inputMethodHints: Qt.ImhNoPredictiveText
                 onTextChanged: {
                     text = text.replace(/\D/g,'');
-                    DriverStation.setTeam (text)
+                    DriverStation.setTeamNumber (text)
                     updatePlaceholders()
                 }
             }
@@ -100,7 +98,7 @@ Pane {
                 Layout.fillWidth: true
                 model: DriverStation.protocols()
                 onCurrentIndexChanged: {
-                    DriverStation.setProtocolType (currentIndex)
+                    DriverStation.setProtocol (currentIndex)
                     updatePlaceholders()
                 }
             }

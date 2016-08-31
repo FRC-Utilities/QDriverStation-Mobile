@@ -50,14 +50,15 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/etc/deploy/android
 # Include the libraries
 #-------------------------------------------------------------------------------
 
-include ($$PWD/lib/LibDS/LibDS.pri)
+include ($$PWD/lib/LibDS-C/LibDS.pri)
 
 #-------------------------------------------------------------------------------
 # Import QML, resources and source code
 #-------------------------------------------------------------------------------
 
 SOURCES += \
-    $$PWD/src/main.cpp
+    $$PWD/src/main.cpp \
+    src/DriverStation.cpp
 
 RESOURCES += \
     $$PWD/qml/qml.qrc \
@@ -73,3 +74,6 @@ OTHER_FILES += \
 DISTFILES += \
     $$PWD/etc/deploy/android/AndroidManifest.xml \
     $$PWD/etc/deploy/android/res/values/libs.xml
+
+HEADERS += \
+    src/DriverStation.h
