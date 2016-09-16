@@ -45,12 +45,9 @@ ApplicationWindow {
     property bool isDarkTheme: themeId === Globals.dark
 
     //
-    // Load the saved theme and initialize the DS
+    // Load the saved theme
     //
-    Component.onCompleted: {
-        setTheme (themeId)
-        DriverStation.start()
-    }
+    Component.onCompleted: setTheme (themeId)
 
     //
     // Changes the current theme

@@ -58,7 +58,8 @@ include ($$PWD/lib/LibDS-C/LibDS.pri)
 
 SOURCES += \
     $$PWD/src/main.cpp \
-    src/DriverStation.cpp
+    src/DriverStation.cpp \
+    src/EventLogger.cpp
 
 RESOURCES += \
     $$PWD/qml/qml.qrc \
@@ -76,4 +77,5 @@ DISTFILES += \
     $$PWD/etc/deploy/android/res/values/libs.xml
 
 HEADERS += \
-    src/DriverStation.h
+    src/DriverStation.h \
+    src/EventLogger.h

@@ -52,12 +52,14 @@ Pane {
         //
         onRobotCodeChanged: {
             robotCode.checked = DriverStation.hasRobotCode()
+            communications.checked = DriverStation.connectedToRobot()
         }
 
         //
         // Update the robot communications checkbox automatically
         //
         onRobotCommunicationsChanged: {
+            robotCode.checked = DriverStation.hasRobotCode()
             communications.checked = DriverStation.connectedToRobot()
         }
 
@@ -66,6 +68,8 @@ Pane {
         //
         onStatusChanged: {
             robotStatus.text = status
+            robotCode.checked = DriverStation.hasRobotCode()
+            communications.checked = DriverStation.connectedToRobot()
         }
 
         //

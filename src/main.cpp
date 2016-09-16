@@ -25,6 +25,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
+#include "EventLogger.h"
 #include "DriverStation.h"
 
 const QString APP_VERSION = "16.08";
@@ -42,6 +43,9 @@ int main (int argc, char* argv[])
 
     QGuiApplication app (argc, argv);
     DriverStation* driverstation = DriverStation::getInstance();
+
+    DSEventLogger::getInstance()->start();
+    DriverStation::getInstance()->start();
 
 #if defined Q_OS_ANDROID || defined Q_OS_MAC || defined Q_OS_LINUX
     bool material = true;

@@ -79,9 +79,7 @@ ColumnLayout {
                 flat: true
                 text: qsTr ("" + (index + 1))
                 width: (buttons.width / buttons.columns) - (buttons.spacing)
-                onPressedChanged: {
-                    DriverStation.updateButton (jsId, index, pressed)
-                }
+                onPressedChanged: DriverStation.setJoystickButton (jsId, index, pressed)
             }
         }
     }
@@ -202,8 +200,8 @@ ColumnLayout {
             anchors.rightMargin: app.width * 0.05
             width: Math.min (app.width * 0.38, 156)
             anchors.verticalCenter: parent.verticalCenter
-            onXValueChanged: DriverStation.updateAxis (jsId, 0, xValue)
-            onYValueChanged: DriverStation.updateAxis (jsId, 1, yValue)
+            onXValueChanged: DriverStation.setJoystickAxis (jsId, 0, xValue)
+            onYValueChanged: DriverStation.setJoystickAxis (jsId, 1, yValue)
         }
 
         Item {
@@ -221,8 +219,8 @@ ColumnLayout {
             anchors.leftMargin: app.width * 0.05
             width: Math.min (app.width * 0.38, 156)
             anchors.verticalCenter: parent.verticalCenter
-            onXValueChanged: DriverStation.updateAxis (jsId, 4, xValue)
-            onYValueChanged: DriverStation.updateAxis (jsId, 5, yValue)
+            onXValueChanged: DriverStation.setJoystickAxis (jsId, 4, xValue)
+            onYValueChanged: DriverStation.setJoystickAxis (jsId, 5, yValue)
         }
     }
 
@@ -251,7 +249,7 @@ ColumnLayout {
                 value = 0.5
         }
 
-        onValueChanged: DriverStation.updateAxis (jsId, 2, (value - 0.5) * 2)
+        onValueChanged: DriverStation.setJoystickAxis (jsId, 2, (value - 0.5) * 2)
     }
 
     //
@@ -270,7 +268,7 @@ ColumnLayout {
                 value = 0.5
         }
 
-        onValueChanged: DriverStation.updateAxis (jsId, 3, (value - 0.5) * 2)
+        onValueChanged: DriverStation.setJoystickAxis (jsId, 3, (value - 0.5) * 2)
     }
 
     //

@@ -25,9 +25,12 @@
 #include <QTimer>
 #include <QDebug>
 #include <LibDS.h>
+#include <QHostAddress>
 #include <QApplication>
 
 static bool initialized = 0;
+
+#define LOG qDebug() << "DS Client:"
 
 /**
  * Converts the given \c QString into a \c SDS string
@@ -448,9 +451,13 @@ QStringList DriverStation::protocols() const
 void DriverStation::start()
 {
     if (!initialized) {
+        LOG << "Initializing DS Engine...";
+
         DS_Init();
         processEvents();
         connect (qApp, SIGNAL (aboutToQuit()), this, SLOT (quitDS()));
+
+        LOG << "DS Engine initialized";
     }
 }
 
@@ -459,6 +466,7 @@ void DriverStation::start()
  */
 void DriverStation::rebootRobot()
 {
+    LOG << "Requesting robot reboot...";
     DS_RebootRobot();
 }
 
@@ -467,6 +475,7 @@ void DriverStation::rebootRobot()
  */
 void DriverStation::resetJoysticks()
 {
+    LOG << "Resetting joysticks...";
     DS_JoysticksReset();
 }
 
@@ -475,6 +484,7 @@ void DriverStation::resetJoysticks()
  */
 void DriverStation::restartRobotCode()
 {
+    LOG << "Requesting robot code restart...";
     DS_RestartRobotCode();
 }
 
@@ -510,6 +520,7 @@ void DriverStation::switchToTeleoperated()
  */
 void DriverStation::setEnabled (const bool enabled)
 {
+    LOG << "Setting enabled state to" << enabled;
     DS_SetRobotEnabled (enabled);
 }
 
@@ -520,6 +531,7 @@ void DriverStation::setEnabled (const bool enabled)
  */
 void DriverStation::setTeamNumber (const int number)
 {
+    LOG << "Setting team number to" << number;
     DS_SetTeamNumber (number);
 }
 
@@ -531,8 +543,12 @@ void DriverStation::setTeamNumber (const int number)
 void DriverStation::setProtocol (DS_Protocol* protocol)
 {
     if (protocol) {
+        LOG << "Loading protocol" << protocol;
+
         DS_ConfigureProtocol (protocol);
         emit protocolChanged();
+
+        LOG << "Protocol" << protocol << "loaded";
     }
 }
 
@@ -541,6 +557,8 @@ void DriverStation::setProtocol (DS_Protocol* protocol)
  */
 void DriverStation::setControlMode (const Control mode)
 {
+    LOG << "Setting control mode to" << mode;
+
     switch (mode) {
     case kControlTest:
         DS_SetControlMode (DS_CONTROL_TEST);
@@ -633,6 +651,8 @@ void DriverStation::setTeamStation (const int station)
  */
 void DriverStation::setTeamAlliance (const int alliance)
 {
+    LOG << "Setting alliance to" << alliance;
+
     switch ((Alliance) alliance) {
     case kAllianceRed:
         DS_SetAlliance (DS_ALLIANCE_RED);
@@ -651,6 +671,8 @@ void DriverStation::setTeamAlliance (const int alliance)
  */
 void DriverStation::setTeamPosition (const int position)
 {
+    LOG << "Setting position to" << position;
+
     switch ((Position) position) {
     case kPosition1:
         DS_SetPosition (DS_POSITION_1);
@@ -669,6 +691,7 @@ void DriverStation::setTeamPosition (const int position)
  */
 void DriverStation::setEmergencyStopped (const bool stopped)
 {
+    LOG << "Setting ESTOP to" << stopped;
     DS_SetEmergencyStopped (stopped);
 }
 
@@ -677,8 +700,10 @@ void DriverStation::setEmergencyStopped (const bool stopped)
  */
 void DriverStation::setCustomFMSAddress (const QString& address)
 {
-    if (!address.isEmpty())
+    if (addressIsValid (address) || address.isEmpty()) {
+        LOG << "Using new FMS address" << address;
         DS_SetCustomFMSAddress (qstring_to_sds (address));
+    }
 }
 
 /**
@@ -686,8 +711,10 @@ void DriverStation::setCustomFMSAddress (const QString& address)
  */
 void DriverStation::setCustomRadioAddress (const QString& address)
 {
-    if (!address.isEmpty())
+    if (addressIsValid (address) || address.isEmpty()) {
+        LOG << "Using new radio address" << address;
         DS_SetCustomRadioAddress (qstring_to_sds (address));
+    }
 }
 
 /**
@@ -695,8 +722,10 @@ void DriverStation::setCustomRadioAddress (const QString& address)
  */
 void DriverStation::setCustomRobotAddress (const QString& address)
 {
-    if (!address.isEmpty())
+    if (addressIsValid (address) || address.isEmpty()) {
+        LOG << "Using new robot address" << address;
         DS_SetCustomRobotAddress (qstring_to_sds (address));
+    }
 }
 
 /**
@@ -718,6 +747,11 @@ void DriverStation::sendNetConsoleMessage (const QString& message)
 void DriverStation::addJoystick (int axes, int hats, int buttons)
 {
     DS_JoysticksAdd (axes, hats, buttons);
+
+    LOG << "Registered new joystick with"
+        << axes << "axes,"
+        << hats << "hats and"
+        << buttons << "buttons";
 }
 
 /**
@@ -764,7 +798,9 @@ void DriverStation::setJoystickButton (int joystick, int button, bool pressed)
  */
 void DriverStation::quitDS()
 {
+    LOG << "Stopping DS Engine...";
     DS_Close();
+    LOG << "DS Engine Stopped";
 }
 
 /**
@@ -828,4 +864,26 @@ void DriverStation::processEvents()
     }
 
     QTimer::singleShot (5, Qt::CoarseTimer, this, SLOT (processEvents()));
+}
+
+/**
+ * Returns \c true if the given \a address is a valid IP or DNS address
+ *
+ * \param address the network address to check for validity
+ */
+bool DriverStation::addressIsValid (const QString address)
+{
+    /* This is a valid mDNS address */
+    if (address.endsWith (".local"))
+        return true;
+
+    /* Check if address is a valid IPv4 address*/
+    QHostAddress host (address);
+    if (!host.isNull()) {
+        if (address.split (".").count() == 4)
+            return true;
+    }
+
+    /* This is an invalid IPv4 address */
+    return false;
 }

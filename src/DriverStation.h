@@ -131,9 +131,11 @@ private slots:
     void quitDS();
     void processEvents();
 
+private:
+    bool addressIsValid (const QString address);
+
 signals:
     void protocolChanged();
-    void teamChanged (int team);
     void canUsageChanged (int usage);
     void cpuUsageChanged (int usage);
     void ramUsageChanged (int usage);
@@ -151,7 +153,6 @@ signals:
     void radioCommunicationsChanged (bool connected);
     void robotCommunicationsChanged (bool connected);
     void emergencyStoppedChanged (bool emergencyStopped);
-
 };
 
 #endif

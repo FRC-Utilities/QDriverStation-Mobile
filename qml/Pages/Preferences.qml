@@ -32,7 +32,7 @@ import "../Globals.js" as Globals
 Pane {
     Connections {
         target: DriverStation
-        onTeamChanged: updatePlaceholders()
+        onTeamNumberChanged: updatePlaceholders()
     }
 
     function updatePlaceholders() {
