@@ -531,7 +531,7 @@ void DriverStation::setEnabled (const bool enabled)
  */
 void DriverStation::setTeamNumber (const int number)
 {
-    LOG << "Setting team number to" << number;
+    LOG << "Changing team number to" << number;
     DS_SetTeamNumber (number);
 }
 
@@ -586,12 +586,15 @@ void DriverStation::setProtocol (const int protocol)
     switch ((Protocol) protocol) {
     case kProtocol2014:
         setProtocol (DS_GetProtocolFRC_2014());
+        LOG << "Switched to FRC 2014 Protocol";
         break;
     case kProtocol2015:
         setProtocol (DS_GetProtocolFRC_2015());
+        LOG << "Switched to FRC 2015 Protocol";
         break;
     case kProtocol2016:
         setProtocol (DS_GetProtocolFRC_2016());
+        LOG << "Switched to FRC 2016 Protocol";
         break;
     default:
         break;

@@ -61,6 +61,7 @@ static void* update_timer (void* ptr)
         DS_Sleep (timer->precision);
     }
 
+    pthread_exit (0);
     return NULL;
 }
 
