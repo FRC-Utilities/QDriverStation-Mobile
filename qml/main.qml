@@ -33,7 +33,7 @@ import "Globals.js" as Globals
 
 ApplicationWindow {
     id: app
-    width: 729
+    width: 340
     height: 520
     visible: true
     title: AppDspName + " " + AppVersion

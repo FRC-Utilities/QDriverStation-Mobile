@@ -47,7 +47,7 @@ int main (int argc, char* argv[])
     DSEventLogger::getInstance()->start();
     DriverStation::getInstance()->start();
 
-#if defined Q_OS_ANDROID || defined Q_OS_MAC || defined Q_OS_LINUX
+#if defined Q_OS_WINRT
     bool material = true;
 #else
     bool material = false;

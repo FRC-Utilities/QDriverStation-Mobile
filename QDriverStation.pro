@@ -28,7 +28,9 @@ TEMPLATE = app
 TARGET = QDriverStation
 
 QT += svg
+QT += core
 QT += quick
+QT += network
 QT += quickcontrols2
 
 #-------------------------------------------------------------------------------
@@ -58,8 +60,8 @@ include ($$PWD/lib/LibDS-C/LibDS.pri)
 
 SOURCES += \
     $$PWD/src/main.cpp \
-    src/DriverStation.cpp \
-    src/EventLogger.cpp
+    $$PWD/src/DriverStation.cpp \
+    $$PWD/src/EventLogger.cpp
 
 RESOURCES += \
     $$PWD/qml/qml.qrc \
@@ -77,5 +79,5 @@ DISTFILES += \
     $$PWD/etc/deploy/android/res/values/libs.xml
 
 HEADERS += \
-    src/DriverStation.h \
-    src/EventLogger.h
+    $$PWD/src/DriverStation.h \
+    $$PWD/src/EventLogger.h
