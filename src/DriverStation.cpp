@@ -451,13 +451,9 @@ QStringList DriverStation::protocols() const
 void DriverStation::start()
 {
     if (!initialized) {
-        LOG << "Initializing DS Engine...";
-
         DS_Init();
         processEvents();
         connect (qApp, SIGNAL (aboutToQuit()), this, SLOT (quitDS()));
-
-        LOG << "DS Engine initialized";
     }
 }
 

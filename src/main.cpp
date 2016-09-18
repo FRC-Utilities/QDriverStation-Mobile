@@ -21,6 +21,7 @@
  */
 
 #include <QtQml>
+#include <LibDS.h>
 #include <QQuickStyle>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
@@ -35,6 +36,8 @@ const QString APP_WEBSITE = "http://frc-utilities.github.io/";
 
 int main (int argc, char* argv[])
 {
+    DS_Init();
+
     QGuiApplication::setApplicationName (APP_DSPNAME);
     QGuiApplication::setOrganizationName (APP_COMPANY);
     QGuiApplication::setApplicationVersion (APP_VERSION);
@@ -44,13 +47,13 @@ int main (int argc, char* argv[])
     QGuiApplication app (argc, argv);
     DriverStation* driverstation = DriverStation::getInstance();
 
-    DSEventLogger::getInstance()->start();
     DriverStation::getInstance()->start();
+    DSEventLogger::getInstance()->start();
 
 #if defined Q_OS_WINRT
-    bool material = true;
-#else
     bool material = false;
+#else
+    bool material = true;
 #endif
 
     QSettings settings;
