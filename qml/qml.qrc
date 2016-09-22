@@ -16,5 +16,6 @@
     </qresource>
     <qresource prefix="/">
         <file>qtquickcontrols2.conf</file>
+        <file>qt.conf</file>
     </qresource>
 </RCC>

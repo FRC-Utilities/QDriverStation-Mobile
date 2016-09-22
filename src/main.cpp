@@ -26,8 +26,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-#include "EventLogger.h"
-#include "DriverStation.h"
+#include <EventLogger.h>
+#include <DriverStation.h>
 
 const QString APP_VERSION = "16.08";
 const QString APP_COMPANY = "Alex Spataru";
@@ -36,30 +36,34 @@ const QString APP_WEBSITE = "http://frc-utilities.github.io/";
 
 int main (int argc, char* argv[])
 {
-    DS_Init();
-
+    /* Set application information */
     QGuiApplication::setApplicationName (APP_DSPNAME);
     QGuiApplication::setOrganizationName (APP_COMPANY);
     QGuiApplication::setApplicationVersion (APP_VERSION);
     QGuiApplication::setOrganizationDomain (APP_WEBSITE);
     QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 
+    /* Initialize application and DS */
     QGuiApplication app (argc, argv);
     DriverStation* driverstation = DriverStation::getInstance();
 
+    /* Start DS engine and logger */
     DriverStation::getInstance()->start();
     DSEventLogger::getInstance()->start();
 
+    /* Use Universal style on Windows Phone */
 #if defined Q_OS_WINRT
     bool material = false;
 #else
     bool material = true;
 #endif
 
+    /* Set application style (based on saved settings) */
     QSettings settings;
     material = settings.value ("material", material).toBool();
     QQuickStyle::setStyle (material ? "Material" : "Universal");
 
+    /* Load QML interface */
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty ("IsMaterial", material);
     engine.rootContext()->setContextProperty ("AppDspName", APP_DSPNAME);
@@ -67,8 +71,10 @@ int main (int argc, char* argv[])
     engine.rootContext()->setContextProperty ("DriverStation", driverstation);
     engine.load (QUrl (QStringLiteral ("qrc:/qml/main.qml")));
 
+    /* Exit if QML fails to load */
     if (engine.rootObjects().isEmpty())
         return EXIT_FAILURE;
 
+    /* Enter application loop */
     return app.exec();
 }
