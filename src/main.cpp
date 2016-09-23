@@ -19,15 +19,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+ 
+#include <EventLogger.h>
+#include <DriverStation.h>
 
 #include <QtQml>
-#include <LibDS.h>
 #include <QQuickStyle>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-
-#include <EventLogger.h>
-#include <DriverStation.h>
 
 const QString APP_VERSION = "16.08";
 const QString APP_COMPANY = "Alex Spataru";
