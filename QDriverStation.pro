@@ -52,7 +52,6 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/etc/deploy/android
 # Include the libraries
 #-------------------------------------------------------------------------------
 
-include ($$PWD/lib/LibDS-C/LibDS.pri)
 include ($$PWD/lib/LibDS-C/wrappers/Qt/LibDS-Qt.pri)
 
 #-------------------------------------------------------------------------------

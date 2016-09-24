@@ -29,10 +29,10 @@
 #include <stdio.h>
 #include <string.h>
 
-static sds status_string;
-static sds custom_fms_address;
-static sds custom_radio_address;
-static sds custom_robot_address;
+static sds status_string = NULL;
+static sds custom_fms_address = NULL;
+static sds custom_radio_address = NULL;
+static sds custom_robot_address = NULL;
 
 /**
  * Allocates memory for the members of the client module
@@ -407,7 +407,6 @@ void DS_SetCustomFMSAddress (const char* address)
     if (strlen (address) > 0) {
         DS_FREESTR (custom_fms_address);
         custom_fms_address = sdsnew (address);
-
         CFG_ReconfigureAddresses (RECONFIGURE_FMS);
     }
 }
@@ -420,7 +419,6 @@ void DS_SetCustomRadioAddress (const char* address)
     if (strlen (address) > 0) {
         DS_FREESTR (custom_radio_address);
         custom_radio_address = sdsnew (address);
-
         CFG_ReconfigureAddresses (RECONFIGURE_RADIO);
     }
 }
@@ -433,7 +431,6 @@ void DS_SetCustomRobotAddress (const char* address)
     if (strlen (address) > 0) {
         DS_FREESTR (custom_robot_address);
         custom_robot_address = sdsnew (address);
-
         CFG_ReconfigureAddresses (RECONFIGURE_ROBOT);
     }
 }

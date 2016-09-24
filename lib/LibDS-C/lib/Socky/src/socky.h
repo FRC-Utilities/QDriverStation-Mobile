@@ -53,15 +53,22 @@ extern "C" {
 #define SOCKY_ANY  0x05
 
 /* Shutdown methods */
-#define SOCKY_READ  0x01
-#define SOCKY_WRITE 0x02
+#if defined _WIN32
+#define SOCKY_SD_RECV SD_RECEIVE
+#define SOCKY_SD_SEND SD_SEND
+#define SOCKY_SD_BOTH SD_BOTH
+#else
+#define SOCKY_SD_RECV 0x00
+#define SOCKY_SD_SEND 0x01
+#define SOCKY_SD_BOTH 0x02
+#endif
 
 /* Set listen() backlog value */
 #define SOCKY_BACKLOG 128
 
 /* Misc functions */
-extern int sockets_exit();
-extern int sockets_init (const int exit_on_fail);
+extern int socky_exit();
+extern int socky_init (const int exit_on_fail);
 extern int set_socket_block (const int sfd, const int block);
 extern struct addrinfo* get_address_info (const char* host,
                                           const char* service,

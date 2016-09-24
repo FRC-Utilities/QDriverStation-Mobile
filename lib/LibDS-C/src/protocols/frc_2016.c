@@ -21,6 +21,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include "DS_Utils.h"
 #include "DS_Config.h"
 #include "DS_Protocol.h"
 #include "DS_DefaultProtocols.h"
@@ -44,7 +45,13 @@ static sds robot_address()
 extern DS_Protocol* DS_GetProtocolFRC_2016()
 {
     DS_Protocol* protocol = DS_GetProtocolFRC_2015();
+
+    /* Change robot address function */
     protocol->robot_address = &robot_address;
+
+    /* Change protocol name */
+    DS_FREESTR (protocol->name);
+    protocol->name = sdsnew ("FRC 2016 Communication Protocol");
 
     return protocol;
 }

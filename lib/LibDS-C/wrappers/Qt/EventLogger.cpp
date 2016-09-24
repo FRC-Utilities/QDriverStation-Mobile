@@ -24,7 +24,6 @@
 
 #include <QFile>
 #include <QDebug>
-#include <QJsonDocument>
 
 #define LOG qDebug() << "DS Events:"
 

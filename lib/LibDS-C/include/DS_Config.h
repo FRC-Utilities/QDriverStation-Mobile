@@ -44,7 +44,8 @@ extern "C" {
 #define RECONFIGURE_FMS   0x01
 #define RECONFIGURE_RADIO 0x02
 #define RECONFIGURE_ROBOT 0x04
-#define RECONFIGURE_ALL   0x01 | 0x02 | 0x04
+#define RECONFIGURE_ALL   RECONFIGURE_FMS \
+    | RECONFIGURE_RADIO | RECONFIGURE_ROBOT
 
 /* Misc */
 extern void CFG_ReconfigureAddresses (const int flags);

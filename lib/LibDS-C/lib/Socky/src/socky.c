@@ -29,6 +29,8 @@
     #define GET_ERR errno
 #endif
 
+#define VERBOSE
+
 /**
  * Returns \c 0 if the given socket file descriptor is invalid
  *
@@ -232,12 +234,42 @@ static int create_server (const char* host, const char* port,
 }
 
 /**
+ * Logs the possible errors that occur when calling \c getaddrinfo()
+ */
+static void print_addr_errors (int error,
+                               const char* host,
+                               const char* service)
+{
+    if (error != 0) {
+#if defined VERBOSE
+#if defined _WIN32
+        const char* string = gai_strerrorA (error);
+#else
+        const char* string = strerror (error);
+#endif
+
+        int code = GET_ERR;
+        fprintf (stderr,
+                 "Cannot obtain address info:\n"
+                 "\t Address: %s\n"
+                 "\t Service: %s\n"
+                 "\t Error Code: %d\n"
+                 "\t Error Desc: %s\n",
+                 host, service, code, string);
+#else
+        (void) host;
+        (void) service;
+#endif
+    }
+}
+
+/**
  * If compiling on Windows, this function closes the WinSock API.
  * If you are using anything else, this function will do nothing.
  *
  * \returns 0 on success
  */
-int sockets_exit()
+int socky_exit()
 {
 #if defined _WIN32
     return WSACleanup();
@@ -255,7 +287,7 @@ int sockets_exit()
  *
  * \returns 0 on success, -1 on failure
  */
-int sockets_init (const int exit_on_fail)
+int socky_init (const int exit_on_fail)
 {
 #if defined _WIN32
     if (WSAStartup (WINSOCK_VERSION, &WSA_DATA) != 0) {
@@ -302,6 +334,7 @@ struct addrinfo* get_address_info (const char* host,
                                    const char* service,
                                    int socktype, int family)
 {
+    int error = 0;
     struct addrinfo hints, *info;
 
     /* Fill the hints with zeroes */
@@ -313,20 +346,11 @@ struct addrinfo* get_address_info (const char* host,
     hints.ai_socktype = get_socktype (socktype);
 
     /* Get address info */
-    int error = getaddrinfo (host, service, &hints, &info);
+    error = getaddrinfo (host, service, &hints, &info);
 
-    /* Check if there was an error with the address */
+    /* There was an error, abort */
     if (error != 0) {
-#if defined VERBOSE
-        int code = GET_ERR;
-        fprintf (stderr,
-                 "Cannot obtain address info:\n"
-                 "\t Address: %s\n"
-                 "\t Service: %s\n"
-                 "\t Error Code: %d\n"
-                 "\t Error Desc: %s\n",
-                 host, service, code, strerror (code));
-#endif
+        print_addr_errors (error, host, service);
         return NULL;
     }
 

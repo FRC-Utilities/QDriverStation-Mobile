@@ -19,7 +19,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
- 
+
+#include <LibDS.h>
 #include <EventLogger.h>
 #include <DriverStation.h>
 
@@ -35,6 +36,9 @@ const QString APP_WEBSITE = "http://frc-utilities.github.io/";
 
 int main (int argc, char* argv[])
 {
+    /* Initialize DS */
+    //DS_Init();
+
     /* Set application information */
     QGuiApplication::setApplicationName (APP_DSPNAME);
     QGuiApplication::setOrganizationName (APP_COMPANY);

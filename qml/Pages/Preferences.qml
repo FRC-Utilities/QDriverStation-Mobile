@@ -99,6 +99,8 @@ Pane {
                 model: DriverStation.protocols()
                 onCurrentIndexChanged: {
                     DriverStation.setProtocol (currentIndex)
+                    DriverStation.setCustomRobotAddress (robotAddress.text)
+
                     updatePlaceholders()
                 }
             }

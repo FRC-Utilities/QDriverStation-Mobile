@@ -41,7 +41,11 @@ static bool initialized = 0;
  */
 static sds qstring_to_sds (const QString& string)
 {
-    return sdsnew (string.toStdString().c_str());
+    if (!string.isEmpty())
+        return sdsnew (string.toStdString().c_str());
+
+    else
+        return sdsempty();
 }
 
 /**
@@ -539,12 +543,16 @@ void DriverStation::setTeamNumber (const int number)
 void DriverStation::setProtocol (DS_Protocol* protocol)
 {
     if (protocol) {
-        LOG << "Loading protocol" << protocol;
+        LOG << "Loading protocol"
+            << sds_to_qstring (protocol->name)
+            << protocol;
 
         DS_ConfigureProtocol (protocol);
         emit protocolChanged();
 
-        LOG << "Protocol" << protocol << "loaded";
+        LOG << "Protocol"
+            << sds_to_qstring (protocol->name)
+            << protocol << "loaded";
     }
 }
 
@@ -700,7 +708,12 @@ void DriverStation::setEmergencyStopped (const bool stopped)
 void DriverStation::setCustomFMSAddress (const QString& address)
 {
     if (addressIsValid (address) || address.isEmpty()) {
-        LOG << "Using new FMS address" << address;
+        if (!address.isEmpty())
+            LOG << "Using new FMS address" << address;
+
+        else
+            LOG << "Using default FMS address" << defaultFMSAddress();
+
         DS_SetCustomFMSAddress (qstring_to_sds (address));
     }
 }
@@ -711,7 +724,12 @@ void DriverStation::setCustomFMSAddress (const QString& address)
 void DriverStation::setCustomRadioAddress (const QString& address)
 {
     if (addressIsValid (address) || address.isEmpty()) {
-        LOG << "Using new radio address" << address;
+        if (!address.isEmpty())
+            LOG << "Using new radio address" << address;
+
+        else
+            LOG << "Using default radio address" << defaultRadioAddress();
+
         DS_SetCustomRadioAddress (qstring_to_sds (address));
     }
 }
@@ -722,7 +740,12 @@ void DriverStation::setCustomRadioAddress (const QString& address)
 void DriverStation::setCustomRobotAddress (const QString& address)
 {
     if (addressIsValid (address) || address.isEmpty()) {
-        LOG << "Using new robot address" << address;
+        if (!address.isEmpty())
+            LOG << "Using new robot address" << address;
+
+        else
+            LOG << "Using default robot address" << defaultRobotAddress();
+
         DS_SetCustomRobotAddress (qstring_to_sds (address));
     }
 }
@@ -872,9 +895,11 @@ void DriverStation::processEvents()
  */
 bool DriverStation::addressIsValid (const QString address)
 {
+#if !defined Q_OS_ANDROID
     /* This is a valid mDNS address */
     if (address.endsWith (".local"))
         return true;
+#endif
 
     /* Check if address is a valid IPv4 address*/
     QHostAddress host (address);

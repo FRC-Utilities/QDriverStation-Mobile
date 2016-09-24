@@ -36,9 +36,11 @@ static DS_Array sockets;
 /**
  * Returns the given \a number as a string
  */
-static sds itc (int number)
+static sds num_to_str (sds string, int number)
 {
-    return sdscatprintf (sdsempty(), "%d", number);
+    DS_FREESTR (string);
+    string = sdsempty();
+    return sdscatprintf (string, "%d", number);
 }
 
 /**
@@ -46,7 +48,12 @@ static sds itc (int number)
  */
 static void read_socket (DS_Socket* ptr)
 {
+    /* Check pointers */
     if (!ptr)
+        return;
+
+    /* Check that address is valid */
+    if (!ptr->address)
         return;
 
     /* Initialize temporary buffer */
@@ -93,40 +100,42 @@ static void read_socket (DS_Socket* ptr)
  */
 static void server_loop (DS_Socket* ptr)
 {
-    if (ptr) {
-        /* Set a 5-ms timeout on Windows */
+    /* Pointer is NULL */
+    if (!ptr)
+        return;
+
+    /* Set a 5-ms timeout on Windows */
 #if defined _WIN32
-        struct timeval tv;
-        tv.tv_sec = 0;
-        tv.tv_usec = 5000;
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 5000;
 #endif
 
-        /* Make the socket non-blocking on Windows */
+    /* Make the socket non-blocking on Windows */
 #if defined _WIN32
-        set_socket_block (ptr->info.sock_in, 0);
+    set_socket_block (ptr->info.sock_in, 0);
 #endif
 
-        /* Periodicaly check if there is data available on the socket */
-        while (ptr->info.server_init == 1) {
-            int rc;
+    /* Periodicaly check if there is data available on the socket */
+    while (ptr->info.server_init == 1) {
+        int rc;
 
-            /* Set the file descriptor */
-            fd_set set;
-            FD_ZERO (&set);
-            FD_SET (ptr->info.sock_in, &set);
+        /* Set the file descriptor */
+        fd_set set;
+        FD_ZERO (&set);
+        FD_SET (ptr->info.sock_in, &set);
 
-            /* Run select */
+        /* Run select */
 #if defined _WIN32
-            rc = select (0, &set, NULL, NULL, &tv);
+        rc = select (0, &set, NULL, NULL, &tv);
 #else
-            rc = select (ptr->info.sock_in + 1, &set, NULL, NULL, NULL);
+        rc = select (ptr->info.sock_in + 1, &set, NULL, NULL, NULL);
 #endif
 
-            /* Data is available, read it */
-            if (rc > 0) {
-                if (FD_ISSET (ptr->info.sock_in, &set))
-                    read_socket (ptr);
-            }
+        /* Data is available, read it */
+        if (rc > 0) {
+            if (FD_ISSET (ptr->info.sock_in, &set))
+                read_socket (ptr);
         }
     }
 }
@@ -152,8 +161,8 @@ static void* create_socket (void* data)
     }
 
     /* Set service strings */
-    ptr->info.in_service = itc (ptr->in_port);
-    ptr->info.out_service = itc (ptr->out_port);
+    ptr->info.in_service = num_to_str (ptr->info.in_service, ptr->in_port);
+    ptr->info.out_service = num_to_str (ptr->info.out_service, ptr->out_port);
 
     /* Open TCP socket */
     if (ptr->type == DS_SOCKET_TCP) {
@@ -219,7 +228,7 @@ DS_Socket DS_SocketEmpty()
  */
 void Sockets_Init()
 {
-    sockets_init (1);
+    socky_init (1);
     DS_ArrayInit (&sockets, sizeof (DS_Socket) * 5);
 }
 
@@ -237,7 +246,7 @@ void Sockets_Close()
     DS_ArrayFree (&sockets);
 
     /* Close the sockets API */
-    sockets_exit();
+    socky_exit();
 }
 
 /**
@@ -270,7 +279,7 @@ void DS_SocketOpen (DS_Socket* ptr)
  */
 void DS_SocketClose (DS_Socket* ptr)
 {
-    /* Check for NULL pointer */
+    /* Socket pointer is invalid */
     if (!ptr)
         return;
 
@@ -278,21 +287,21 @@ void DS_SocketClose (DS_Socket* ptr)
     ptr->info.server_init = 0;
     ptr->info.client_init = 0;
 
-    /* Close sockets */
-    socket_close (ptr->info.sock_in);
-    socket_close (ptr->info.sock_out);
-
     /* Stop threads */
     DS_StopThread (ptr->info.socket_thread);
 
-    /* Clear data buffers */
+    /* Close sockets */
+    socket_shutdown (ptr->info.sock_in, SOCKY_SD_BOTH);
+    socket_shutdown (ptr->info.sock_out, SOCKY_SD_BOTH);
+
+    /* Clear data buffer */
     DS_FREESTR (ptr->info.buffer);
     DS_FREESTR (ptr->info.in_service);
     DS_FREESTR (ptr->info.out_service);
 
     /* Reset socket information structure */
-    ptr->info.sock_in = -1;
-    ptr->info.sock_out = -1;
+    ptr->info.sock_in = 0;
+    ptr->info.sock_out = 0;
     ptr->info.socket_thread = 0;
 }
 
@@ -367,13 +376,11 @@ void DS_SocketChangeAddress (DS_Socket* ptr, sds address)
     if (!ptr || !address)
         return;
 
-    /* Close the socket */
-    DS_SocketClose (ptr);
-
-    /* Re-assign the address */
-    if (sdscmp (ptr->address, address) != 0)
+    /* Re-assign the address if required */
+    if (sdscmp (ptr->address, address) != 0) {
+        DS_SocketClose (ptr);
+        DS_FREESTR (ptr->address);
         ptr->address = sdsdup (address);
-
-    /* Re-configure the socket */
-    DS_SocketOpen (ptr);
+        DS_SocketOpen (ptr);
+    }
 }
