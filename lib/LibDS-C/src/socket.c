@@ -85,6 +85,22 @@ static void read_socket (DS_Socket* ptr)
 }
 
 /**
+ * Allows the program to reconfigure a socket in a different thread to avoid
+ * blocking the main thread during reconfiguration.
+ *
+ * \param ptr a generic pointer to a \c DS_Socket structure
+ */
+static void* reconfigure_socket (void* ptr)
+{
+    if (ptr) {
+        DS_SocketClose ((DS_Socket*) ptr);
+        DS_SocketOpen ((DS_Socket*) ptr);
+    }
+
+    return NULL;
+}
+
+/**
  * Runs the server socket loop, which uses the \c select() function
  * to copy received data into the socket's buffer only when the
  * operating system detects that the socket received some data.
@@ -196,6 +212,46 @@ static void* create_socket (void* data)
 }
 
 /**
+ * Closes the socket file descriptors, clears the buffers and resets the
+ * information structure of the given socket pointer
+ *
+ * \param data generic pointer to a \c DS_Socket structure
+ */
+static void* close_socket (void* data)
+{
+    /* Socket pointer is invalid */
+    if (!data)
+        return NULL;
+
+    /* Cast the generic pointer */
+    DS_Socket* ptr = (DS_Socket*) data;
+
+    /* Reset socket properties */
+    ptr->info.server_init = 0;
+    ptr->info.client_init = 0;
+
+    /* Stop threads */
+    DS_StopThread (ptr->info.socket_thread);
+
+    /* Close sockets */
+    socket_shutdown (ptr->info.sock_in, SOCKY_SD_BOTH);
+    socket_shutdown (ptr->info.sock_out, SOCKY_SD_BOTH);
+
+    /* Clear data buffer */
+    DS_FREESTR (ptr->info.buffer);
+    DS_FREESTR (ptr->info.in_service);
+    DS_FREESTR (ptr->info.out_service);
+
+    /* Reset socket information structure */
+    ptr->info.sock_in = 0;
+    ptr->info.sock_out = 0;
+    ptr->info.socket_thread = 0;
+
+    /* Exit thread */
+    return NULL;
+}
+
+/**
  * Returns an empty socket for safe initialization
  */
 DS_Socket DS_SocketEmpty()
@@ -272,37 +328,32 @@ void DS_SocketOpen (DS_Socket* ptr)
 }
 
 /**
- * Closes the socket file descriptors of the given socket structure
- * and resets the structure's information.
+ * Closes the socket file descriptors, clears the buffers and resets the
+ * information structure of the given socket pointer.
+ *
+ * \warning This function may block the main thread, use the
+ *          \c DS_SocketCloseThreaded() function to avoid that
  *
  * \param ptr pointer to the \c DS_Socket to close
  */
 void DS_SocketClose (DS_Socket* ptr)
 {
-    /* Socket pointer is invalid */
-    if (!ptr)
-        return;
+    (void) close_socket ((void*) ptr);
+}
 
-    /* Reset socket properties */
-    ptr->info.server_init = 0;
-    ptr->info.client_init = 0;
-
-    /* Stop threads */
-    DS_StopThread (ptr->info.socket_thread);
-
-    /* Close sockets */
-    socket_shutdown (ptr->info.sock_in, SOCKY_SD_BOTH);
-    socket_shutdown (ptr->info.sock_out, SOCKY_SD_BOTH);
-
-    /* Clear data buffer */
-    DS_FREESTR (ptr->info.buffer);
-    DS_FREESTR (ptr->info.in_service);
-    DS_FREESTR (ptr->info.out_service);
-
-    /* Reset socket information structure */
-    ptr->info.sock_in = 0;
-    ptr->info.sock_out = 0;
-    ptr->info.socket_thread = 0;
+/**
+ * Closes the socket file descriptors, clears the buffers and resets the
+ * information structure of the given socket pointer.
+ *
+ * This function closes the given socket in another thread to avoid freezing
+ * the main thread during runtime.
+ *
+ * \param ptr pointer to the \c DS_Socket to close
+ */
+void DS_SocketCloseThreaded (DS_Socket* ptr)
+{
+    pthread_t thread;
+    pthread_create (&thread, NULL, &close_socket, (void*) ptr);
 }
 
 /**
@@ -376,11 +427,18 @@ void DS_SocketChangeAddress (DS_Socket* ptr, sds address)
     if (!ptr || !address)
         return;
 
-    /* Re-assign the address if required */
+    /* Change the address if required */
     if (sdscmp (ptr->address, address) != 0) {
-        DS_SocketClose (ptr);
+        /* Reset socket properties (to stop loops before changing address) */
+        ptr->info.server_init = 0;
+        ptr->info.client_init = 0;
+
+        /* Re-assign the address */
         DS_FREESTR (ptr->address);
         ptr->address = sdsdup (address);
-        DS_SocketOpen (ptr);
+
+        /* Re-configure the socket */
+        pthread_t thread;
+        pthread_create (&thread, NULL, &reconfigure_socket, (void*) ptr);
     }
 }
