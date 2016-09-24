@@ -1,6 +1,6 @@
 # QDriverStation Mobile
 
-The Mobile QDriverStation is an application for mobile devices that allows you to operate FRC robots using [LibDS](https://github.com/frc-utilities/libds). 
+The Mobile QDriverStation is an application for mobile devices that allows you to operate FRC robots using [LibDS](https://github.com/frc-utilities/libds-c). 
 
 This application uses the latest features provided by Qt, it **requires** Qt 5.7 or greater in order to compile.
 
