@@ -85,22 +85,6 @@ static void read_socket (DS_Socket* ptr)
 }
 
 /**
- * Allows the program to reconfigure a socket in a different thread to avoid
- * blocking the main thread during reconfiguration.
- *
- * \param ptr a generic pointer to a \c DS_Socket structure
- */
-static void* reconfigure_socket (void* ptr)
-{
-    if (ptr) {
-        DS_SocketClose ((DS_Socket*) ptr);
-        DS_SocketOpen ((DS_Socket*) ptr);
-    }
-
-    return NULL;
-}
-
-/**
  * Runs the server socket loop, which uses the \c select() function
  * to copy received data into the socket's buffer only when the
  * operating system detects that the socket received some data.
@@ -252,6 +236,22 @@ static void* close_socket (void* data)
 }
 
 /**
+ * Allows the program to reconfigure a socket in a different thread to avoid
+ * blocking the main thread during reconfiguration.
+ *
+ * \param ptr a generic pointer to a \c DS_Socket structure
+ */
+static void* reconfigure_socket (void* ptr)
+{
+    if (ptr) {
+        close_socket ((void*) ptr);
+        DS_SocketOpen ((DS_Socket*) ptr);
+    }
+
+    return NULL;
+}
+
+/**
  * Returns an empty socket for safe initialization
  */
 DS_Socket DS_SocketEmpty()
@@ -331,26 +331,12 @@ void DS_SocketOpen (DS_Socket* ptr)
  * Closes the socket file descriptors, clears the buffers and resets the
  * information structure of the given socket pointer.
  *
- * \warning This function may block the main thread, use the
- *          \c DS_SocketCloseThreaded() function to avoid that
- *
- * \param ptr pointer to the \c DS_Socket to close
- */
-void DS_SocketClose (DS_Socket* ptr)
-{
-    (void) close_socket ((void*) ptr);
-}
-
-/**
- * Closes the socket file descriptors, clears the buffers and resets the
- * information structure of the given socket pointer.
- *
  * This function closes the given socket in another thread to avoid freezing
  * the main thread during runtime.
  *
  * \param ptr pointer to the \c DS_Socket to close
  */
-void DS_SocketCloseThreaded (DS_Socket* ptr)
+void DS_SocketClose (DS_Socket* ptr)
 {
     pthread_t thread;
     pthread_create (&thread, NULL, &close_socket, (void*) ptr);

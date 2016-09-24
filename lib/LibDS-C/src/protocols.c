@@ -304,10 +304,10 @@ static void close_protocol()
         return;
 
     /* Close the sockets */
-    DS_SocketCloseThreaded (&protocol->fms_socket);
-    DS_SocketCloseThreaded (&protocol->radio_socket);
-    DS_SocketCloseThreaded (&protocol->robot_socket);
-    DS_SocketCloseThreaded (&protocol->netconsole_socket);
+    DS_SocketClose (&protocol->fms_socket);
+    DS_SocketClose (&protocol->radio_socket);
+    DS_SocketClose (&protocol->robot_socket);
+    DS_SocketClose (&protocol->netconsole_socket);
 
     /* Stop sender timers */
     DS_TimerStop (&fms_send_timer);

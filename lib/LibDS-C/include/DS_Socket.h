@@ -72,7 +72,6 @@ extern void Sockets_Close();
 /* Socket initializer and destructor functions */
 extern void DS_SocketOpen (DS_Socket* ptr);
 extern void DS_SocketClose (DS_Socket* ptr);
-extern void DS_SocketCloseThreaded (DS_Socket* ptr);
 
 /* I/O functions */
 extern sds DS_SocketRead (DS_Socket* ptr);
