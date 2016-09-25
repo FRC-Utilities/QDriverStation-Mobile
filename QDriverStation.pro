@@ -52,7 +52,7 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/etc/deploy/android
 # Include the libraries
 #-------------------------------------------------------------------------------
 
-include ($$PWD/lib/LibDS-C/wrappers/Qt/LibDS-Qt.pri)
+include ($$PWD/lib/LibDS/wrappers/Qt/LibDS-Qt.pri)
 
 #-------------------------------------------------------------------------------
 # Import QML, resources and source code
