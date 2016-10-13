@@ -37,8 +37,8 @@ Rectangle {
     //
     // Holds the values of the thumb axes
     //
-    property double xValue: 0
-    property double yValue: 0
+    property float xValue: 0
+    property float yValue: 0
 
     //
     // Moves the knob to the x and y values of the touch point

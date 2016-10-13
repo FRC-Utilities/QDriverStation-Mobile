@@ -29,16 +29,13 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-const QString APP_VERSION = "16.08";
+const QString APP_VERSION = "16.09";
 const QString APP_COMPANY = "Alex Spataru";
 const QString APP_DSPNAME = "QDriverStation";
 const QString APP_WEBSITE = "http://frc-utilities.github.io/";
 
 int main (int argc, char* argv[])
 {
-    /* Initialize DS */
-    //DS_Init();
-
     /* Set application information */
     QGuiApplication::setApplicationName (APP_DSPNAME);
     QGuiApplication::setOrganizationName (APP_COMPANY);
