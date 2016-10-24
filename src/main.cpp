@@ -45,11 +45,8 @@ int main (int argc, char* argv[])
 
     /* Initialize application and DS */
     QGuiApplication app (argc, argv);
+    DSEventLogger* eventlogger = DSEventLogger::getInstance();
     DriverStation* driverstation = DriverStation::getInstance();
-
-    /* Start DS engine and logger */
-    DriverStation::getInstance()->start();
-    DSEventLogger::getInstance()->start();
 
     /* Use Universal style on Windows Phone */
 #if defined Q_OS_WINRT
@@ -68,6 +65,7 @@ int main (int argc, char* argv[])
     engine.rootContext()->setContextProperty ("IsMaterial", material);
     engine.rootContext()->setContextProperty ("AppDspName", APP_DSPNAME);
     engine.rootContext()->setContextProperty ("AppVersion", APP_VERSION);
+    engine.rootContext()->setContextProperty ("EventLogger", eventlogger);
     engine.rootContext()->setContextProperty ("DriverStation", driverstation);
     engine.load (QUrl (QStringLiteral ("qrc:/qml/main.qml")));
 
