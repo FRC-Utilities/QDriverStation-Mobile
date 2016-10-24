@@ -52,10 +52,10 @@ Pane {
         target: DriverStation
         onProtocolChanged: reset()
         onRobotCommunicationsChanged: reset()
-        onVoltageChanged: battery.text = voltage + "V"
         onCpuUsageChanged: cpuUsage.text = usage + "%"
         onRamUsageChanged: ramUsage.text = usage + "%"
         onDiskUsageChanged: diskUsage.text = usage + "%"
+        onVoltageChanged: battery.text = DriverStation.voltageString()
     }
 
     //
