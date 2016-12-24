@@ -23,7 +23,10 @@
 #ifndef _DRIVERSTATION_H
 #define _DRIVERSTATION_H
 
-#include <QtQml>
+#ifdef QT_QML_LIB
+    #include <QtQml>
+#endif
+
 #include <QTime>
 #include <QObject>
 #include <QStringList>
@@ -198,7 +201,9 @@ public:
 
     static void declareQML()
     {
+#ifdef QT_QML_LIB
         qmlRegisterType<DriverStation> ("DriverStation", 1, 0, "LibDS");
+#endif
     }
 
     int teamNumber() const;
