@@ -32,7 +32,7 @@ Pane {
     // Display incoming NetConsole messages in the UI
     //
     Connections {
-        target: DriverStation
+        target: DS
         onNewMessage: netconsole.append (message)
     }
 

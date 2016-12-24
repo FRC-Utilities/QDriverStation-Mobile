@@ -29,18 +29,17 @@ import QtQuick.Controls.Universal 2.0
 import "../Globals.js" as Globals
 
 ColumnLayout {
-    anchors.fill: parent
     spacing: Globals.spacing
 
     property var jsId: 0
-    property bool triggersEnabled: parent.height > 556
+    property bool triggersEnabled: app.height > 620
 
     //
     // Register the joystick when created
     //
     Component.onCompleted: {
-        DriverStation.addJoystick (6, 0, 10)
-        jsId = DriverStation.joystickCount() - 1
+        DS.addJoystick (6, 0, 10)
+        jsId = DS.joystickCount - 1
     }
 
     //
@@ -67,11 +66,11 @@ ColumnLayout {
     //
     Grid {
         id: buttons
-        property var numButtons: 10
+        property var numButtons: 12
 
         spacing: 2
         Layout.fillWidth: true
-        columns: numButtons / (triggersEnabled || IsMaterial ? 2 : 3)
+        columns: numButtons / (numButtons % 2 === 0 ? 2 : 3)
 
         Repeater {
             model: buttons.numButtons
@@ -79,7 +78,7 @@ ColumnLayout {
                 flat: true
                 text: qsTr ("" + (index + 1))
                 width: (buttons.width / buttons.columns) - (buttons.spacing)
-                onPressedChanged: DriverStation.setJoystickButton (jsId, index, pressed)
+                onPressedChanged: DS.setJoystickButton (jsId, index, pressed)
             }
         }
     }
@@ -200,8 +199,8 @@ ColumnLayout {
             anchors.rightMargin: app.width * 0.05
             width: Math.min (app.width * 0.38, 156)
             anchors.verticalCenter: parent.verticalCenter
-            onXValueChanged: DriverStation.setJoystickAxis (jsId, 0, xValue)
-            onYValueChanged: DriverStation.setJoystickAxis (jsId, 1, yValue)
+            onXValueChanged: DS.setJoystickAxis (jsId, 0, xValue)
+            onYValueChanged: DS.setJoystickAxis (jsId, 1, yValue)
         }
 
         Item {
@@ -219,8 +218,8 @@ ColumnLayout {
             anchors.leftMargin: app.width * 0.05
             width: Math.min (app.width * 0.38, 156)
             anchors.verticalCenter: parent.verticalCenter
-            onXValueChanged: DriverStation.setJoystickAxis (jsId, 4, xValue)
-            onYValueChanged: DriverStation.setJoystickAxis (jsId, 5, yValue)
+            onXValueChanged: DS.setJoystickAxis (jsId, 4, xValue)
+            onYValueChanged: DS.setJoystickAxis (jsId, 5, yValue)
         }
     }
 
@@ -241,15 +240,13 @@ ColumnLayout {
         id: triggerA
         Layout.fillWidth: true
         visible: triggersEnabled
-        Material.accent: Material.Red
-        Universal.accent: Universal.Cobalt
 
         onPressedChanged: {
             if (!pressed)
                 value = 0.5
         }
 
-        onValueChanged: DriverStation.setJoystickAxis (jsId, 2, (value - 0.5) * 2)
+        onValueChanged: DS.setJoystickAxis (jsId, 2, (value - 0.5) * 2)
     }
 
     //
@@ -260,15 +257,13 @@ ColumnLayout {
         id: triggerB
         Layout.fillWidth: true
         visible: triggersEnabled
-        Material.accent: Material.Red
-        Universal.accent: Universal.Cobalt
 
         onPressedChanged: {
             if (!pressed)
                 value = 0.5
         }
 
-        onValueChanged: DriverStation.setJoystickAxis (jsId, 3, (value - 0.5) * 2)
+        onValueChanged: DS.setJoystickAxis (jsId, 3, (value - 0.5) * 2)
     }
 
     //

@@ -28,39 +28,6 @@ import "../Widgets"
 import "../Globals.js" as Globals
 
 Pane {
-    //
-    // Changes the status labels to "--.--" if there is no robot comms.
-    //
-    function reset() {
-        if (!DriverStation.connectedToRobot()) {
-            battery.text = Globals.invalidStr
-            cpuUsage.text = Globals.invalidStr
-            ramUsage.text = Globals.invalidStr
-            diskUsage.text = Globals.invalidStr
-        }
-    }
-
-    //
-    // Load status text on launch
-    //
-    Component.onCompleted: reset()
-
-    //
-    // Updates the status labels automatically
-    //
-    Connections {
-        target: DriverStation
-        onProtocolChanged: reset()
-        onRobotCommunicationsChanged: reset()
-        onCpuUsageChanged: cpuUsage.text = usage + "%"
-        onRamUsageChanged: ramUsage.text = usage + "%"
-        onDiskUsageChanged: diskUsage.text = usage + "%"
-        onVoltageChanged: battery.text = DriverStation.voltageString()
-    }
-
-    //
-    // Yay! Another column!
-    //
     ColumnLayout {
         anchors.fill: parent
         spacing: Globals.spacing * 2
@@ -86,7 +53,8 @@ Pane {
                 }
 
                 Label {
-                    id: battery
+                    text: DS.connectedToRobot ?
+                              DS.voltageString : Globals.invalidStr
                 }
             }
         }
@@ -112,7 +80,8 @@ Pane {
                 }
 
                 Label {
-                    id: cpuUsage
+                    text: DS.connectedToRobot ?
+                              DS.cpuUsage : Globals.invalidStr
                 }
             }
         }
@@ -138,7 +107,8 @@ Pane {
                 }
 
                 Label {
-                    id: ramUsage
+                    text: DS.connectedToRobot ?
+                              DS.ramUsage : Globals.invalidStr
                 }
             }
         }
@@ -164,13 +134,14 @@ Pane {
                 }
 
                 Label {
-                    id: diskUsage
+                    text: DS.connectedToRobot ?
+                              DS.diskUsage : Globals.invalidStr
                 }
             }
         }
 
         //
-        // Why not? A spacer!
+        // Vertical spacer
         //
         Item {
             Layout.fillHeight: true

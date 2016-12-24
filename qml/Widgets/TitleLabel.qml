@@ -34,6 +34,7 @@ ColumnLayout {
     Item {
         id: sp
         height: visible ? Globals.spacing : 0
+        Behavior on height { NumberAnimation{} }
     }
 
     Label {

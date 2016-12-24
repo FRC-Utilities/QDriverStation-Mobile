@@ -45,8 +45,8 @@ int main (int argc, char* argv[])
 
     /* Initialize application and DS */
     QGuiApplication app (argc, argv);
-    DSEventLogger* eventlogger = DSEventLogger::getInstance();
     DriverStation* driverstation = DriverStation::getInstance();
+    DriverStation::declareQML();
 
     /* Use Universal style on Windows Phone */
 #if defined Q_OS_WINRT
@@ -62,16 +62,19 @@ int main (int argc, char* argv[])
 
     /* Load QML interface */
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty ("DS", driverstation);
     engine.rootContext()->setContextProperty ("IsMaterial", material);
     engine.rootContext()->setContextProperty ("AppDspName", APP_DSPNAME);
     engine.rootContext()->setContextProperty ("AppVersion", APP_VERSION);
-    engine.rootContext()->setContextProperty ("EventLogger", eventlogger);
-    engine.rootContext()->setContextProperty ("DriverStation", driverstation);
     engine.load (QUrl (QStringLiteral ("qrc:/qml/main.qml")));
 
     /* Exit if QML fails to load */
     if (engine.rootObjects().isEmpty())
         return EXIT_FAILURE;
+
+    /* Stop the DS when the application wants to quit */
+    QObject::connect (&engine,     SIGNAL (quit()),
+                      driverstation, SLOT (quitDS()));
 
     /* Enter application loop */
     return app.exec();

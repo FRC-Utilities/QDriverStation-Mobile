@@ -23,71 +23,19 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
-import Qt.labs.settings 1.0
 import QtQuick.Controls.Material 2.0
 import QtQuick.Controls.Universal 2.0
+
+import DriverStation 1.0
 
 import "../Widgets"
 import "../Globals.js" as Globals
 
-Pane {
-    Settings {
-        category: "Operator"
-        property alias station: station.currentIndex
-    }
-
+Pane {    
     //
     // Disable robot if user changes to another page
     //
     onVisibleChanged: enableBt.checked = false
-
-    //
-    // Update UI when the DS registers an event
-    //
-    Connections {
-        target: DriverStation
-
-        //
-        // Update the robot code checkbox automatically
-        //
-        onRobotCodeChanged: {
-            robotCode.checked = DriverStation.hasRobotCode()
-            communications.checked = DriverStation.connectedToRobot()
-        }
-
-        //
-        // Update the robot communications checkbox automatically
-        //
-        onRobotCommunicationsChanged: {
-            robotCode.checked = DriverStation.hasRobotCode()
-            communications.checked = DriverStation.connectedToRobot()
-        }
-
-        //
-        // Update the status label automatically
-        //
-        onStatusChanged: {
-            robotStatus.text = status
-            robotCode.checked = DriverStation.hasRobotCode()
-            communications.checked = DriverStation.connectedToRobot()
-        }
-
-        //
-        // Uncheck the enabled button automatically (e.g. when switching modes)
-        //
-        onEnabledChanged: {
-            enableBt.checked = DriverStation.isEnabled()
-        }
-    }
-
-    //
-    // Ensure that layouts are setup correctly
-    //
-    Component.onCompleted: {
-        controls.setVisible (true)
-        joystick.setVisible (false)
-        robotStatus.text = DriverStation.generalStatus()
-    }
 
     //
     // Holds all the widgets
@@ -97,157 +45,23 @@ Pane {
         spacing: Globals.spacing
 
         //
-        // These controls are hidden when teleoperated is started
+        // Operator and Joystick selector
         //
-        ColumnLayout {
-            id: controls
-            spacing: Globals.spacing
-            onOpacityChanged: visible = (opacity !== 0)
-
-            function setVisible (visible) {
-                opacity = visible ? 1 : 0
-            }
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: Globals.slowAnimation
-                }
-            }
-
-            TitleLabel {
-                spacer: false
-                text: qsTr ("Robot Status")
-            }
-
-            //
-            // Robot communications indicator
-            //
-            CheckBox {
-                id: communications
-                text: qsTr ("Communications")
-                onClicked: checked = !checked
-            }
-
-            //
-            // Robot code indicator
-            //
-            CheckBox {
-                id: robotCode
-                text: qsTr ("Robot Code")
-                onClicked: checked = !checked
-            }
-
-            TitleLabel {
-                spacer: true
-                text: qsTr ("Control Options")
-            }
-
-            //
-            // Control Mode selector
-            //
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Globals.spacing
-
-                Label {
-                    Layout.fillWidth: true
-                    text: qsTr ("Control Mode") + ": "
-                }
-
-                ComboBox {
-                    Layout.fillWidth: true
-
-                    model: [
-                        qsTr ("TeleOperated"),
-                        qsTr ("Autonomous"),
-                        qsTr ("Test")
-                    ]
-
-                    onCurrentIndexChanged: {
-                        switch (currentIndex) {
-                        case 0:
-                            DriverStation.switchToTeleoperated()
-                            break
-                        case 1:
-                            DriverStation.switchToAutonomous()
-                            break
-                        case 2:
-                            DriverStation.switchToTestMode()
-                            break
-                        }
-                    }
-                }
-            }
-
-            //
-            // Team station selector
-            //
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Globals.spacing
-
-                Label {
-                    text: qsTr ("Team Station") + ": "
-                }
-
-                ComboBox {
-                    id: station
-                    Layout.fillWidth: true
-                    model: DriverStation.stations()
-                    onCurrentIndexChanged: DriverStation.setTeamStation (currentIndex)
-                }
-            }
-        }
-
-        //
-        // Spacer between operator controls and enable/disable button
-        //
-        Item {
-            Layout.fillHeight: true
-        }
-
-        //
-        // These widgets are shown when teleoperated is enabled
-        //
-        Joystick {
-            id: joystick
+        StackView {
+            id: stackView
+            initialItem: controls
             Layout.fillWidth: true
-
-            function setVisible (visible) {
-                opacity = visible ? 1 : 0
-            }
-
-            opacity: 0
-            visible: false
-            onOpacityChanged: visible = (opacity !== 0)
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: Globals.slowAnimation
-                }
-            }
-        }
-
-        //
-        // Robot status label
-        //
-        Label {
-            id: robotStatus
-            font.bold: true
-            font.pixelSize: 18
-            Layout.fillWidth: true
-            visible: controls.visible
-            opacity: controls.opacity
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-        }
-
-        //
-        // Spacer between operator controls and enable/disable button
-        //
-        Item {
             Layout.fillHeight: true
+
+            Controls {
+                id: controls
+                visible: false
+            }
+
+            Joystick {
+                id: joystick
+                visible: false
+            }
         }
 
         //
@@ -255,11 +69,13 @@ Pane {
         //
         Button {
             id: enableBt
-            checked: false
             checkable: true
             highlighted: true
+            checked: DS.enabled
             Layout.fillWidth: true
             Layout.maximumWidth: 312
+            Material.theme: Material.Light
+            Universal.theme: Universal.Dark
             anchors.horizontalCenter: parent.horizontalCenter
             text: checked ? qsTr ("Disable") : qsTr ("Enable")
 
@@ -269,7 +85,7 @@ Pane {
                 //
                 // User tried to enable robot when it cannot be enabled
                 //
-                if (enabled && !DriverStation.canBeEnabled())
+                if (enabled && !DS.canBeEnabled)
                     enabled = false
 
                 //
@@ -280,32 +96,20 @@ Pane {
                 //
                 // Show joysticks if robot is in teleop and enabled
                 //
-                if (DriverStation.isTeleoperated() && enabled) {
-                    joystick.setVisible (enabled)
-                    controls.setVisible (!enabled)
-                }
+                if (DS.isTeleoperated && enabled)
+                    stackView.push (joystick)
 
                 //
                 // Robot is not in teleop, hide joysticks
                 //
-                else {
-                    controls.setVisible (true)
-                    joystick.setVisible (false)
-                }
+                else
+                    stackView.pop()
 
                 //
                 // Finally, enable or disable the robot
                 //
-                DriverStation.setEnabled (enabled)
+                DS.enabled = enabled
             }
-
-            //
-            // Change button color between enabled and disabled
-            //
-            Material.theme: Material.Light
-            Universal.theme: Universal.Dark
-            Universal.accent: Universal.Cobalt
-            Material.accent: checked ? Material.Red : Material.Green
         }
     }
 }

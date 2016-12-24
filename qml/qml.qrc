@@ -11,11 +11,10 @@
         <file>Globals.js</file>
         <file>main.qml</file>
         <file>Widgets/Separator.qml</file>
-        <file>Widgets/Spacer.qml</file>
         <file>Widgets/TitleLabel.qml</file>
+        <file>Widgets/Controls.qml</file>
     </qresource>
     <qresource prefix="/">
-        <file>qtquickcontrols2.conf</file>
         <file>qt.conf</file>
     </qresource>
 </RCC>

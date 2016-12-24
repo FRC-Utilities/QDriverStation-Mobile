@@ -49,8 +49,7 @@ ApplicationWindow {
     //
     Component.onCompleted: {
         setTheme (themeId)
-        EventLogger.start()
-        DriverStation.start()
+        DS.start()
     }
 
     //
@@ -62,11 +61,19 @@ ApplicationWindow {
         if (isDarkTheme) {
             Material.theme = Material.Dark
             Universal.theme = Universal.Dark
+
+            Material.accent = Material.Red
+            Material.primary = Material.Red
+            Universal.accent = Universal.Cobalt
         }
 
         else {
             Material.theme = Material.Light
             Universal.theme = Universal.Light
+
+            Material.accent = Material.Blue
+            Material.primary = Material.Blue
+            Universal.accent = Universal.Cyan
         }
 
         menuImg.source = getImage ("menu.svg", true)

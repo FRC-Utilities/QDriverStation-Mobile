@@ -28,16 +28,6 @@ import "../Widgets"
 import "../Globals.js" as Globals
 
 Pane {
-    //
-    // Update the checkboxes automatically
-    //
-    Connections {
-        target: DriverStation
-        onFmsCommunicationsChanged: fms.checked = DriverStation.connectedToFMS()
-        onRadioCommunicationsChanged: radio.checked = DriverStation.connectedToRadio()
-        onRobotCommunicationsChanged: robot.checked = DriverStation.connectedToRobot()
-    }
-
     ColumnLayout {
         anchors.fill: parent
         spacing: Globals.spacing
@@ -54,27 +44,27 @@ Pane {
         // FMS Checkbox
         //
         CheckBox {
-            id: fms
             text: qsTr ("FMS")
             onClicked: checked = !checked
+            checked: DS.connectedToFMS
         }
 
         //
         // Robot Checkbox
         //
         CheckBox {
-            id: robot
             text: qsTr ("Robot")
             onClicked: checked = !checked
+            checked: DS.connectedToRobot
         }
 
         //
         // Radio Checkbox
         //
         CheckBox {
-            id: radio
             text: qsTr ("Bridge/Radio")
             onClicked: checked = !checked
+            checked: DS.connectedToRadio
         }
 
         //
@@ -91,7 +81,7 @@ Pane {
         Button {
             Layout.fillWidth: true
             text: qsTr ("Reboot Robot")
-            onClicked: DriverStation.rebootRobot()
+            onClicked: DS.rebootRobot()
         }
 
         //
@@ -100,7 +90,7 @@ Pane {
         Button {
             Layout.fillWidth: true
             text: qsTr ("Restart Robot Code")
-            onClicked: DriverStation.restartRobotCode()
+            onClicked: DS.restartRobotCode()
         }
 
         //

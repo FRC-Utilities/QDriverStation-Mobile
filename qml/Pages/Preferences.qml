@@ -30,16 +30,8 @@ import "../Widgets"
 import "../Globals.js" as Globals
 
 Pane {
-    Connections {
-        target: DriverStation
-        onTeamNumberChanged: updatePlaceholders()
-    }
-
-    function updatePlaceholders() {
-        robotAddress.placeholderText = DriverStation.defaultRobotAddress()
-    }
-
-    Component.onCompleted: app.setTheme (darkMode.checked ? Globals.dark : Globals.light)
+    Component.onCompleted: app.setTheme (darkMode.checked ?
+                                             Globals.dark : Globals.light)
 
     Settings {
         property alias team: team.text
@@ -66,11 +58,11 @@ Pane {
             TextField {
                 id: team
                 Layout.fillWidth: true
+                text: DS.teamNumber
                 inputMethodHints: Qt.ImhNoPredictiveText
                 onTextChanged: {
                     text = text.replace(/\D/g,'');
-                    DriverStation.setTeamNumber (text)
-                    updatePlaceholders()
+                    DS.teamNumber = text
                 }
             }
         }
@@ -83,7 +75,8 @@ Pane {
             TextField {
                 id: robotAddress
                 Layout.fillWidth: true
-                onTextChanged: DriverStation.setCustomRobotAddress (text)
+                text: DS.customRobotAddress
+                onTextChanged: DS.customRobotAddress = text
                 inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
             }
         }
@@ -96,13 +89,8 @@ Pane {
             ComboBox {
                 id: protocols
                 Layout.fillWidth: true
-                model: DriverStation.protocols()
-                onCurrentIndexChanged: {
-                    DriverStation.setProtocol (currentIndex)
-                    DriverStation.setCustomRobotAddress (robotAddress.text)
-
-                    updatePlaceholders()
-                }
+                model: DS.protocols
+                onCurrentIndexChanged: DS.setProtocol (currentIndex)
             }
         }
 

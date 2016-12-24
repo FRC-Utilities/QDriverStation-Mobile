@@ -21,6 +21,7 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Controls.Material 2.0
 import QtQuick.Controls.Universal 2.0
 
 import "../Globals.js" as Globals
@@ -73,7 +74,7 @@ Rectangle {
     radius: width / 2
     color: {
         if (IsMaterial) {
-            return app.isDarkTheme ? "#2a2a2a" : "#e2e2e2"
+            return app.isDarkTheme ? "#2a2a2a" : "#ececec"
         }
 
         else {
@@ -90,7 +91,7 @@ Rectangle {
             property bool isCenter: index >= 9
             property bool isBorder: index == 0
 
-            color: IsMaterial ? "#F44336" : "#3E65FF"
+            color: IsMaterial ? Material.primary : Universal.accent
 
             height: width
             radius: width / 2

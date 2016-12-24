@@ -25,6 +25,7 @@
 #include <math.h>
 #include <LibDS.h>
 
+#include <QTime>
 #include <QTimer>
 #include <QDebug>
 #include <QHostAddress>
@@ -69,6 +70,38 @@ DriverStation* DriverStation::getInstance()
 {
     static DriverStation instance;
     return &instance;
+}
+
+/**
+ * Returns the current CPU usage of the robot
+ */
+int DriverStation::cpuUsage() const
+{
+    return DS_GetRobotCPUUsage();
+}
+
+/**
+ * Returns the current CAN utilization of the robot
+ */
+int DriverStation::canUsage() const
+{
+    return DS_GetRobotCANUtilization();
+}
+
+/**
+ * Returns the current RAM usage of the robot
+ */
+int DriverStation::ramUsage() const
+{
+    return DS_GetRobotRAMUsage();
+}
+
+/**
+ * Returns the current disk usage of the robot
+ */
+int DriverStation::diskUsage() const
+{
+    return DS_GetRobotDiskUsage();
 }
 
 /**
@@ -119,33 +152,6 @@ int DriverStation::joystickCount() const
 }
 
 /**
- * Returns the number of axes that the given \a joystick has.
- * If the joystick does not exist, this function will return \c 0
- */
-int DriverStation::getNumAxes (const int joystick) const
-{
-    return DS_GetJoystickNumAxes (joystick);
-}
-
-/**
- * Returns the number of hats that the given \a joystick has.
- * If the joystick does not exist, this function will return \c 0
- */
-int DriverStation::getNumHats (const int joystick) const
-{
-    return DS_GetJoystickNumHats (joystick);
-}
-
-/**
- * Returns the number of buttons that the given \a joystick has.
- * If the joystick does not exist, this function will return \c 0
- */
-int DriverStation::getNumButtons (const int joystick) const
-{
-    return DS_GetJoystickNumButtons (joystick);
-}
-
-/**
  * Returns the current enabled state of the robot,
  * you can change it with the \c setEnabled() function
  */
@@ -162,7 +168,7 @@ bool DriverStation::isEnabled() const
  */
 bool DriverStation::isTestMode() const
 {
-    return (controlMode() == kControlTest);
+    return (controlMode() == ControlTest);
 }
 
 /**
@@ -193,7 +199,7 @@ bool DriverStation::hasRobotCode() const
  */
 bool DriverStation::isAutonomous() const
 {
-    return (controlMode() == kControlAutonomous);
+    return (controlMode() == ControlAutonomous);
 }
 
 /**
@@ -204,7 +210,7 @@ bool DriverStation::isAutonomous() const
  */
 bool DriverStation::isTeleoperated() const
 {
-    return (controlMode() == kControlTeleoperated);
+    return (controlMode() == ControlTeleoperated);
 }
 
 /**
@@ -300,16 +306,16 @@ DriverStation::Control DriverStation::controlMode() const
 {
     switch (DS_GetControlMode()) {
     case DS_CONTROL_TEST:
-        return kControlTest;
+        return ControlTest;
         break;
     case DS_CONTROL_AUTONOMOUS:
-        return kControlAutonomous;
+        return ControlAutonomous;
         break;
     case DS_CONTROL_TELEOPERATED:
-        return kControlTeleoperated;
+        return ControlTeleoperated;
         break;
     default:
-        return kControlTeleoperated;
+        return ControlTeleoperated;
         break;
     }
 }
@@ -330,36 +336,36 @@ DriverStation::Control DriverStation::controlMode() const
  */
 DriverStation::Station DriverStation::teamStation() const
 {
-    if (teamAlliance() == kAllianceRed) {
+    if (teamAlliance() == AllianceRed) {
         switch (teamPosition()) {
-        case kPosition1:
-            return kStationRed1;
+        case Position1:
+            return StationRed1;
             break;
-        case kPosition2:
-            return kStationRed2;
+        case Position2:
+            return StationRed2;
             break;
-        case kPosition3:
-            return kStationRed3;
+        case Position3:
+            return StationRed3;
             break;
         default:
-            return kStationRed1;
+            return StationRed1;
             break;
         }
     }
 
     else {
         switch (teamPosition()) {
-        case kPosition1:
-            return kStationBlue1;
+        case Position1:
+            return StationBlue1;
             break;
-        case kPosition2:
-            return kStationBlue2;
+        case Position2:
+            return StationBlue2;
             break;
-        case kPosition3:
-            return kStationBlue3;
+        case Position3:
+            return StationBlue3;
             break;
         default:
-            return kStationBlue1;
+            return StationBlue1;
             break;
         }
     }
@@ -378,13 +384,13 @@ DriverStation::Alliance DriverStation::teamAlliance() const
 {
     switch (DS_GetAlliance()) {
     case DS_ALLIANCE_RED:
-        return kAllianceRed;
+        return AllianceRed;
         break;
     case DS_ALLIANCE_BLUE:
-        return kAllianceBlue;
+        return AllianceBlue;
         break;
     default:
-        return kAllianceRed;
+        return AllianceRed;
         break;
     }
 }
@@ -403,16 +409,16 @@ DriverStation::Position DriverStation::teamPosition() const
 {
     switch (DS_GetPosition()) {
     case DS_POSITION_1:
-        return kPosition1;
+        return Position1;
         break;
     case DS_POSITION_2:
-        return kPosition2;
+        return Position2;
         break;
     case DS_POSITION_3:
-        return kPosition3;
+        return Position3;
         break;
     default:
-        return kPosition1;
+        return Position1;
         break;
     }
 }
@@ -466,6 +472,17 @@ QString DriverStation::defaultRadioAddress() const
 QString DriverStation::defaultRobotAddress() const
 {
     return sds_to_qstring (DS_GetDefaultRobotAddress());
+}
+
+/**
+ * Returns the elapsed time since the robot has been enabled
+ */
+QString DriverStation::elapsedTime()
+{
+    if (m_elapsedTime.isEmpty())
+        m_elapsedTime = "00:00.0";
+
+    return m_elapsedTime;
 }
 
 /**
@@ -549,6 +566,33 @@ QStringList DriverStation::protocols() const
 }
 
 /**
+ * Returns the number of axes that the given \a joystick has.
+ * If the joystick does not exist, this function will return \c 0
+ */
+int DriverStation::getNumAxes (const int joystick) const
+{
+    return DS_GetJoystickNumAxes (joystick);
+}
+
+/**
+ * Returns the number of hats that the given \a joystick has.
+ * If the joystick does not exist, this function will return \c 0
+ */
+int DriverStation::getNumHats (const int joystick) const
+{
+    return DS_GetJoystickNumHats (joystick);
+}
+
+/**
+ * Returns the number of buttons that the given \a joystick has.
+ * If the joystick does not exist, this function will return \c 0
+ */
+int DriverStation::getNumButtons (const int joystick) const
+{
+    return DS_GetJoystickNumButtons (joystick);
+}
+
+/**
  * Initializes the LibDS system and instructs the class to close the LibDS
  * before the Qt application is closed.
  */
@@ -557,7 +601,8 @@ void DriverStation::start()
     if (!DS_Initialized()) {
         DS_Init();
         processEvents();
-        emit statusChanged (sds_to_qstring (DS_GetStatusString()));
+        updateElapsedTime();
+        emit statusChanged (generalStatus());
         connect (qApp, SIGNAL (aboutToQuit()), this, SLOT (quitDS()));
     }
 }
@@ -591,38 +636,15 @@ void DriverStation::restartRobotCode()
 }
 
 /**
- * Disables the robot and switches its control mode to \c kControlTest
- */
-void DriverStation::switchToTestMode()
-{
-    setEnabled (false);
-    setControlMode (kControlTest);
-}
-
-/**
- * Disables the robot and switches its control mode to \c kControlAutonomous
- */
-void DriverStation::switchToAutonomous()
-{
-    setEnabled (false);
-    setControlMode (kControlAutonomous);
-}
-
-/**
- * Disables the robot and switches its control mode to \c kControlTeleoperated
- */
-void DriverStation::switchToTeleoperated()
-{
-    setEnabled (false);
-    setControlMode (kControlTeleoperated);
-}
-
-/**
  * Disables or enables the robot
  */
 void DriverStation::setEnabled (const bool enabled)
 {
     LOG << "Setting enabled state to" << enabled;
+
+    if (enabled)
+        resetElapsedTime();
+
     DS_SetRobotEnabled (enabled);
 }
 
@@ -644,7 +666,7 @@ void DriverStation::setTeamNumber (const int number)
  *
  * \param protocol the new communication protocol to use
  */
-void DriverStation::setProtocol (DS_Protocol* protocol)
+void DriverStation::loadProtocol (DS_Protocol* protocol)
 {
     if (protocol) {
         LOG << "Loading protocol" << protocol;
@@ -654,6 +676,10 @@ void DriverStation::setProtocol (DS_Protocol* protocol)
 
         emit protocolChanged();
         emit statusChanged (sds_to_qstring (DS_GetStatusString()));
+
+        setCustomFMSAddress (customFMSAddress());
+        setCustomRadioAddress (customRadioAddress());
+        setCustomRobotAddress (customRobotAddress());
 
         LOG << "Protocol" << protocol << "loaded";
     }
@@ -666,14 +692,17 @@ void DriverStation::setControlMode (const Control mode)
 {
     LOG << "Setting control mode to" << mode;
 
+    if (isEnabled() && mode != controlMode())
+        setEnabled (false);
+
     switch (mode) {
-    case kControlTest:
+    case ControlTest:
         DS_SetControlMode (DS_CONTROL_TEST);
         break;
-    case kControlAutonomous:
+    case ControlAutonomous:
         DS_SetControlMode (DS_CONTROL_AUTONOMOUS);
         break;
-    case kControlTeleoperated:
+    case ControlTeleoperated:
         DS_SetControlMode (DS_CONTROL_TELEOPERATED);
         break;
     default:
@@ -688,19 +717,19 @@ void DriverStation::setControlMode (const Control mode)
  * \note You can use this function directly with the index values given by the
  *       \c protocols() function
  */
-void DriverStation::setProtocol (const int protocol)
+void DriverStation::setProtocol (const Protocol protocol)
 {
     switch ((Protocol) protocol) {
-    case kProtocol2014:
-        setProtocol (DS_GetProtocolFRC_2014());
+    case Protocol2014:
+        loadProtocol (DS_GetProtocolFRC_2014());
         LOG << "Switched to FRC 2014 Protocol";
         break;
-    case kProtocol2015:
-        setProtocol (DS_GetProtocolFRC_2015());
+    case Protocol2015:
+        loadProtocol (DS_GetProtocolFRC_2015());
         LOG << "Switched to FRC 2015 Protocol";
         break;
-    case kProtocol2016:
-        setProtocol (DS_GetProtocolFRC_2016());
+    case Protocol2016:
+        loadProtocol (DS_GetProtocolFRC_2016());
         LOG << "Switched to FRC 2016 Protocol";
         break;
     default:
@@ -722,32 +751,32 @@ void DriverStation::setProtocol (const int protocol)
  * \note You can use this function directly with the output given by the \c
  *       \c stations() function
  */
-void DriverStation::setTeamStation (const int station)
+void DriverStation::setTeamStation (const Station station)
 {
     switch ((Station) station) {
-    case kStationRed1:
-        setTeamPosition (kPosition1);
-        setTeamAlliance (kAllianceRed);
+    case StationRed1:
+        setTeamPosition (Position1);
+        setTeamAlliance (AllianceRed);
         break;
-    case kStationRed2:
-        setTeamPosition (kPosition2);
-        setTeamAlliance (kAllianceRed);
+    case StationRed2:
+        setTeamPosition (Position2);
+        setTeamAlliance (AllianceRed);
         break;
-    case kStationRed3:
-        setTeamPosition (kPosition3);
-        setTeamAlliance (kAllianceRed);
+    case StationRed3:
+        setTeamPosition (Position3);
+        setTeamAlliance (AllianceRed);
         break;
-    case kStationBlue1:
-        setTeamPosition (kPosition1);
-        setTeamAlliance (kAllianceBlue);
+    case StationBlue1:
+        setTeamPosition (Position1);
+        setTeamAlliance (AllianceBlue);
         break;
-    case kStationBlue2:
-        setTeamPosition (kPosition2);
-        setTeamAlliance (kAllianceBlue);
+    case StationBlue2:
+        setTeamPosition (Position2);
+        setTeamAlliance (AllianceBlue);
         break;
-    case kStationBlue3:
-        setTeamPosition (kPosition3);
-        setTeamAlliance (kAllianceBlue);
+    case StationBlue3:
+        setTeamPosition (Position3);
+        setTeamAlliance (AllianceBlue);
         break;
     default:
         break;
@@ -759,15 +788,15 @@ void DriverStation::setTeamStation (const int station)
  *    - \c kAllianceRed (0)
  *    - \c kAllianceBlue (1)
  */
-void DriverStation::setTeamAlliance (const int alliance)
+void DriverStation::setTeamAlliance (const Alliance alliance)
 {
     LOG << "Setting alliance to" << alliance;
 
     switch ((Alliance) alliance) {
-    case kAllianceRed:
+    case AllianceRed:
         DS_SetAlliance (DS_ALLIANCE_RED);
         break;
-    case kAllianceBlue:
+    case AllianceBlue:
         DS_SetAlliance (DS_ALLIANCE_BLUE);
         break;
     }
@@ -779,18 +808,18 @@ void DriverStation::setTeamAlliance (const int alliance)
  *    - \c kPosition2 (1)
  *    - \c kPosition3 (2)
  */
-void DriverStation::setTeamPosition (const int position)
+void DriverStation::setTeamPosition (const Position position)
 {
     LOG << "Setting position to" << position;
 
     switch ((Position) position) {
-    case kPosition1:
+    case Position1:
         DS_SetPosition (DS_POSITION_1);
         break;
-    case kPosition2:
+    case Position2:
         DS_SetPosition (DS_POSITION_2);
         break;
-    case kPosition3:
+    case Position3:
         DS_SetPosition (DS_POSITION_3);
         break;
     }
@@ -822,6 +851,8 @@ void DriverStation::setCustomFMSAddress (const QString& address)
 
             DS_SetCustomFMSAddress ("");
         }
+
+        emit fmsAddressChanged();
     }
 }
 
@@ -842,6 +873,8 @@ void DriverStation::setCustomRadioAddress (const QString& address)
 
             DS_SetCustomRadioAddress ("");
         }
+
+        emit radioAddressChanged();
     }
 }
 
@@ -862,6 +895,8 @@ void DriverStation::setCustomRobotAddress (const QString& address)
 
             DS_SetCustomRobotAddress ("");
         }
+
+        emit robotAddressChanged();
     }
 }
 
@@ -954,9 +989,11 @@ void DriverStation::processEvents()
     while (DS_PollEvent (&event)) {
         switch (event.type) {
         case DS_FMS_COMMS_CHANGED:
+            emit fmsAddressChanged();
             emit fmsCommunicationsChanged (event.fms.connected);
             break;
         case DS_RADIO_COMMS_CHANGED:
+            emit radioAddressChanged();
             emit radioCommunicationsChanged (event.radio.connected);
             break;
         case DS_NETCONSOLE_NEW_MESSAGE:
@@ -969,6 +1006,7 @@ void DriverStation::processEvents()
             emit controlModeChanged (controlMode());
             break;
         case DS_ROBOT_COMMS_CHANGED:
+            emit robotAddressChanged();
             emit robotCommunicationsChanged (event.robot.connected);
             break;
         case DS_ROBOT_CODE_CHANGED:
@@ -990,6 +1028,7 @@ void DriverStation::processEvents()
             emit diskUsageChanged (event.robot.disk_usage);
             break;
         case DS_ROBOT_STATION_CHANGED:
+            emit stationChanged();
             emit allianceChanged (teamAlliance());
             emit positionChanged (teamPosition());
             break;
@@ -1005,6 +1044,42 @@ void DriverStation::processEvents()
     }
 
     QTimer::singleShot (5, Qt::CoarseTimer, this, SLOT (processEvents()));
+}
+
+/**
+ * Restarts the elapsed time counter
+ */
+void DriverStation::resetElapsedTime()
+{
+    m_time.restart();
+    m_elapsedTime.clear();
+    emit elapsedTimeChanged (elapsedTime());
+}
+
+/**
+ * Updates the elapsed time and formats it as a string only if the robot
+ * is currently enabled
+ */
+void DriverStation::updateElapsedTime()
+{
+    if (isEnabled()) {
+        int milliseconds = m_time.elapsed();
+        int seconds = (milliseconds / 1000);
+        int minutes = (seconds / 60) % 60;
+
+        seconds = seconds % 60;
+        milliseconds = milliseconds % 1000;
+
+        m_elapsedTime = QString ("%1:%2.%3")
+                        .arg (minutes, 2, 10, QLatin1Char ('0'))
+                        .arg (seconds, 2, 10, QLatin1Char ('0'))
+                        .arg (QString::number (milliseconds).at (0));
+
+        emit elapsedTimeChanged (elapsedTime());
+    }
+
+    QTimer::singleShot (100, Qt::PreciseTimer,
+                        this, SLOT (updateElapsedTime()));
 }
 
 /**
