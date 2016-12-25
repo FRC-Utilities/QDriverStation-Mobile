@@ -61,8 +61,10 @@ Pane {
                 text: DS.teamNumber
                 inputMethodHints: Qt.ImhNoPredictiveText
                 onTextChanged: {
-                    text = text.replace(/\D/g,'');
-                    DS.teamNumber = text
+                    text = text.replace (' ', '')
+                    text = text.replace (/\D/g,'')
+                    if (text.length > 0)
+                        DS.teamNumber = text
                 }
             }
         }

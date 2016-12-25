@@ -270,9 +270,8 @@ void DS_SocketClose (DS_Socket* ptr)
     ptr->info.client_init = 0;
 
     /* Close sockets */
-    int error = 0;
-    socket_close_threaded (ptr->info.sock_in, &error);
-    socket_close_threaded (ptr->info.sock_out, &error);
+    socket_close_threaded (ptr->info.sock_in, NULL);
+    socket_close_threaded (ptr->info.sock_out, NULL);
 
     /* Stop threads */
     DS_StopThread (ptr->info.socket_thread);
