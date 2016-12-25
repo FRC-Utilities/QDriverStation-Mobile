@@ -76,6 +76,7 @@ Pane {
                 id: robotAddress
                 Layout.fillWidth: true
                 text: DS.customRobotAddress
+                placeholderText: DS.defaultRobotAddress
                 onTextChanged: DS.customRobotAddress = text
                 inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
             }
