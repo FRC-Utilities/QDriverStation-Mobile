@@ -29,10 +29,10 @@
 #include <stdio.h>
 #include <string.h>
 
-static sds status_string;
-static sds custom_fms_address;
-static sds custom_radio_address;
-static sds custom_robot_address;
+static sds status_string = NULL;
+static sds custom_fms_address = NULL;
+static sds custom_radio_address = NULL;
+static sds custom_robot_address = NULL;
 
 /**
  * Allocates memory for the members of the client module
@@ -40,9 +40,6 @@ static sds custom_robot_address;
 void Client_Init()
 {
     status_string = sdsempty();
-    custom_fms_address = sdsempty();
-    custom_radio_address = sdsempty();
-    custom_robot_address = sdsempty();
 }
 
 /**
@@ -96,7 +93,7 @@ sds DS_GetDefaultFMSAddress()
     if (DS_CurrentProtocol())
         return DS_CurrentProtocol()->fms_address();
 
-    return sdsempty();
+    return sdsnew ("0.0.0.0");
 }
 
 /**
@@ -109,7 +106,7 @@ sds DS_GetDefaultRadioAddress()
     if (DS_CurrentProtocol())
         return DS_CurrentProtocol()->radio_address();
 
-    return sdsempty();
+    return sdsnew ("0.0.0.0");
 }
 
 /**
@@ -122,7 +119,7 @@ sds DS_GetDefaultRobotAddress()
     if (DS_CurrentProtocol())
         return DS_CurrentProtocol()->robot_address();
 
-    return sdsempty();
+    return sdsnew ("127.0.0.1");
 }
 
 /**

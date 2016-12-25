@@ -844,21 +844,10 @@ void DriverStation::setEmergencyStopped (const bool stopped)
  */
 void DriverStation::setCustomFMSAddress (const QString& address)
 {
-    if (addressIsValid (address) || address.isEmpty()) {
-        if (!address.isEmpty()) {
-            LOG << "Using new FMS address" << address;
-            DS_SetCustomFMSAddress (qstring_to_sds (address));
-        }
+    LOG << "Using new FMS address" << getAddress (address);
+    DS_SetCustomFMSAddress (qstring_to_sds (getAddress (address)));
 
-        else {
-            LOG << "Using default FMS address"
-                << sds_to_qstring (DS_GetDefaultFMSAddress());
-
-            DS_SetCustomFMSAddress ("");
-        }
-
-        emit fmsAddressChanged();
-    }
+    emit fmsAddressChanged();
 }
 
 /**
@@ -866,21 +855,10 @@ void DriverStation::setCustomFMSAddress (const QString& address)
  */
 void DriverStation::setCustomRadioAddress (const QString& address)
 {
-    if (addressIsValid (address) || address.isEmpty()) {
-        if (!address.isEmpty()) {
-            LOG << "Using new radio address" << address;
-            DS_SetCustomRadioAddress (qstring_to_sds (address));
-        }
+    LOG << "Using new radio address" << getAddress (address);
+    DS_SetCustomRadioAddress (qstring_to_sds (getAddress (address)));
 
-        else {
-            LOG << "Using default radio address"
-                << sds_to_qstring (DS_GetDefaultRadioAddress());
-
-            DS_SetCustomRadioAddress ("");
-        }
-
-        emit radioAddressChanged();
-    }
+    emit radioAddressChanged();
 }
 
 /**
@@ -888,21 +866,9 @@ void DriverStation::setCustomRadioAddress (const QString& address)
  */
 void DriverStation::setCustomRobotAddress (const QString& address)
 {
-    if (addressIsValid (address) || address.isEmpty()) {
-        if (!address.isEmpty()) {
-            LOG << "Using new robot address" << address;
-            DS_SetCustomRobotAddress (qstring_to_sds (address));
-        }
-
-        else {
-            LOG << "Using default robot address"
-                << sds_to_qstring (DS_GetDefaultRobotAddress());
-
-            DS_SetCustomRobotAddress ("");
-        }
-
-        emit robotAddressChanged();
-    }
+    LOG << "Using new robot address" << getAddress (address);
+    DS_SetCustomRobotAddress (qstring_to_sds (getAddress (address)));
+    emit robotAddressChanged();
 }
 
 /**
@@ -1076,9 +1042,9 @@ void DriverStation::updateElapsedTime()
         milliseconds = milliseconds % 1000;
 
         m_elapsedTime = QString ("%1:%2.%3")
-                        .arg (minutes, 2, 10, QLatin1Char ('0'))
-                        .arg (seconds, 2, 10, QLatin1Char ('0'))
-                        .arg (QString::number (milliseconds).at (0));
+                .arg (minutes, 2, 10, QLatin1Char ('0'))
+                .arg (seconds, 2, 10, QLatin1Char ('0'))
+                .arg (QString::number (milliseconds).at (0));
 
         emit elapsedTimeChanged (elapsedTime());
     }
@@ -1088,21 +1054,22 @@ void DriverStation::updateElapsedTime()
 }
 
 /**
- * Returns \c true if the given \a address is a valid IP or DNS address
- *
- * \param address the network address to check for validity
+ * Returns a valid network \a address
  */
-bool DriverStation::addressIsValid (const QString& address)
+QString DriverStation::getAddress (const QString& address)
 {
-    /* This is a valid mDNS/DNS address */
-    if (address.endsWith (".local", Qt::CaseInsensitive) ||
-        address.endsWith (".lan",   Qt::CaseInsensitive) ||
-        address.endsWith (".com",   Qt::CaseInsensitive) ||
-        address.endsWith (".net",   Qt::CaseInsensitive) ||
-        address.endsWith (".com",   Qt::CaseInsensitive))
-        return true;
+    if (!address.isEmpty()) {
+        if (address.endsWith (".local", Qt::CaseInsensitive) ||
+                address.endsWith (".lan",   Qt::CaseInsensitive) ||
+                address.endsWith (".com",   Qt::CaseInsensitive) ||
+                address.endsWith (".net",   Qt::CaseInsensitive) ||
+                address.endsWith (".com",   Qt::CaseInsensitive))
+            return address;
 
-    /* Address is valid IPv4/IPv6 */
-    QHostAddress ip (address);
-    return !ip.isNull();
+        QHostAddress ip (address);
+        if (!ip.isNull())
+            return ip.toString();
+    }
+
+    return "";
 }

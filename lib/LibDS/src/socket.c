@@ -361,10 +361,16 @@ void DS_SocketChangeAddress (DS_Socket* ptr, sds address)
     /* Close the socket */
     DS_SocketClose (ptr);
 
+    /* Get valid input address */
+    if (DS_StringIsEmpty (address)) {
+        DS_FREESTR (address);
+        address = sdsnew ("0.0.0.0");
+    }
+
     /* Re-assign the address */
     if (sdscmp (ptr->address, address) != 0) {
         DS_FREESTR (ptr->address);
-        ptr->address = sdsdup (address);
+        ptr->address = address;
     }
 
     /* Re-configure the socket */

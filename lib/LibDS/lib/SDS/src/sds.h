@@ -68,10 +68,9 @@ struct sdshdr_h_ {
 
 static INLINE size_t sdslen (const sds s)
 {
+    if (s == NULL) return 0;
     struct sdshdr_h_ *sh = (struct sdshdr_h_*)
                            (s - (int)offsetof (struct sdshdr_h_, buf));
-
-    if (s == NULL) return 0;
     return sh->len;
 }
 

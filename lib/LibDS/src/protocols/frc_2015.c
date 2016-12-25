@@ -420,7 +420,7 @@ static DS_Position get_position (const uint8_t byte)
  */
 static sds fms_address()
 {
-    return sdsempty();
+    return sdsnew ("0.0.0.0");
 }
 
 /**
