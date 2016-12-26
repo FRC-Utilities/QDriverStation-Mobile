@@ -27,6 +27,7 @@
 #include "DS_Socket.h"
 
 #include <socky.h>
+#include <bstraux.h>
 
 /**
  * Holds the sockets in a dynamic array (for automatic closing)
@@ -36,9 +37,9 @@ static DS_Array sockets;
 /**
  * Returns the given \a number as a string
  */
-static sds itc (int number)
+static bstring itc (int number)
 {
-    return sdscatprintf (sdsempty(), "%d", number);
+    return bformat ("%d", number);
 }
 
 /**
@@ -51,26 +52,27 @@ static void read_socket (DS_Socket* ptr)
 
     /* Initialize temporary buffer */
     int read = -1;
-    sds data = sdsnewlen (NULL, 1024);
+    bstring data = DS_GetEmptyString (1024);
 
     /* Read TCP socket */
     if (ptr->type == DS_SOCKET_TCP)
-        read = recv (ptr->info.sock_in, data, sdslen (data), 0);
+        read = recv (ptr->info.sock_in, (char*) data->data, blength (data), 0);
 
     /* Read UDP socket */
     if (ptr->type == DS_SOCKET_UDP)
         read = udp_recvfrom (ptr->info.sock_in,
-                             data, sdslen (data),
-                             ptr->address, ptr->info.in_service, 0);
+                             (char*) data->data, blength (data),
+                             bstr2cstr (ptr->address, 0),
+                             bstr2cstr (ptr->info.in_service, 0), 0);
 
     /* We received some data, copy it to socket's buffer */
     if (read > 0) {
         DS_FREESTR (ptr->info.buffer);
-        ptr->info.buffer = sdsnewlen (NULL, read);
+        ptr->info.buffer = DS_GetEmptyString (read);
 
         int i;
         for (i = 0; i < read; ++i)
-            ptr->info.buffer [i] = data [i];
+            ptr->info.buffer->data [i] = data->data [i];
     }
 
     /* De-allocate temporary data */
@@ -138,10 +140,10 @@ static void* create_socket (void* data)
     /* Cast raw pointer to socket */
     DS_Socket* ptr = (DS_Socket*) data;
 
-    /* Make the address 0.0.0.0 if it is empty */
+    /* Load fallback address if input address is invalid */
     if (DS_StringIsEmpty (ptr->address) || ptr->broadcast == 1) {
         DS_FREESTR (ptr->address);
-        ptr->address = sdsnew ("0.0.0.0");
+        ptr->address = DS_FallBackAddress;
     }
 
     /* Set service strings */
@@ -150,18 +152,21 @@ static void* create_socket (void* data)
 
     /* Open TCP socket */
     if (ptr->type == DS_SOCKET_TCP) {
-        ptr->info.sock_in = create_server_tcp (ptr->info.in_service,
-                                               SOCKY_IPv4, 0);
+        ptr->info.sock_in = create_server_tcp (
+                    bstr2cstr (ptr->info.in_service, 0),
+                    SOCKY_IPv4, 0);
 
-        ptr->info.sock_out = create_client_tcp (ptr->address,
-                                                ptr->info.out_service,
-                                                SOCKY_IPv4, 0);
+        ptr->info.sock_out = create_client_tcp (
+                    bstr2cstr (ptr->address, 0),
+                    bstr2cstr (ptr->info.out_service, 0),
+                    SOCKY_IPv4, 0);
     }
 
     /* Open UDP socket */
     else if (ptr->type == DS_SOCKET_UDP) {
-        ptr->info.sock_in = create_server_udp (ptr->info.in_service,
-                                               SOCKY_IPv4, 0);
+        ptr->info.sock_in = create_server_udp (
+                    bstr2cstr (ptr->info.in_service, 0),
+                    SOCKY_IPv4, 0);
 
         ptr->info.sock_out = create_client_udp (SOCKY_IPv4, 0);
     }
@@ -292,7 +297,7 @@ void DS_SocketClose (DS_Socket* ptr)
  *
  * \param ptr pointer to a \c DS_Socket structure
  */
-sds DS_SocketRead (DS_Socket* ptr)
+bstring DS_SocketRead (DS_Socket* ptr)
 {
     /* Invalid pointer */
     if (!ptr)
@@ -303,8 +308,8 @@ sds DS_SocketRead (DS_Socket* ptr)
         return NULL;
 
     /* Copy the current buffer and clear it */
-    if (sdslen (ptr->info.buffer) > 0) {
-        sds buffer = sdsdup (ptr->info.buffer);
+    if (blength (ptr->info.buffer) > 0) {
+        bstring buffer = bstrcpy (ptr->info.buffer);
         DS_FREESTR (ptr->info.buffer);
         return buffer;
     }
@@ -321,7 +326,7 @@ sds DS_SocketRead (DS_Socket* ptr)
  *
  * \returns number of bytes written on success, -1 on failure
  */
-int DS_SocketSend (DS_Socket* ptr, sds data)
+int DS_SocketSend (DS_Socket* ptr, bstring data)
 {
     /* Invalid pointer and/or empty data buffer */
     if (!ptr || DS_StringIsEmpty (data))
@@ -333,13 +338,15 @@ int DS_SocketSend (DS_Socket* ptr, sds data)
 
     /* Send data using TCP */
     if (ptr->type == DS_SOCKET_TCP)
-        return send (ptr->info.sock_out, data, sdslen (data), 0);
+        return send (ptr->info.sock_out,
+                     bstr2cstr (data, 0), blength (data), 0);
 
     /* Send data using UDP */
     else if (ptr->type == DS_SOCKET_UDP) {
         return udp_sendto (ptr->info.sock_out,
-                           data, sdslen (data),
-                           ptr->address, ptr->info.out_service, 0);
+                           bstr2cstr (data, 0), blength (data),
+                           bstr2cstr (ptr->address, 0),
+                           bstr2cstr (ptr->info.out_service, 0), 0);
     }
 
     /* Should not happen */
@@ -352,27 +359,27 @@ int DS_SocketSend (DS_Socket* ptr, sds data)
  * \param ptr pointer to a \c DS_Socket structure
  * \param address the new address to apply to the socket
  */
-void DS_SocketChangeAddress (DS_Socket* ptr, sds address)
+void DS_SocketChangeAddress (DS_Socket* ptr, bstring address)
 {
-    /* Check if pointer is NULL */
+    /* Pointers are invalid */
     if (!ptr || !address)
         return;
+
+    /* Input address is invalid, load fallback address */
+    if (DS_StringIsEmpty (address)) {
+        DS_FREESTR (address);
+        address = DS_FallBackAddress;
+    }
 
     /* Close the socket */
     DS_SocketClose (ptr);
 
-    /* Get valid input address */
-    if (DS_StringIsEmpty (address)) {
-        DS_FREESTR (address);
-        address = sdsnew ("0.0.0.0");
-    }
-
-    /* Re-assign the address */
-    if (sdscmp (ptr->address, address) != 0) {
+    /* Change the address */
+    if (bstricmp (ptr->address, address) != 0) {
         DS_FREESTR (ptr->address);
-        ptr->address = address;
+        ptr->address = bstrcpy (address);
     }
 
-    /* Re-configure the socket */
+    /* Re-open the socket */
     DS_SocketOpen (ptr);
 }

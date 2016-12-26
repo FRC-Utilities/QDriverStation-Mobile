@@ -81,7 +81,7 @@ Pane {
 
                 Label {
                     text: DS.connectedToRobot ?
-                              DS.cpuUsage : Globals.invalidStr
+                              DS.cpuUsage + " %": Globals.invalidStr
                 }
             }
         }
@@ -108,7 +108,7 @@ Pane {
 
                 Label {
                     text: DS.connectedToRobot ?
-                              DS.ramUsage : Globals.invalidStr
+                              DS.ramUsage + " %": Globals.invalidStr
                 }
             }
         }
@@ -135,7 +135,7 @@ Pane {
 
                 Label {
                     text: DS.connectedToRobot ?
-                              DS.diskUsage : Globals.invalidStr
+                              DS.diskUsage + " %" : Globals.invalidStr
                 }
             }
         }

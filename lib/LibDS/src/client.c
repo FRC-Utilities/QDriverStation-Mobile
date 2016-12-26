@@ -29,17 +29,20 @@
 #include <stdio.h>
 #include <string.h>
 
-static sds status_string = NULL;
-static sds custom_fms_address = NULL;
-static sds custom_radio_address = NULL;
-static sds custom_robot_address = NULL;
+static bstring status_string = NULL;
+static bstring custom_fms_address = NULL;
+static bstring custom_radio_address = NULL;
+static bstring custom_robot_address = NULL;
 
 /**
  * Allocates memory for the members of the client module
  */
 void Client_Init()
 {
-    status_string = sdsempty();
+    status_string = bfromcstr ("");
+    custom_fms_address = bfromcstr ("");
+    custom_radio_address = bfromcstr ("");
+    custom_robot_address = bfromcstr ("");
 }
 
 /**
@@ -58,7 +61,7 @@ void Client_Close()
  * This value may be empty, if that's the case, then the Driver Station will
  * use the addresses specified by the currently loaded protocol.
  */
-sds DS_GetCustomFMSAddress()
+bstring DS_GetCustomFMSAddress()
 {
     return custom_fms_address;
 }
@@ -68,7 +71,7 @@ sds DS_GetCustomFMSAddress()
  * This value may be empty, if that's the case, then the Driver Station will
  * use the addresses specified by the currently loaded protocol.
  */
-sds DS_GetCustomRadioAddress()
+bstring DS_GetCustomRadioAddress()
 {
     return custom_radio_address;
 }
@@ -78,7 +81,7 @@ sds DS_GetCustomRadioAddress()
  * This value may be empty, if that's the case, then the Driver Station will
  * use the addresses specified by the currently loaded protocol.
  */
-sds DS_GetCustomRobotAddress()
+bstring DS_GetCustomRobotAddress()
 {
     return custom_robot_address;
 }
@@ -88,12 +91,12 @@ sds DS_GetCustomRobotAddress()
  * number is changed, if your application relies on this value, consider
  * updating in regurarly or using the events system of the LibDS.
  */
-sds DS_GetDefaultFMSAddress()
+bstring DS_GetDefaultFMSAddress()
 {
     if (DS_CurrentProtocol())
         return DS_CurrentProtocol()->fms_address();
 
-    return sdsnew ("0.0.0.0");
+    return DS_FallBackAddress;
 }
 
 /**
@@ -101,12 +104,12 @@ sds DS_GetDefaultFMSAddress()
  * team number is changed, if your application relies on this value, consider
  * updating in regurarly or using the events system of the LibDS.
  */
-sds DS_GetDefaultRadioAddress()
+bstring DS_GetDefaultRadioAddress()
 {
     if (DS_CurrentProtocol())
         return DS_CurrentProtocol()->radio_address();
 
-    return sdsnew ("0.0.0.0");
+    return DS_FallBackAddress;
 }
 
 /**
@@ -114,12 +117,12 @@ sds DS_GetDefaultRadioAddress()
  * team number is changed, if your application relies on this value, consider
  * updating in regurarly or using the events system of the LibDS.
  */
-sds DS_GetDefaultRobotAddress()
+bstring DS_GetDefaultRobotAddress()
 {
     if (DS_CurrentProtocol())
         return DS_CurrentProtocol()->robot_address();
 
-    return sdsnew ("127.0.0.1");
+    return bfromcstr ("127.0.0.1");
 }
 
 /**
@@ -128,7 +131,7 @@ sds DS_GetDefaultRobotAddress()
  * user-set address. Otherwise, this function will return the address
  * specified  by the currently loaded protocol.
  */
-sds DS_GetAppliedFMSAddress()
+bstring DS_GetAppliedFMSAddress()
 {
     if (DS_StringIsEmpty (DS_GetCustomFMSAddress()))
         return DS_GetDefaultFMSAddress();
@@ -142,7 +145,7 @@ sds DS_GetAppliedFMSAddress()
  * user-set address. Otherwise, this function will return the address
  * specified  by the currently loaded protocol.
  */
-sds DS_GetAppliedRadioAddress()
+bstring DS_GetAppliedRadioAddress()
 {
     if (DS_StringIsEmpty (DS_GetCustomRadioAddress()))
         return DS_GetDefaultRadioAddress();
@@ -156,7 +159,7 @@ sds DS_GetAppliedRadioAddress()
  * user-set address. Otherwise, this function will return the address
  * specified  by the currently loaded protocol.
  */
-sds DS_GetAppliedRobotAddress()
+bstring DS_GetAppliedRobotAddress()
 {
     if (DS_StringIsEmpty (DS_GetCustomRobotAddress()))
         return DS_GetDefaultRobotAddress();
@@ -177,35 +180,34 @@ sds DS_GetAppliedRobotAddress()
  *    - Autonomous Enabled/Disabled
  *    - Test Enabled/Disabled
  */
-sds DS_GetStatusString()
+bstring DS_GetStatusString()
 {
     DS_FREESTR (status_string);
 
     if (!DS_GetRobotCommunications())
-        status_string = sdsnew ("No Robot Communications");
+        status_string = bfromcstr ("No Robot Communications");
 
     else if (!DS_GetRobotCode())
-        status_string = sdsnew ("No Robot Code");
+        status_string = bfromcstr ("No Robot Code");
 
     else if (DS_GetEmergencyStopped())
-        status_string = sdsnew ("Emergency Stopped");
+        status_string = bfromcstr ("Emergency Stopped");
 
     else {
         switch (DS_GetControlMode()) {
         case DS_CONTROL_TELEOPERATED:
-            status_string = sdsnew ("Teleoperated");
+            status_string = bfromcstr ("Teleoperated");
             break;
         case DS_CONTROL_AUTONOMOUS:
-            status_string = sdsnew ("Autonomous");
+            status_string = bfromcstr ("Autonomous");
             break;
         case DS_CONTROL_TEST:
-            status_string = sdsnew ("Test");
+            status_string = bfromcstr ("Test");
             break;
         }
 
-        sds enabled = sdsnew (DS_GetRobotEnabled() ? "Enabled" : "Disabled");
-        status_string = sdscatprintf (status_string, " %s", enabled);
-        DS_FREESTR (enabled);
+        bconcat (status_string, bfromcstr (DS_GetRobotEnabled() ?
+                                           " Enabled" : " Disabled"));
     }
 
     return status_string;
@@ -433,13 +435,13 @@ void DS_SetCustomFMSAddress (const char* address)
 {
     if (strlen (address) > 0) {
         DS_FREESTR (custom_fms_address);
-        custom_fms_address = sdsnew (address);
+        custom_fms_address = bfromcstr (address);
         CFG_ReconfigureAddresses (RECONFIGURE_FMS);
     }
 
     else {
         DS_FREESTR (custom_fms_address);
-        custom_fms_address = sdsempty();
+        custom_fms_address = bfromcstr ("");
         CFG_ReconfigureAddresses (RECONFIGURE_FMS);
     }
 }
@@ -451,13 +453,13 @@ void DS_SetCustomRadioAddress (const char* address)
 {
     if (strlen (address) > 0) {
         DS_FREESTR (custom_radio_address);
-        custom_radio_address = sdsnew (address);
+        custom_radio_address = bfromcstr (address);
         CFG_ReconfigureAddresses (RECONFIGURE_RADIO);
     }
 
     else {
         DS_FREESTR (custom_radio_address);
-        custom_radio_address = sdsempty();
+        custom_radio_address = bfromcstr ("");
         CFG_ReconfigureAddresses (RECONFIGURE_RADIO);
     }
 }
@@ -469,13 +471,13 @@ void DS_SetCustomRobotAddress (const char* address)
 {
     if (strlen (address) > 0) {
         DS_FREESTR (custom_robot_address);
-        custom_robot_address = sdsnew (address);
+        custom_robot_address = bfromcstr (address);
         CFG_ReconfigureAddresses (RECONFIGURE_ROBOT);
     }
 
     else {
         DS_FREESTR (custom_robot_address);
-        custom_robot_address = sdsempty();
+        custom_robot_address = bfromcstr ("");
         CFG_ReconfigureAddresses (RECONFIGURE_ROBOT);
     }
 }
@@ -487,5 +489,5 @@ void DS_SendNetConsoleMessage (const char* message)
 {
     if (DS_CurrentProtocol())
         DS_SocketSend (DS_CurrentProtocol()->netconsole_socket,
-                       sdsnew (message));
+                       bfromcstr (message));
 }
