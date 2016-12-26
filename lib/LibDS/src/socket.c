@@ -326,7 +326,7 @@ bstring DS_SocketRead (DS_Socket* ptr)
  *
  * \returns number of bytes written on success, -1 on failure
  */
-int DS_SocketSend (DS_Socket* ptr, bstring data)
+int DS_SocketSend (DS_Socket* ptr, const bstring data)
 {
     /* Invalid pointer and/or empty data buffer */
     if (!ptr || DS_StringIsEmpty (data))
@@ -359,26 +359,30 @@ int DS_SocketSend (DS_Socket* ptr, bstring data)
  * \param ptr pointer to a \c DS_Socket structure
  * \param address the new address to apply to the socket
  */
-void DS_SocketChangeAddress (DS_Socket* ptr, bstring address)
+void DS_SocketChangeAddress (DS_Socket* ptr, const bstring address)
 {
     /* Pointers are invalid */
     if (!ptr || !address)
         return;
 
-    /* Input address is invalid, load fallback address */
-    if (DS_StringIsEmpty (address)) {
-        DS_FREESTR (address);
-        address = DS_FallBackAddress;
+    /* Copy address (and load fallback IP if address is invalid) */
+    bstring ip = bstrcpy (address);
+    if (DS_StringIsEmpty (ip)) {
+        DS_FREESTR (ip);
+        ip = DS_FallBackAddress;
     }
 
     /* Close the socket */
     DS_SocketClose (ptr);
 
     /* Change the address */
-    if (bstricmp (ptr->address, address) != 0) {
+    if (bstricmp (ptr->address, ip) != 0) {
         DS_FREESTR (ptr->address);
-        ptr->address = bstrcpy (address);
+        ptr->address = bstrcpy (ip);
     }
+
+    /* Delete address copy */
+    DS_FREESTR (ip);
 
     /* Re-open the socket */
     DS_SocketOpen (ptr);
