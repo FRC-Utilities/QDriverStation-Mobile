@@ -109,7 +109,8 @@ int DS_StringIsEmpty (const bstring string)
 /**
  * Returns a zero-filled string with the given \a length
  */
-bstring DS_GetEmptyString (const int length) {
+bstring DS_GetEmptyString (const int length)
+{
     bstring string = bfromcstr ("");
     balloc (string, length);
     bFill (string, 0, length);
