@@ -23,6 +23,8 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
+import QtQuick.Controls.Material 2.0
+import QtQuick.Controls.Universal 2.0
 
 import "../Globals.js" as Globals
 
@@ -32,16 +34,17 @@ Popup {
     focus: true
     y: app.height / 6
     x: (app.width - width) / 2
-    contentWidth: column.width * 1.2
-    contentHeight: column.height * 1.2
+    contentWidth: column.width * 1.1
+    contentHeight: column.height * 1.1
 
-    Column {
+    ColumnLayout {
         id: column
         spacing: Globals.spacing
         anchors.centerIn: parent
 
         Image {
             fillMode: Image.Pad
+            sourceSize: Qt.size (96, 96)
             source: "qrc:/images/logo.png"
             verticalAlignment: Image.AlignVCenter
             horizontalAlignment: Image.AlignHCenter
@@ -51,6 +54,7 @@ Popup {
         Label {
             font.bold: true
             text: AppDspName
+            font.pixelSize: 18
             anchors.horizontalCenter: parent.horizontalCenter
         }
 

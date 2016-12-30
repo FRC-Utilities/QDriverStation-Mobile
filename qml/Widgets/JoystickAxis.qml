@@ -91,7 +91,7 @@ Rectangle {
             property bool isCenter: index >= 9
             property bool isBorder: index == 0
 
-            color: IsMaterial ? Material.primary : Universal.accent
+            color: IsMaterial ? Material.accent : Universal.accent
 
             height: width
             radius: width / 2

@@ -41,6 +41,11 @@ Pane {
         property alias protocol: protocols.currentIndex
     }
 
+    Connections {
+        target: DS
+        onProtocolChanged: DS.customRobotAddress = robotAddress.text
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: Globals.spacing

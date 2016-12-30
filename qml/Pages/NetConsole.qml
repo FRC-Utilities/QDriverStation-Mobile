@@ -28,20 +28,26 @@ import "../Widgets"
 import "../Globals.js" as Globals
 
 Pane {
-    //
-    // Display incoming NetConsole messages in the UI
-    //
-    Connections {
-        target: DS
-        onNewMessage: netconsole.append (message)
-    }
-
-    //
-    // Here are all the controls
-    //
     ColumnLayout {
         anchors.fill: parent
         spacing: Globals.spacing
+
+        //
+        // Display incoming NetConsole messages in the UI
+        //
+        Connections {
+            target: DS
+            onNewMessage: netconsole.append (message)
+        }
+
+        //
+        // Display incoming NetConsole messages in the UI
+        //
+        Connections {
+            target: DS
+            onNewMessage: netconsole.append (message)
+        }
+
 
         //
         // Uneccessary label explaining what is the NetConsole
@@ -61,7 +67,6 @@ Pane {
             id: netconsole
             readOnly: true
             wrapMode: Text.Wrap
-            font.family: "Courier"
             Layout.fillWidth: true
             Layout.fillHeight: true
             textFormat: Text.RichText

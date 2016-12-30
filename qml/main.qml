@@ -55,8 +55,6 @@ ApplicationWindow {
     //
     // Style options
     //
-    Material.accent: Material.Blue
-    Material.primary: Material.Blue
     Universal.accent: Universal.Cobalt
 
     //
@@ -66,11 +64,15 @@ ApplicationWindow {
         themeId = theme
 
         if (isDarkTheme) {
+            Material.accent = "#a44"
+            Material.primary = "#282828"
             Material.theme = Material.Dark
             Universal.theme = Universal.Dark
         } else {
             Material.theme = Material.Light
             Universal.theme = Universal.Light
+            Material.accent = Material.Indigo
+            Material.primary = Material.Indigo
         }
 
         menuImg.source = getImage ("menu.svg", true)
