@@ -23,5 +23,10 @@
         <file>logo.png</file>
         <file>logo@2x.png</file>
         <file>logo@3x.png</file>
+        <file>pages/diagnostics.svg</file>
+        <file>pages/monitor.svg</file>
+        <file>pages/netconsole.svg</file>
+        <file>pages/operator.svg</file>
+        <file>pages/settings.svg</file>
     </qresource>
 </RCC>

@@ -63,7 +63,7 @@ SOURCES += \
 
 RESOURCES += \
     $$PWD/qml/qml.qrc \
-    $$PWD/etc/images/images.qrc
+    $$PWD/images/images.qrc
 
 OTHER_FILES += \
     $$PWD/qml/*.js \

@@ -24,6 +24,7 @@ import QtQuick 2.0
 import QtQml.Models 2.2
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
+import QtGraphicalEffects 1.0
 import QtQuick.Controls.Material 2.0
 import QtQuick.Controls.Universal 2.0
 
@@ -75,7 +76,6 @@ ApplicationWindow {
             Material.primary = Material.Indigo
         }
 
-        menuImg.source = getImage ("menu.svg", true)
         drawerImg.source = getImage ("drawer.svg", true)
     }
 
@@ -119,35 +119,10 @@ ApplicationWindow {
             //
             Label {
                 id: titleLabel
-                font.pixelSize: 17
+                font.pixelSize: 20
                 Layout.fillWidth: true
                 elide: Label.ElideRight
-            }
-
-            //
-            // Shows a menu that allows the user to open different popups
-            //
-            ToolButton {
-                id: menuButton
-                onClicked: optionsMenu.open()
-
-                contentItem: Image {
-                    id: menuImg
-                    fillMode: Image.Pad
-                    verticalAlignment: Image.AlignVCenter
-                    horizontalAlignment: Image.AlignHCenter
-                }
-
-                Menu {
-                    id: optionsMenu
-                    x: parent.width - width
-                    transformOrigin: Menu.TopRight
-
-                    MenuItem {
-                        text: qsTr ("About")
-                        onTriggered: aboutDialog.open()
-                    }
-                }
+                font.weight: Font.Medium
             }
         }
     }
@@ -158,73 +133,190 @@ ApplicationWindow {
     Drawer {
         id: drawer
         height: app.height
-        width: Math.min (app.width, app.height) / 3 * 2
+        width: Math.min (Math.min (app.width, app.height) * 0.90, 320)
 
-        ListView {
-            id: listView
-            currentIndex: -1
+        //
+        // Drawer controls
+        //
+        ColumnLayout {
+            spacing: 0
             anchors.fill: parent
+            anchors.margins: 0
 
             //
-            // Change toolbar title and current page when user changes the
-            // current page title
+            // Application name & version
             //
-            onCurrentIndexChanged: {
-                stackView.push (pages.get (currentIndex))
-                titleLabel.text = titles.get (currentIndex).title
-            }
+            Rectangle {
+                z: 1
+                color: "#4c4c4c"
+                Layout.fillWidth: true
+                Layout.minimumHeight: 120
 
-            //
-            // Open the operator page at launch
-            //
-            Component.onCompleted: currentIndex = 0
+                RowLayout {
+                    anchors.centerIn: parent
+                    spacing: Globals.spacing
 
-            //
-            // This item is created for each item from the \c titles list
-            //
-            delegate: ItemDelegate {
-                text: model.title
-                width: parent.width
-                highlighted: ListView.isCurrentItem
+                    Image {
+                        sourceSize: Qt.size (96, 96)
+                        source: "qrc:/images/logo.png"
+                    }
 
-                onClicked: {
-                    if (listView.currentIndex != index)
-                        listView.currentIndex = index
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: Globals.spacing
 
-                    drawer.close()
+                        Item {
+                            Layout.fillHeight: true
+                        }
+
+                        Label {
+                            color: "#fff"
+                            font.bold: true
+                            text: AppDspName
+                            font.pixelSize: 24
+                        }
+
+                        Label {
+                            color: "#ccc"
+                            font.pixelSize: 16
+                            text: qsTr ("Version") + ": " + AppVersion
+                        }
+
+                        Item {
+                            Layout.fillHeight: true
+                        }
+                    }
+
+                    Item {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                    }
                 }
             }
 
             //
-            // The delegate should contain a title, not the whole page itself
+            // Page selector
             //
-            model: titles
+            ListView {
+                z: 0
+                id: listView
+                currentIndex: -1
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-            //
-            // Holds the title of each page in the \c pages list
-            //
-            ListModel {
-                id: titles
-                ListElement { title: qsTr ("Operator") }
-                ListElement { title: qsTr ("Diagnostics") }
-                ListElement { title: qsTr ("System Monitor") }
-                ListElement { title: qsTr ("NetConsole") }
-                ListElement { title: qsTr ("Preferences") }
+                //
+                // Change toolbar title and current page when user changes the
+                // current page title
+                //
+                onCurrentIndexChanged: {
+                    stackView.push (pages.get (currentIndex))
+                    titleLabel.text = titles.get (currentIndex).title
+                }
+
+                //
+                // Open the operator page at launch
+                //
+                Component.onCompleted: currentIndex = 0
+
+                //
+                // This item is created for each item from the \c titles list
+                //
+                delegate: ItemDelegate {
+                    width: parent.width
+                    highlighted: ListView.isCurrentItem
+
+                    onClicked: {
+                        if (listView.currentIndex != index)
+                            listView.currentIndex = index
+
+                        drawer.close()
+                    }
+
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: Globals.spacing
+                        anchors.margins: Globals.spacing
+
+                        Image {
+                            smooth: true
+                            fillMode: Image.Pad
+                            sourceSize: Qt.size (24, 24)
+                            verticalAlignment: Image.AlignVCenter
+                            horizontalAlignment: Image.AlignHCenter
+                            source: "qrc:/images/pages/" + model.icon
+
+                            ColorOverlay {
+                                source: parent
+                                color: model.color
+                                anchors.fill: parent
+                            }
+                        }
+
+                        Label {
+                            text: model.title
+                            Layout.fillWidth: true
+                        }
+                    }
+
+                }
+
+                //
+                // The delegate should contain a title, not the whole page itself
+                //
+                model: titles
+
+                //
+                // Holds the title of each page in the \c pages list
+                //
+                ListModel {
+                    id: titles
+
+                    ListElement {
+                        color: "#2196f4"
+                        icon: "operator.svg"
+                        title: qsTr ("Operator")
+                    }
+
+                    ListElement {
+                        color: "#F44336"
+                        icon: "diagnostics.svg"
+                        title: qsTr ("Diagnostics")
+                    }
+
+                    ListElement {
+                        color: "#009688"
+                        icon: "monitor.svg"
+                        title: qsTr ("System Monitor")
+                    }
+
+                    ListElement {
+                        color: "#8bc43a"
+                        icon: "netconsole.svg"
+                        title: qsTr ("NetConsole")
+                    }
+
+                    ListElement {
+                        color: "#ff9800"
+                        icon: "settings.svg"
+                        title: qsTr ("Preferences")
+                    }
+                }
+
+                //
+                // Holds the page data (to avoid creating duplicate instances)
+                //
+                ObjectModel {
+                    id: pages
+                    Operator    { visible: false }
+                    Diagnostics { visible: false }
+                    Monitor     { visible: false }
+                    NetConsole  { visible: false }
+                    Preferences { visible: false }
+                }
+
+                ScrollIndicator.vertical: ScrollIndicator { }
             }
-
-            //
-            // Holds the page data (to avoid creating duplicate instances)
-            //
-            ObjectModel {
-                id: pages
-                Operator    { visible: false }
-                Diagnostics { visible: false }
-                Monitor     { visible: false }
-                NetConsole  { visible: false }
-                Preferences { visible: false }
-            }
-
-            ScrollIndicator.vertical: ScrollIndicator { }
         }
     }
 
@@ -235,12 +327,5 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
         anchors.margins: Globals.spacing
-    }
-
-    //
-    // The name says it all...
-    //
-    AboutDialog {
-        id: aboutDialog
     }
 }
