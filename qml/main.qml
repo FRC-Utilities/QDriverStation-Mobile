@@ -56,6 +56,8 @@ ApplicationWindow {
     //
     // Style options
     //
+    Material.accent: Material.Green
+    Material.primary: Material.Green
     Universal.accent: Universal.Cobalt
 
     //
@@ -65,15 +67,11 @@ ApplicationWindow {
         themeId = theme
 
         if (isDarkTheme) {
-            Material.accent = "#a44"
-            Material.primary = "#282828"
             Material.theme = Material.Dark
             Universal.theme = Universal.Dark
         } else {
             Material.theme = Material.Light
             Universal.theme = Universal.Light
-            Material.accent = Material.Indigo
-            Material.primary = Material.Indigo
         }
 
         drawerImg.source = getImage ("drawer.svg", true)
@@ -93,6 +91,7 @@ ApplicationWindow {
     // Holds the navigation buttons and page title
     //
     header: ToolBar {
+        Material.primary: "#444"
         Material.foreground: "white"
 
         RowLayout {
@@ -133,15 +132,15 @@ ApplicationWindow {
     Drawer {
         id: drawer
         height: app.height
-        width: Math.min (Math.min (app.width, app.height) * 0.90, 320)
+        width: Math.min (Math.min (app.width, app.height) * 0.90, 280)
 
         //
         // Drawer controls
         //
         ColumnLayout {
             spacing: 0
-            anchors.fill: parent
             anchors.margins: 0
+            anchors.fill: parent
 
             //
             // Application name & version
@@ -157,7 +156,7 @@ ApplicationWindow {
                     spacing: Globals.spacing
 
                     Image {
-                        sourceSize: Qt.size (96, 96)
+                        sourceSize: Qt.size (72, 72)
                         source: "qrc:/images/logo.png"
                     }
 
@@ -234,12 +233,13 @@ ApplicationWindow {
                     }
 
                     RowLayout {
+                        spacing: 16
+                        anchors.margins: 16
                         anchors.fill: parent
-                        spacing: Globals.spacing
-                        anchors.margins: Globals.spacing
 
                         Image {
                             smooth: true
+                            opacity: 0.54
                             fillMode: Image.Pad
                             sourceSize: Qt.size (24, 24)
                             verticalAlignment: Image.AlignVCenter
