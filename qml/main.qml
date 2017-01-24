@@ -56,8 +56,8 @@ ApplicationWindow {
     //
     // Style options
     //
-    Material.accent: Material.Green
-    Material.primary: Material.Green
+    Material.accent: Material.Teal
+    Material.primary: Material.Teal
     Universal.accent: Universal.Cobalt
 
     //
@@ -91,7 +91,7 @@ ApplicationWindow {
     // Holds the navigation buttons and page title
     //
     header: ToolBar {
-        Material.primary: "#444"
+        Material.primary: "#263238"
         Material.foreground: "white"
 
         RowLayout {
@@ -118,7 +118,7 @@ ApplicationWindow {
             //
             Label {
                 id: titleLabel
-                font.pixelSize: 20
+                font.pixelSize: 18
                 Layout.fillWidth: true
                 elide: Label.ElideRight
                 font.weight: Font.Medium
@@ -147,7 +147,7 @@ ApplicationWindow {
             //
             Rectangle {
                 z: 1
-                color: "#4c4c4c"
+                color: "#263238"
                 Layout.fillWidth: true
                 Layout.minimumHeight: 120
 
@@ -173,13 +173,19 @@ ApplicationWindow {
                             color: "#fff"
                             font.bold: true
                             text: AppDspName
-                            font.pixelSize: 24
+                            font.pixelSize: 18
                         }
 
                         Label {
                             color: "#ccc"
                             font.pixelSize: 16
                             text: qsTr ("Version") + ": " + AppVersion
+                        }
+
+                        Label {
+                            color: "#aaa"
+                            font.pixelSize: 12
+                            text: qsTr ("Using LibDS") + ": " + DS.libDSVersion
                         }
 
                         Item {
@@ -239,7 +245,7 @@ ApplicationWindow {
 
                         Image {
                             smooth: true
-                            opacity: 0.54
+                            opacity: 0.72
                             fillMode: Image.Pad
                             sourceSize: Qt.size (24, 24)
                             verticalAlignment: Image.AlignVCenter
