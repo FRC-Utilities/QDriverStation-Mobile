@@ -30,15 +30,12 @@ import "../Widgets"
 import "../Globals.js" as Globals
 
 Pane {
-    Component.onCompleted: app.setTheme (darkMode.checked ?
-                                             Globals.dark : Globals.light)
-
     Settings {
         property alias team: team.text
-        property alias darkMode: darkMode.checked
         property alias material: useMaterial.checked
         property alias robotAddress: robotAddress.text
         property alias protocol: protocols.currentIndex
+        property alias enableRealJoysticks: enableRealJoysticks.checked
     }
 
     Connections {
@@ -95,8 +92,8 @@ Pane {
 
             ComboBox {
                 id: protocols
-                Layout.fillWidth: true
                 model: DS.protocols
+                Layout.fillWidth: true
                 onCurrentIndexChanged: DS.setProtocol (currentIndex)
             }
         }
@@ -107,17 +104,16 @@ Pane {
         }
 
         Switch {
-            id: darkMode
-            checked: !IsMaterial
-            text: qsTr ("Dark Theme")
-            onCheckedChanged: app.setTheme (checked ? Globals.dark :
-                                                      Globals.light)
+            id: useMaterial
+            checked: IsMaterial
+            text: qsTr ("Use Material Style") + " *"
         }
 
         Switch {
-            id: useMaterial
-            checked: IsMaterial
-            text: qsTr ("Use Material Style") + "*"
+            checked: false
+            id: enableRealJoysticks
+            text: qsTr ("Enable real joystick input")
+            onCheckedChanged: QJoysticks.setEnabled (checked)
         }
 
         Item {
@@ -128,6 +124,10 @@ Pane {
             color: "#666"
             font.pixelSize: 12
             text: "* " + qsTr ("Requires application restart")
+        }
+
+        Item {
+            Layout.fillHeight: true
         }
     }
 }

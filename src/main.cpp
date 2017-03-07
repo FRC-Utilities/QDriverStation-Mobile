@@ -21,6 +21,7 @@
  */
 
 #include <LibDS.h>
+#include <QJoysticks.h>
 #include <EventLogger.h>
 #include <DriverStation.h>
 
@@ -66,6 +67,7 @@ int main (int argc, char* argv[])
     engine.rootContext()->setContextProperty ("IsMaterial", material);
     engine.rootContext()->setContextProperty ("AppDspName", APP_DSPNAME);
     engine.rootContext()->setContextProperty ("AppVersion", APP_VERSION);
+    engine.rootContext()->setContextProperty ("QJoysticks", QJoysticks::getInstance());
     engine.load (QUrl (QStringLiteral ("qrc:/qml/main.qml")));
 
     /* Exit if QML fails to load */

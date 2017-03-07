@@ -40,48 +40,27 @@ ApplicationWindow {
     title: AppDspName + " " + AppVersion
 
     //
-    // Saves the current theme style (dark or light)
-    //
-    property var themeId: Globals.light
-    property bool isDarkTheme: themeId === Globals.dark
-
-    //
-    // Load the saved theme and initialize the DS
+    // Initialize the DS
     //
     Component.onCompleted: {
-        setTheme (themeId)
         DS.start()
+        showMaximized()
     }
 
     //
     // Style options
     //
+    Material.theme: Material.Light
     Material.accent: Material.Teal
     Material.primary: Material.Teal
+    Universal.theme: Universal.Dark
     Universal.accent: Universal.Cobalt
-
-    //
-    // Changes the current theme
-    //
-    function setTheme (theme) {
-        themeId = theme
-
-        if (isDarkTheme) {
-            Material.theme = Material.Dark
-            Universal.theme = Universal.Dark
-        } else {
-            Material.theme = Material.Light
-            Universal.theme = Universal.Light
-        }
-
-        drawerImg.source = getImage ("drawer.svg", true)
-    }
 
     //
     // Returns the toolbar image that matches the current theme and style
     //
     function getImage (image, toolbar) {
-        if (themeId === Globals.dark || (IsMaterial && toolbar))
+        if (IsMaterial && toolbar || !IsMaterial)
             return "qrc:/images/dark/" + image
 
         return "qrc:/images/light/" + image
@@ -91,6 +70,7 @@ ApplicationWindow {
     // Holds the navigation buttons and page title
     //
     header: ToolBar {
+        id: toolbar
         Material.primary: "#263238"
         Material.foreground: "white"
 
@@ -108,6 +88,7 @@ ApplicationWindow {
                 contentItem: Image {
                     id: drawerImg
                     fillMode: Image.Pad
+                    source: getImage ("drawer.svg", true)
                     verticalAlignment: Image.AlignVCenter
                     horizontalAlignment: Image.AlignHCenter
                 }
@@ -147,7 +128,13 @@ ApplicationWindow {
             //
             Rectangle {
                 z: 1
-                color: "#263238"
+                color: {
+                    if (IsMaterial)
+                        return "#263238"
+                    else
+                        return "#414141"
+                }
+
                 Layout.fillWidth: true
                 Layout.minimumHeight: 120
 
@@ -251,6 +238,7 @@ ApplicationWindow {
                             verticalAlignment: Image.AlignVCenter
                             horizontalAlignment: Image.AlignHCenter
                             source: "qrc:/images/pages/" + model.icon
+                            anchors.verticalCenter: parent.verticalCenter
 
                             ColorOverlay {
                                 source: parent
@@ -262,6 +250,7 @@ ApplicationWindow {
                         Label {
                             text: model.title
                             Layout.fillWidth: true
+                            anchors.verticalCenter: parent.verticalCenter
                         }
                     }
 

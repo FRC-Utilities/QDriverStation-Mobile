@@ -52,6 +52,7 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/etc/deploy/android
 # Include the libraries
 #-------------------------------------------------------------------------------
 
+include ($$PWD/lib/QJoysticks/QJoysticks.pri)
 include ($$PWD/lib/LibDS/wrappers/Qt/LibDS-Qt.pri)
 
 #-------------------------------------------------------------------------------

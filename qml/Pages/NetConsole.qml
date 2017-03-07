@@ -41,15 +41,6 @@ Pane {
         }
 
         //
-        // Display incoming NetConsole messages in the UI
-        //
-        Connections {
-            target: DS
-            onNewMessage: netconsole.append (message)
-        }
-
-
-        //
         // Uneccessary label explaining what is the NetConsole
         //
         Label {
