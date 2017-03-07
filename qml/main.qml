@@ -70,7 +70,6 @@ ApplicationWindow {
     // Holds the navigation buttons and page title
     //
     header: ToolBar {
-        id: toolbar
         Material.primary: "#263238"
         Material.foreground: "white"
 
