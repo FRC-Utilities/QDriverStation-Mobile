@@ -192,7 +192,7 @@ ColumnLayout {
         //
         // First thumb
         //
-        JoystickAxis {
+        VirtualJoystickAxis {
             id: thumbA
             height: width
             anchors.right: center.left
@@ -211,7 +211,7 @@ ColumnLayout {
         //
         // Second thumb
         //
-        JoystickAxis {
+        VirtualJoystickAxis {
             id: thumbB
             height: width
             anchors.left: center.right

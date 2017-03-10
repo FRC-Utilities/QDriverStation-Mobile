@@ -58,9 +58,14 @@ Pane {
                 visible: false
             }
 
-            Joystick {
-                id: joystick
+            VirtualJoystick {
                 visible: false
+                id: virtualJoystick
+            }
+
+            Item {
+                visible: false
+                id: sdlJoystick
             }
         }
 
@@ -97,7 +102,10 @@ Pane {
                 // Show joysticks if robot is in teleop and enabled
                 //
                 if (DS.isTeleoperated && enabled)
-                    stackView.push (joystick)
+                    if (QJoysticks.count < 1)
+                        stackView.push (virtualJoystick)
+                    else
+                        stackView.push (sdlJoystick)
 
                 //
                 // Robot is not in teleop, hide joysticks

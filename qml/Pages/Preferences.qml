@@ -35,7 +35,6 @@ Pane {
         property alias material: useMaterial.checked
         property alias robotAddress: robotAddress.text
         property alias protocol: protocols.currentIndex
-        property alias enableRealJoysticks: enableRealJoysticks.checked
     }
 
     Connections {
@@ -109,13 +108,6 @@ Pane {
             text: qsTr ("Use Material Style") + " *"
         }
 
-        Switch {
-            checked: false
-            id: enableRealJoysticks
-            text: qsTr ("Enable real joystick input")
-            onCheckedChanged: QJoysticks.setEnabled (checked)
-        }
-
         Item {
             Layout.fillHeight: true
         }
@@ -124,10 +116,6 @@ Pane {
             color: "#666"
             font.pixelSize: 12
             text: "* " + qsTr ("Requires application restart")
-        }
-
-        Item {
-            Layout.fillHeight: true
         }
     }
 }
