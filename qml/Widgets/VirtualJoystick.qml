@@ -35,14 +35,6 @@ ColumnLayout {
     property bool triggersEnabled: app.height > 620
 
     //
-    // Register the joystick when created
-    //
-    Component.onCompleted: {
-        DS.addJoystick (6, 0, 10)
-        jsId = DS.joystickCount - 1
-    }
-
-    //
     // Do not allow the robot to apply a "surprise madafaka!"
     //
     onVisibleChanged: {

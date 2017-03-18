@@ -61,7 +61,6 @@ QJoysticks::QJoysticks()
              this, &QJoysticks::onButtonEvent);
 
     /* Configure the settings */
-    m_enabled = true;
     m_sortJoyticks = 0;
     m_settings = new QSettings (qApp->organizationName(), qApp->applicationName());
     m_settings->beginGroup ("Blacklisted Joysticks");
@@ -92,14 +91,6 @@ QJoysticks* QJoysticks::getInstance()
 int QJoysticks::count() const
 {
     return inputDevices().count();
-}
-
-/**
- * Returns the enabled state of the QJoysticks system
- */
-bool QJoysticks::enabled() const
-{
-    return m_enabled;
 }
 
 /**
@@ -363,17 +354,6 @@ void QJoysticks::updateInterfaces()
 }
 
 /**
- * Enables or disables the \c QJoysticks system
- */
-void QJoysticks::setEnabled (bool enabled)
-{
-    if (m_enabled != enabled) {
-        m_enabled = enabled;
-        emit enabledChanged (m_enabled);
-    }
-}
-
-/**
  * Changes the axis value range of the virtual joystick.
  *
  * Take into account that maximum axis values supported by the \c QJoysticks
@@ -416,7 +396,7 @@ void QJoysticks::addInputDevice (QJoystickDevice* device)
  */
 void QJoysticks::onPOVEvent (const QJoystickPOVEvent& event)
 {
-    if (!isBlacklisted (event.joystick->id) && enabled())
+    if (!isBlacklisted (event.joystick->id))
         emit povChanged (event.joystick->id, event.pov, event.angle);
 }
 
@@ -426,7 +406,7 @@ void QJoysticks::onPOVEvent (const QJoystickPOVEvent& event)
  */
 void QJoysticks::onAxisEvent (const QJoystickAxisEvent& event)
 {
-    if (!isBlacklisted (event.joystick->id) && enabled())
+    if (!isBlacklisted (event.joystick->id))
         emit axisChanged (event.joystick->id, event.axis, event.value);
 }
 
@@ -436,6 +416,6 @@ void QJoysticks::onAxisEvent (const QJoystickAxisEvent& event)
  */
 void QJoysticks::onButtonEvent (const QJoystickButtonEvent& event)
 {
-    if (!isBlacklisted (event.joystick->id) && enabled())
+    if (!isBlacklisted (event.joystick->id))
         emit buttonChanged (event.joystick->id, event.button, event.pressed);
 }

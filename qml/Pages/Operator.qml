@@ -38,6 +38,39 @@ Pane {
     onVisibleChanged: enableBt.checked = false
 
     //
+    // Automatically configures the joysticks with the DS
+    //
+    function registerJoysticks() {
+        DS.resetJoysticks()
+
+        if (QJoysticks.count) {
+            for (var i = 0; i < QJoysticks.count; ++i)
+                DS.addJoystick (QJoysticks.getNumAxes (i),
+                                QJoysticks.getNumPOVs (i),
+                                QJoysticks.getNumButtons (i))
+        }
+
+        else {
+            virtualJoystick.jsId = 0
+            DS.addJoystick (6, 0, 10) /* Should be dynamic... */
+        }
+    }
+
+    //
+    // Re-configure the joysticks when the user plugs (or unplugs)
+    // a real joystick. Also, disable the robot
+    //
+    Connections {
+        target: QJoysticks
+        onCountChanged: {
+            registerJoysticks()
+
+            if (DS.isTeleoperated && DS.enabled)
+                enableBt.checked = false
+        }
+    }
+
+    //
     // Holds all the widgets
     //
     ColumnLayout {
@@ -63,7 +96,7 @@ Pane {
                 id: virtualJoystick
             }
 
-            Item {
+            SDLJoystick {
                 visible: false
                 id: sdlJoystick
             }
@@ -102,10 +135,7 @@ Pane {
                 // Show joysticks if robot is in teleop and enabled
                 //
                 if (DS.isTeleoperated && enabled)
-                    if (QJoysticks.count < 1)
-                        stackView.push (virtualJoystick)
-                    else
-                        stackView.push (sdlJoystick)
+                    stackView.push (QJoysticks.count ? sdlJoystick : virtualJoystick)
 
                 //
                 // Robot is not in teleop, hide joysticks

@@ -77,7 +77,6 @@ public:
     static QJoysticks* getInstance();
 
     int count() const;
-    bool enabled() const;
     int nonBlacklistedCount();
     QStringList deviceNames() const;
 
@@ -95,7 +94,6 @@ public:
 
 public slots:
     void updateInterfaces();
-    void setEnabled (bool enabled);
     void setVirtualJoystickRange (qreal range);
     void setVirtualJoystickEnabled (bool enabled);
     void setSortJoysticksByBlacklistState (bool sort);
@@ -112,9 +110,7 @@ private slots:
     void onAxisEvent (const QJoystickAxisEvent& event);
     void onButtonEvent (const QJoystickButtonEvent& event);
 
-private:
-    bool m_enabled;
-    bool m_sortJoyticks;
+private:    bool m_sortJoyticks;
 
     QSettings* m_settings;
     SDL_Joysticks* m_sdlJoysticks;
