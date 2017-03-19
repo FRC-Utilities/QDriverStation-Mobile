@@ -47,7 +47,7 @@ static QString GENERIC_MAPPINGS;
     #define GENERIC_MAPPINGS_PATH ":/QJoysticks/SDL/GenericMappings/Android.txt"
 #endif
 
-SDL_Joysticks::SDL_Joysticks()
+SDL_Joysticks::SDL_Joysticks (QObject* parent) : QObject (parent)
 {
     m_tracker = -1;
 

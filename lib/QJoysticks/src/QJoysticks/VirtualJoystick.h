@@ -45,7 +45,7 @@ signals:
     void buttonEvent (const QJoystickButtonEvent& event);
 
 public:
-    explicit VirtualJoystick();
+    VirtualJoystick (QObject* parent = Q_NULLPTR);
 
     qreal axisRange() const;
     bool joystickEnabled() const;

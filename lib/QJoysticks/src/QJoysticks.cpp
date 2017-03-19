@@ -29,8 +29,8 @@
 QJoysticks::QJoysticks()
 {
     /* Initialize input methods */
-    m_sdlJoysticks = new SDL_Joysticks;
-    m_virtualJoystick = new VirtualJoystick;
+    m_sdlJoysticks = new SDL_Joysticks (this);
+    m_virtualJoystick = new VirtualJoystick (this);
 
     /* Configure SDL joysticks */
     connect (sdlJoysticks(),    &SDL_Joysticks::POVEvent,

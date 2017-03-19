@@ -82,20 +82,24 @@ ColumnLayout {
             delegate: Button {
                 id: bt
                 flat: true
-                enabled: false
+                checkable: true
                 text: qsTr ("" + (index + 1))
                 width: (buttons.width / buttons.columns) - buttons.spacing
 
-                onPressedChanged: {
+                onCheckedChanged: {
                     if (!simulation)
                         DS.setJoystickButton (jsId, index, pressed)
+                }
+
+                MouseArea {
+                    anchors.fill: parent
                 }
 
                 Connections {
                     target: QJoysticks
                     onButtonChanged: {
                         if (js === jsId && button === index)
-                            bt.pressed = pressed
+                            bt.checked = pressed
                     }
                 }
             }
@@ -131,10 +135,13 @@ ColumnLayout {
                 to: 100
                 from: -100
                 width: (axes.width / axes.columns) - axes.spacing
+
                 onValueChanged: {
                     if (!simulation)
                         DS.setJoystickAxis (jsId, index, value / 100)
                 }
+
+                Behavior on value {NumberAnimation{}}
 
                 Connections {
                     target: QJoysticks

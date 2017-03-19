@@ -23,7 +23,7 @@
 #include <math.h>
 #include <QJoysticks/VirtualJoystick.h>
 
-VirtualJoystick::VirtualJoystick()
+VirtualJoystick::VirtualJoystick (QObject* parent) : QObject (parent)
 {
     m_axisRange = 1;
     m_joystickEnabled = false;

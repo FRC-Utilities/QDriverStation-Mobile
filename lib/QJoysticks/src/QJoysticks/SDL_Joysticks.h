@@ -50,8 +50,9 @@ signals:
     void buttonEvent (const QJoystickButtonEvent& event);
 
 public:
-    explicit SDL_Joysticks();
+    SDL_Joysticks (QObject* parent = Q_NULLPTR);
     ~SDL_Joysticks();
+
     QList<QJoystickDevice*> joysticks();
 
 public slots:
