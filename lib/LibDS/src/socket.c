@@ -245,7 +245,7 @@ void DS_SocketClose (DS_Socket* ptr)
     ptr->info.client_init = 0;
 
     /* Close sockets */
-#ifdef __ANDROID
+#ifdef __ANDROID__
     socket_close_threaded (ptr->info.sock_in, NULL);
     socket_close_threaded (ptr->info.sock_out, NULL);
 #else
@@ -354,7 +354,7 @@ void DS_SocketChangeAddress (DS_Socket* ptr, const bstring address)
             DS_FREESTR (ip);
     }
 
-    /* Socket address is empty, remplace it directly */
+    /* Socket address is empty, replace it directly */
     else
         ptr->address = ip;
 

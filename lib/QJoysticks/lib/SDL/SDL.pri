@@ -48,3 +48,27 @@ macx* {
 linux:!android {
     LIBS += -lSDL2
 }
+
+android {
+    LIBS += -ldl
+    LIBS += -llog
+    LIBS += -lGLESv2
+    LIBS += -landroid
+    LIBS += -lGLESv1_CM
+    
+    equals (ANDROID_TARGET_ARCH, x86_64) { 
+        LIBS += -L$$PWD/bin/android/x86/ -lSDL2
+    }
+
+    equals (ANDROID_TARGET_ARCH, mips64) { 
+        LIBS += -L$$PWD/bin/android/mips64/ -lSDL2
+    }
+
+    equals (ANDROID_TARGET_ARCH, arm64-v8a) { 
+        LIBS += -L$$PWD/bin/android/arm64-v8a/ -lSDL2
+    }
+
+    equals (ANDROID_TARGET_ARCH, armeabi-v7a) { 
+        LIBS += -L$$PWD/bin/android/armeabi-v7a/ -lSDL2
+    }
+}

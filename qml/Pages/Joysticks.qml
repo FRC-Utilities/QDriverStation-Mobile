@@ -62,6 +62,7 @@ ColumnLayout {
         }
 
         /* Display the joystick controls */
+        stackView.clear()
         stackView.push (QJoysticks.count > 0 ? sdlJoystick : virtualJoystick)
     }
 

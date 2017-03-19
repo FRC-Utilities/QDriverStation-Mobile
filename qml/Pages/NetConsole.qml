@@ -24,6 +24,8 @@ import QtQuick 2.0
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
 
+import QtQuick.Controls.Material 2.0
+
 import "../Widgets"
 import "../Globals.js" as Globals
 
@@ -54,13 +56,22 @@ Pane {
         //
         // Holds the NetConsole text
         //
-        TextArea {
-            id: netconsole
-            readOnly: true
-            wrapMode: Text.Wrap
+        Flickable {
+            id: flickable
             Layout.fillWidth: true
             Layout.fillHeight: true
-            textFormat: Text.RichText
+
+            TextArea.flickable: TextArea {
+                id: netconsole
+                readOnly: true
+                font.family: "Mono"
+                wrapMode: Text.Wrap
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                textFormat: Text.RichText
+            }
+
+            ScrollBar.vertical: ScrollBar { }
         }
 
         //
@@ -75,7 +86,7 @@ Pane {
 
                 onClicked: {
                     netconsole.copy()
-                    netconsole.append (qsTr ("NetConsole output copied to clipboard."))
+                    netconsole.append ("** " + qsTr ("NetConsole output copied to clipboard"))
                 }
             }
 

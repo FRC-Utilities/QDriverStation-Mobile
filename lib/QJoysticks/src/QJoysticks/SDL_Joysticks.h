@@ -51,6 +51,7 @@ signals:
 
 public:
     explicit SDL_Joysticks();
+    ~SDL_Joysticks();
     QList<QJoystickDevice*> joysticks();
 
 public slots:

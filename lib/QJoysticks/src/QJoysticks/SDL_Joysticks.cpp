@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QDebug>
 #include <QTimer>
+#include <QApplication>
 #include <QJoysticks/SDL_Joysticks.h>
 
 /**
@@ -40,14 +41,21 @@ static QString GENERIC_MAPPINGS;
     #define GENERIC_MAPPINGS_PATH ":/QJoysticks/SDL/GenericMappings/Windows.txt"
 #elif defined Q_OS_MAC
     #define GENERIC_MAPPINGS_PATH ":/QJoysticks/SDL/GenericMappings/OSX.txt"
-#elif defined Q_OS_LINUX
+#elif defined Q_OS_LINUX && !defined Q_OS_ANDROID
     #define GENERIC_MAPPINGS_PATH ":/QJoysticks/SDL/GenericMappings/Linux.txt"
+#elif defined Q_OS_ANDROID
+    #define GENERIC_MAPPINGS_PATH ":/QJoysticks/SDL/GenericMappings/Android.txt"
 #endif
 
 SDL_Joysticks::SDL_Joysticks()
 {
     m_tracker = -1;
-    SDL_Init (SDL_INIT_HAPTIC | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
+    int error = SDL_Init (SDL_INIT_HAPTIC | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
+
+    if (error) {
+        qDebug() << "Cannot initialize SDL:" << SDL_GetError();
+        qApp->quit();
+    }
 
     QFile database (":/QJoysticks/SDL/Database.txt");
     if (database.open (QFile::ReadOnly)) {
@@ -66,6 +74,11 @@ SDL_Joysticks::SDL_Joysticks()
     }
 
     QTimer::singleShot (Qt::PreciseTimer, this, SLOT (update()));
+}
+
+SDL_Joysticks::~SDL_Joysticks()
+{
+    SDL_Quit();
 }
 
 /**
