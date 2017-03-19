@@ -50,7 +50,12 @@ static QString GENERIC_MAPPINGS;
 SDL_Joysticks::SDL_Joysticks()
 {
     m_tracker = -1;
+
+#ifndef Q_OS_ANDROID
     int error = SDL_Init (SDL_INIT_HAPTIC | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
+#else
+    int error = SDL_Init (SDL_INIT_EVERYTHING);
+#endif
 
     if (error) {
         qDebug() << "Cannot initialize SDL:" << SDL_GetError();
