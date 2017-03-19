@@ -308,12 +308,35 @@ ApplicationWindow {
                 //
                 ObjectModel {
                     id: pages
-                    Operator    { visible: false }
-                    Diagnostics { visible: false }
-                    Monitor     { visible: false }
-                    NetConsole  { visible: false }
-                    Joysticks   { visible: false }
-                    Preferences { visible: false }
+
+                    Operator {
+                        visible: false
+                    }
+
+                    Diagnostics {
+                        visible: false
+                    }
+
+                    Monitor {
+                        visible: false
+                    }
+
+                    NetConsole {
+                        visible: false
+                    }
+
+                    Pane {
+                        visible: false
+
+                        Joysticks {
+                            simulation: true
+                            anchors.fill: parent
+                        }
+                    }
+
+                    Preferences {
+                        visible: false
+                    }
                 }
 
                 ScrollIndicator.vertical: ScrollIndicator { }

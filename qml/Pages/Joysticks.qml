@@ -29,8 +29,9 @@ import DriverStation 1.0
 import "../Widgets"
 import "../Globals.js" as Globals
 
-Pane {
+ColumnLayout {
     id: js
+    spacing: Globals.spacing
 
     //
     // If set to true, joystick values will not be sent to
@@ -81,27 +82,22 @@ Pane {
     //
     // Holds all the widgets
     //
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: Globals.spacing
+    StackView {
+        id: stackView
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        initialItem: virtualJoystick
 
-        StackView {
-            id: stackView
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            initialItem: virtualJoystick
+        VirtualJoystick {
+            visible: false
+            id: virtualJoystick
+            simulation: js.simulation
+        }
 
-            VirtualJoystick {
-                visible: false
-                id: virtualJoystick
-                simulation: js.simulation
-            }
-
-            SDLJoystick {
-                visible: false
-                id: sdlJoystick
-                simulation: js.simulation
-            }
+        SDLJoystick {
+            visible: false
+            id: sdlJoystick
+            simulation: js.simulation
         }
     }
 }
