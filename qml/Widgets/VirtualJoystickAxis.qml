@@ -72,7 +72,7 @@ Rectangle {
     // Make the rectangle a circle and give it some color
     //
     radius: width / 2
-    color: IsMaterial ? "#2a2a2a" : "#1f1f1f"
+    color: IsMaterial ? "#ededed" : "#1f1f1f"
 
     //
     // Knob circles (arranged as a 'gradient')

@@ -14,6 +14,7 @@
         <file>Widgets/TitleLabel.qml</file>
         <file>Widgets/Controls.qml</file>
         <file>Widgets/SDLJoystick.qml</file>
+        <file>Pages/Joysticks.qml</file>
     </qresource>
     <qresource prefix="/">
         <file>qt.conf</file>

@@ -28,5 +28,6 @@
         <file>pages/netconsole.svg</file>
         <file>pages/operator.svg</file>
         <file>pages/settings.svg</file>
+        <file>pages/joysticks.svg</file>
     </qresource>
 </RCC>

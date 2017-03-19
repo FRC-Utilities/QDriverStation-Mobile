@@ -279,7 +279,7 @@ ApplicationWindow {
                     }
 
                     ListElement {
-                        color: "#009688"
+                        color: "#00bcd4"
                         icon: "monitor.svg"
                         title: qsTr ("System Monitor")
                     }
@@ -288,6 +288,12 @@ ApplicationWindow {
                         color: "#8bc43a"
                         icon: "netconsole.svg"
                         title: qsTr ("NetConsole")
+                    }
+
+                    ListElement {
+                        color: "#9c27b0"
+                        icon: "joysticks.svg"
+                        title: qsTr ("Joysticks")
                     }
 
                     ListElement {
@@ -306,6 +312,7 @@ ApplicationWindow {
                     Diagnostics { visible: false }
                     Monitor     { visible: false }
                     NetConsole  { visible: false }
+                    Joysticks   { visible: false }
                     Preferences { visible: false }
                 }
 

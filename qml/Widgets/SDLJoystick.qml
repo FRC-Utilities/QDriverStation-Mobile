@@ -28,6 +28,11 @@ import "../Globals.js" as Globals
 
 ColumnLayout {
     spacing: Globals.spacing
+
+    //
+    // Custom properties
+    //
+    property bool simulation: true
     property alias jsId: selector.currentIndex
 
     //
@@ -80,7 +85,11 @@ ColumnLayout {
                 enabled: false
                 text: qsTr ("" + (index + 1))
                 width: (buttons.width / buttons.columns) - buttons.spacing
-                onPressedChanged: DS.setJoystickButton (jsId, index, pressed)
+
+                onPressedChanged: {
+                    if (!simulation)
+                        DS.setJoystickButton (jsId, index, pressed)
+                }
 
                 Connections {
                     target: QJoysticks
@@ -122,7 +131,10 @@ ColumnLayout {
                 to: 100
                 from: -100
                 width: (axes.width / axes.columns) - axes.spacing
-                onValueChanged: DS.setJoystickButton (jsId, index, value / 100)
+                onValueChanged: {
+                    if (!simulation)
+                        DS.setJoystickAxis (jsId, index, value / 100)
+                }
 
                 Connections {
                     target: QJoysticks
@@ -165,7 +177,10 @@ ColumnLayout {
                 from: 0
                 enabled: false
                 width: (hats.width / hats.columns) - hats.spacing
-                onValueChanged: DS.setJoystickHat (jsId, index, value)
+                onValueChanged: {
+                    if (!simulation)
+                        DS.setJoystickHat (jsId, index, value)
+                }
 
                 Connections {
                     target: QJoysticks

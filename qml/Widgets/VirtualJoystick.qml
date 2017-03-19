@@ -31,7 +31,11 @@ import "../Globals.js" as Globals
 ColumnLayout {
     spacing: Globals.spacing
 
+    //
+    // Custom properties
+    //
     property var jsId: 0
+    property bool simulation: true
     property bool triggersEnabled: app.height > 620
 
     //
@@ -70,7 +74,10 @@ ColumnLayout {
                 flat: true
                 text: qsTr ("" + (index + 1))
                 width: (buttons.width / buttons.columns) - (buttons.spacing)
-                onPressedChanged: DS.setJoystickButton (jsId, index, pressed)
+                onPressedChanged: {
+                    if (!simulation)
+                        DS.setJoystickButton (jsId, index, pressed)
+                }
             }
         }
     }
@@ -191,8 +198,16 @@ ColumnLayout {
             anchors.rightMargin: app.width * 0.05
             width: Math.min (app.width * 0.38, 156)
             anchors.verticalCenter: parent.verticalCenter
-            onXValueChanged: DS.setJoystickAxis (jsId, 0, xValue)
-            onYValueChanged: DS.setJoystickAxis (jsId, 1, yValue)
+
+            onXValueChanged: {
+                if (!simulation)
+                    DS.setJoystickAxis (jsId, 0, xValue)
+            }
+
+            onYValueChanged: {
+                if (!simulation)
+                    DS.setJoystickAxis (jsId, 1, yValue)
+            }
         }
 
         Item {
@@ -210,8 +225,16 @@ ColumnLayout {
             anchors.leftMargin: app.width * 0.05
             width: Math.min (app.width * 0.38, 156)
             anchors.verticalCenter: parent.verticalCenter
-            onXValueChanged: DS.setJoystickAxis (jsId, 4, xValue)
-            onYValueChanged: DS.setJoystickAxis (jsId, 5, yValue)
+
+            onXValueChanged: {
+                if (!simulation)
+                    DS.setJoystickAxis (jsId, 4, xValue)
+            }
+
+            onYValueChanged: {
+                if (!simulation)
+                    DS.setJoystickAxis (jsId, 5, yValue)
+            }
         }
     }
 
@@ -238,7 +261,10 @@ ColumnLayout {
                 value = 0.5
         }
 
-        onValueChanged: DS.setJoystickAxis (jsId, 2, (value - 0.5) * 2)
+        onValueChanged: {
+            if (!simulation)
+                DS.setJoystickAxis (jsId, 2, (value - 0.5) * 2)
+        }
     }
 
     //
@@ -255,7 +281,10 @@ ColumnLayout {
                 value = 0.5
         }
 
-        onValueChanged: DS.setJoystickAxis (jsId, 3, (value - 0.5) * 2)
+        onValueChanged: {
+            if (!simulation)
+                DS.setJoystickAxis (jsId, 3, (value - 0.5) * 2)
+        }
     }
 
     //
