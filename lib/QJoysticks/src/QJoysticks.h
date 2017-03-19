@@ -110,7 +110,8 @@ private slots:
     void onAxisEvent (const QJoystickAxisEvent& event);
     void onButtonEvent (const QJoystickButtonEvent& event);
 
-private:    bool m_sortJoyticks;
+private:
+    bool m_sortJoyticks;
 
     QSettings* m_settings;
     SDL_Joysticks* m_sdlJoysticks;
