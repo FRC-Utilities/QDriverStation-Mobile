@@ -51,13 +51,7 @@ SDL_Joysticks::SDL_Joysticks (QObject* parent) : QObject (parent)
 {
     m_tracker = -1;
 
-#ifndef Q_OS_ANDROID
-    int error = SDL_Init (SDL_INIT_HAPTIC | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
-#else
-    int error = SDL_Init (SDL_INIT_EVERYTHING);
-#endif
-
-    if (error) {
+    if (SDL_Init (SDL_INIT_HAPTIC | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER)) {
         qDebug() << "Cannot initialize SDL:" << SDL_GetError();
         qApp->quit();
     }
@@ -78,7 +72,7 @@ SDL_Joysticks::SDL_Joysticks (QObject* parent) : QObject (parent)
         genericMappings.close();
     }
 
-    QTimer::singleShot (Qt::PreciseTimer, this, SLOT (update()));
+    QTimer::singleShot (100, Qt::PreciseTimer, this, &SDL_Joysticks::update);
 }
 
 SDL_Joysticks::~SDL_Joysticks()
@@ -145,7 +139,7 @@ void SDL_Joysticks::update()
         }
     }
 
-    QTimer::singleShot (10, Qt::PreciseTimer, this, SLOT (update()));
+    QTimer::singleShot (10, Qt::PreciseTimer, this, &SDL_Joysticks::update);
 }
 
 /**

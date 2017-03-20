@@ -50,25 +50,26 @@ linux:!android {
 }
 
 android {
-    LIBS += -ldl
-    LIBS += -llog
-    LIBS += -lGLESv2
-    LIBS += -landroid
-    LIBS += -lGLESv1_CM
+    QMAKE_CFLAGS += -DGL_GLEXT_PROTOTYPES
+    QMAKE_LFLAGS += -ldl -lGLESv1_CM -lGLESv2 -llog -landroid
     
     equals (ANDROID_TARGET_ARCH, x86_64) { 
-        LIBS += -L$$PWD/bin/android/x86/ -lSDL2
+        LIBS += $$PWD/bin/android/x86_64/libSDL2.so
+        ANDROID_EXTRA_LIBS += $$PWD/bin/android/x86_64/libSDL2.so
     }
 
     equals (ANDROID_TARGET_ARCH, mips64) { 
-        LIBS += -L$$PWD/bin/android/mips64/ -lSDL2
+        LIBS += $$PWD/bin/android/mips64/libSDL2.so
+        ANDROID_EXTRA_LIBS += $$PWD/bin/android/mips64/libSDL2.so
     }
 
     equals (ANDROID_TARGET_ARCH, arm64-v8a) { 
-        LIBS += -L$$PWD/bin/android/arm64-v8a/ -lSDL2
+        LIBS += $$PWD/bin/android/arm64-v8a/libSDL2.so
+        ANDROID_EXTRA_LIBS += $$PWD/bin/android/arm64-v8a/libSDL2.so
     }
 
     equals (ANDROID_TARGET_ARCH, armeabi-v7a) { 
-        LIBS += -L$$PWD/bin/android/armeabi-v7a/ -lSDL2
+        LIBS += $$PWD/bin/android/armeabi-v7a/libSDL2.so
+        ANDROID_EXTRA_LIBS += $$PWD/bin/android/armeabi-v7a/libSDL2.so
     }
 }

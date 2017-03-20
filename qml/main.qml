@@ -240,6 +240,7 @@ ApplicationWindow {
                             anchors.verticalCenter: parent.verticalCenter
 
                             ColorOverlay {
+                                cached: true
                                 source: parent
                                 color: model.color
                                 anchors.fill: parent
