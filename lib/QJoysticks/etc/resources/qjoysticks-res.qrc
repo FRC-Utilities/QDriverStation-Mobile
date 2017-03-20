@@ -4,6 +4,5 @@
         <file>SDL/GenericMappings/Linux.txt</file>
         <file>SDL/GenericMappings/OSX.txt</file>
         <file>SDL/GenericMappings/Windows.txt</file>
-        <file>SDL/GenericMappings/Android.txt</file>
     </qresource>
 </RCC>

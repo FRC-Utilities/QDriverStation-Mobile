@@ -1,5 +1,9 @@
 INCLUDEPATH += $$PWD/include
 
+!android {
+    DEFINES += SDL_SUPPORTED
+}
+
 win32* {
     DEFINES += SDL_WIN
     DEFINES += SDL_MAIN_HANDLED
@@ -47,29 +51,4 @@ macx* {
 
 linux:!android {
     LIBS += -lSDL2
-}
-
-android {
-    QMAKE_CFLAGS += -DGL_GLEXT_PROTOTYPES
-    QMAKE_LFLAGS += -ldl -lGLESv1_CM -lGLESv2 -llog -landroid
-    
-    equals (ANDROID_TARGET_ARCH, x86_64) { 
-        LIBS += $$PWD/bin/android/x86_64/libSDL2.so
-        ANDROID_EXTRA_LIBS += $$PWD/bin/android/x86_64/libSDL2.so
-    }
-
-    equals (ANDROID_TARGET_ARCH, mips64) { 
-        LIBS += $$PWD/bin/android/mips64/libSDL2.so
-        ANDROID_EXTRA_LIBS += $$PWD/bin/android/mips64/libSDL2.so
-    }
-
-    equals (ANDROID_TARGET_ARCH, arm64-v8a) { 
-        LIBS += $$PWD/bin/android/arm64-v8a/libSDL2.so
-        ANDROID_EXTRA_LIBS += $$PWD/bin/android/arm64-v8a/libSDL2.so
-    }
-
-    equals (ANDROID_TARGET_ARCH, armeabi-v7a) { 
-        LIBS += $$PWD/bin/android/armeabi-v7a/libSDL2.so
-        ANDROID_EXTRA_LIBS += $$PWD/bin/android/armeabi-v7a/libSDL2.so
-    }
 }
