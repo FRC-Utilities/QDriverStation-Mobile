@@ -45,8 +45,10 @@ static int running = 0;
  */
 static void* update_timer (void* ptr)
 {
-    if (!ptr)
+    if (!ptr) {
+        pthread_exit (NULL);
         return NULL;
+    }
 
     DS_Timer* timer = (DS_Timer*) ptr;
 
@@ -61,7 +63,7 @@ static void* update_timer (void* ptr)
         DS_Sleep (timer->precision);
     }
 
-    return NULL;
+    pthread_exit (NULL);
 }
 
 /**
@@ -69,7 +71,7 @@ static void* update_timer (void* ptr)
  * used by the library. We need to do this so that we can terminate each timer
  * thread once the module is closed.
  */
-void Timers_Init()
+void Timers_Init (void)
 {
     running = 1;
     DS_ArrayInit (&timers, 10);
@@ -78,7 +80,7 @@ void Timers_Init()
 /**
  * Breaks all the timer loops and stops every thread used by this module
  */
-void Timers_Close()
+void Timers_Close (void)
 {
     running = 0;
     DS_ArrayFree (&timers);

@@ -266,8 +266,7 @@ static void* run_event_loop()
         DS_Sleep (5);
     }
 
-    pthread_exit (0);
-    return NULL;
+    pthread_exit (NULL);
 }
 
 /**
@@ -348,7 +347,7 @@ void Protocols_Close()
 {
     running = 0;
     close_protocol();
-    DS_StopThread (event_thread);
+    DS_StopThread (&event_thread);
 }
 
 /**

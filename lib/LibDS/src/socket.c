@@ -28,14 +28,6 @@
 #include <bstraux.h>
 
 /**
- * Returns the given \a number as a string
- */
-static bstring itc (int number)
-{
-    return bformat ("%d", number);
-}
-
-/**
  * Copies the received data from the socket in its data buffer
  */
 static void read_socket (DS_Socket* ptr)
@@ -52,20 +44,22 @@ static void read_socket (DS_Socket* ptr)
         read = recv (ptr->info.sock_in, (char*) data->data, blength (data), 0);
 
     /* Read UDP socket */
-    if (ptr->type == DS_SOCKET_UDP)
-        read = udp_recvfrom (ptr->info.sock_in,
-                             (char*) data->data, blength (data),
-                             bstr2cstr (ptr->address, 0),
-                             bstr2cstr (ptr->info.in_service, 0), 0);
+    if (ptr->type == DS_SOCKET_UDP) {
+        char* addr = bstr2cstr (ptr->address, 0);
+
+        read = udp_recvfrom (ptr->info.sock_in, (char*) data->data, blength (data),
+                             addr, ptr->info.in_service, 0);
+
+        DS_FREE (addr);
+    }
 
     /* We received some data, copy it to socket's buffer */
     if (read > 0) {
-        DS_FREESTR (ptr->info.buffer);
-        ptr->info.buffer = DS_GetEmptyString (read);
+        ptr->info.buffer_size = read;
 
         int i;
         for (i = 0; i < read; ++i)
-            ptr->info.buffer->data [i] = data->data [i];
+            ptr->info.buffer [i] = data->data [i];
     }
 
     /* De-allocate temporary data */
@@ -116,8 +110,10 @@ static void server_loop (DS_Socket* ptr)
 static void* create_socket (void* data)
 {
     /* Data pointer is NULL */
-    if (!data)
+    if (!data) {
+        pthread_exit (NULL);
         return NULL;
+    }
 
     /* Cast raw pointer to socket */
     DS_Socket* ptr = (DS_Socket*) data;
@@ -128,29 +124,29 @@ static void* create_socket (void* data)
         ptr->address = DS_FallBackAddress;
     }
 
+    /* Ensure that buffer and service strings are set to 0 */
+    memset (ptr->info.buffer, 0, sizeof (ptr->info.buffer));
+    memset (ptr->info.in_service, 0, sizeof (ptr->info.in_service));
+    memset (ptr->info.out_service, 0, sizeof (ptr->info.out_service));
+
     /* Set service strings */
-    ptr->info.in_service = itc (ptr->in_port);
-    ptr->info.out_service = itc (ptr->out_port);
+    sprintf (ptr->info.in_service, "%d", ptr->in_port);
+    sprintf (ptr->info.out_service, "%d", ptr->out_port);
 
     /* Open TCP socket */
     if (ptr->type == DS_SOCKET_TCP) {
-        ptr->info.sock_in = create_server_tcp (
-                                bstr2cstr (ptr->info.in_service, 0),
-                                SOCKY_IPv4, 0);
+        char* addr = bstr2cstr (ptr->address, 0);
 
-        ptr->info.sock_out = create_client_tcp (
-                                 bstr2cstr (ptr->address, 0),
-                                 bstr2cstr (ptr->info.out_service, 0),
-                                 SOCKY_IPv4, 0);
+        ptr->info.sock_in = create_server_tcp (ptr->info.in_service, SOCKY_IPv4, 0);
+        ptr->info.sock_out = create_client_tcp (addr, ptr->info.out_service, SOCKY_IPv4, 0);
+
+        DS_FREE (addr);
     }
 
     /* Open UDP socket */
     else if (ptr->type == DS_SOCKET_UDP) {
-        ptr->info.sock_in = create_server_udp (
-                                bstr2cstr (ptr->info.in_service, 0),
-                                SOCKY_IPv4, 0);
-
         ptr->info.sock_out = create_client_udp (SOCKY_IPv4, 0);
+        ptr->info.sock_in = create_server_udp (ptr->info.in_service, SOCKY_IPv4, 0);
     }
 
     /* Update initialized states */
@@ -161,13 +157,13 @@ static void* create_socket (void* data)
     server_loop (ptr);
 
     /* Exit */
-    return NULL;
+    pthread_exit (NULL);
 }
 
 /**
  * Returns an empty socket for safe initialization
  */
-DS_Socket* DS_SocketEmpty()
+DS_Socket* DS_SocketEmpty (void)
 {
     DS_Socket* socket = calloc (1, sizeof (DS_Socket));
 
@@ -180,21 +176,26 @@ DS_Socket* DS_SocketEmpty()
     socket->type = DS_SOCKET_UDP;
 
     /* Fill socket info structure */
+    socket->info.thread = 0;
     socket->info.sock_in = 0;
     socket->info.sock_out = 0;
-    socket->info.buffer = NULL;
+    socket->info.buffer_size = 0;
     socket->info.server_init = 0;
     socket->info.client_init = 0;
-    socket->info.in_service = NULL;
-    socket->info.out_service = NULL;
 
+    /* Fill strings with 0 */
+    memset (socket->info.buffer, 0, sizeof (socket->info.buffer));
+    memset (socket->info.in_service, 0, sizeof (socket->info.in_service));
+    memset (socket->info.out_service, 0, sizeof (socket->info.out_service));
+
+    /* Return the socket data */
     return socket;
 }
 
 /**
  * Initializes the sockets module and its event system
  */
-void Sockets_Init()
+void Sockets_Init (void)
 {
     sockets_init (1);
 }
@@ -202,7 +203,7 @@ void Sockets_Init()
 /**
  * Stops the event loops and closes all socket structures
  */
-void Sockets_Close()
+void Sockets_Close (void)
 {
     sockets_exit();
 }
@@ -223,9 +224,12 @@ void DS_SocketOpen (DS_Socket* ptr)
     if (ptr->disabled)
         return;
 
+    /* Stop the current thread (if any) */
+    DS_StopThread (&ptr->info.thread);
+
     /* Initialize the socket in another thread */
-    pthread_t thread;
-    pthread_create (&thread, NULL, &create_socket, (void*) ptr);
+    ptr->info.thread = 0;
+    pthread_create (&ptr->info.thread, NULL, &create_socket, (void*) ptr);
 }
 
 /**
@@ -245,7 +249,7 @@ void DS_SocketClose (DS_Socket* ptr)
     ptr->info.client_init = 0;
 
     /* Close sockets */
-#ifdef __ANDROID__
+#ifdef __ANDROID
     socket_close_threaded (ptr->info.sock_in, NULL);
     socket_close_threaded (ptr->info.sock_out, NULL);
 #else
@@ -253,14 +257,19 @@ void DS_SocketClose (DS_Socket* ptr)
     socket_close (ptr->info.sock_out);
 #endif
 
-    /* Clear data buffers */
-    DS_FREESTR (ptr->info.buffer);
-    DS_FREESTR (ptr->info.in_service);
-    DS_FREESTR (ptr->info.out_service);
-
     /* Reset socket information structure */
     ptr->info.sock_in = -1;
     ptr->info.sock_out = -1;
+    ptr->info.buffer_size = 0;
+
+    /* Reset strings */
+    memset (ptr->info.buffer, 0, sizeof (ptr->info.buffer));
+    memset (ptr->info.in_service, 0, sizeof (ptr->info.in_service));
+    memset (ptr->info.out_service, 0, sizeof (ptr->info.out_service));
+
+    /* Stop the socket thread (if any) */
+    DS_StopThread (&ptr->info.thread);
+    ptr->info.thread = 0;
 }
 
 /**
@@ -279,9 +288,20 @@ bstring DS_SocketRead (DS_Socket* ptr)
         return NULL;
 
     /* Copy the current buffer and clear it */
-    if (blength (ptr->info.buffer) > 0) {
-        bstring buffer = bstrcpy (ptr->info.buffer);
-        DS_FREESTR (ptr->info.buffer);
+    if (ptr->info.buffer_size > 0) {
+        bstring buffer = DS_GetEmptyString (ptr->info.buffer_size);
+
+        /* Copy buffer to string */
+        int i;
+        for (i = 0; i < ptr->info.buffer_size; ++i) {
+            buffer->data [i] = ptr->info.buffer [i];
+            ptr->info.buffer [i] = 0;
+        }
+
+        /* Clear buffer info */
+        ptr->info.buffer_size = 0;
+
+        /* Return copied buffer */
         return buffer;
     }
 
@@ -307,21 +327,28 @@ int DS_SocketSend (DS_Socket* ptr, const bstring data)
     if ((ptr->info.client_init == 0) || (ptr->disabled == 1))
         return -1;
 
+    /* Get raw data */
+    int error = 0;
+    int len = blength (data);
+    char* bytes = bstr2cstr (data, 0);
+
     /* Send data using TCP */
     if (ptr->type == DS_SOCKET_TCP)
-        return send (ptr->info.sock_out,
-                     bstr2cstr (data, 0), blength (data), 0);
+        error = send (ptr->info.sock_out, bytes, len, 0);
 
     /* Send data using UDP */
     else if (ptr->type == DS_SOCKET_UDP) {
-        return udp_sendto (ptr->info.sock_out,
-                           bstr2cstr (data, 0), blength (data),
-                           bstr2cstr (ptr->address, 0),
-                           bstr2cstr (ptr->info.out_service, 0), 0);
+        char* addr = bstr2cstr (ptr->address, 0);
+        error = udp_sendto (ptr->info.sock_out, bytes, len,
+                            addr, ptr->info.out_service, 0);
+        DS_FREE (addr);
     }
 
-    /* Should not happen */
-    return -1;
+    /* Free temp. buffer */
+    DS_FREE (bytes);
+
+    /* Return error code */
+    return error;
 }
 
 /**
@@ -336,27 +363,9 @@ void DS_SocketChangeAddress (DS_Socket* ptr, const bstring address)
     if (!ptr || !address)
         return;
 
-    /* Copy address (and load fallback IP if address is invalid) */
-    bstring ip = bstrcpy (address);
-    if (DS_StringIsEmpty (ip)) {
-        DS_FREESTR (ip);
-        ip = DS_FallBackAddress;
-    }
-
-    /* Re-assign the address only if its different from input IP */
-    if (ptr->address) {
-        if (bstrcmp (ptr->address, ip) != 0) {
-            DS_FREESTR (ptr->address);
-            ptr->address = ip;
-        }
-
-        else
-            DS_FREESTR (ip);
-    }
-
-    /* Socket address is empty, replace it directly */
-    else
-        ptr->address = ip;
+    /* Re-assign the address */
+    DS_FREESTR (ptr->address);
+    ptr->address = bstrcpy (address);
 
     /* Re-open the socket */
     DS_SocketClose (ptr);

@@ -40,9 +40,9 @@ extern "C" {
 #include "DS_Joysticks.h"
 #include "DS_DefaultProtocols.h"
 
-extern void DS_Init();
-extern void DS_Close();
-extern int DS_Initialized();
+extern void DS_Init (void);
+extern void DS_Close (void);
+extern int DS_Initialized (void);
 
 #ifdef __cplusplus
 }
