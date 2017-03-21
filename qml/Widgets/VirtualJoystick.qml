@@ -62,7 +62,7 @@ ColumnLayout {
     //
     Grid {
         id: buttons
-        property var numButtons: 12
+        property var numButtons: 10
 
         spacing: 2
         Layout.fillWidth: true
@@ -112,19 +112,19 @@ ColumnLayout {
 
             /* Get finger positions */
             var ax = pointA.x
-            var ay = pointA.y
             var bx = pointB.x
-            var by = pointB.y
+            var ay = pointA.y * (thumbA.height / height)
+            var by = pointB.y * (thumbB.height / height)
 
             /* Get position of each thumb */
-            var posA = (thumbA.x - multitouch.x) + (thumbA.width / 2)
-            var posB = (thumbB.x - multitouch.x) + (thumbB.width / 2)
+            var XposA = (thumbA.x - multitouch.x) + (thumbA.width / 2)
+            var XposB = (thumbB.x - multitouch.x) + (thumbB.width / 2)
 
             /* Only one finger pressed, decide which thumb to move */
             if (aPressed !== bPressed) {
                 /* Get distances between the press and each thumb */
-                var distanceA = Math.abs (posA - ax)
-                var distanceB = Math.abs (posB - ax)
+                var distanceA = Math.abs (XposA - ax)
+                var distanceB = Math.abs (XposB - ax)
 
                 /* Press is closer to first thumb */
                 if (distanceA < distanceB) {
@@ -135,7 +135,7 @@ ColumnLayout {
                 /* Press is closer to second thumb */
                 else {
                     thumbA.release()
-                    thumbB.press (ax - posB + posA, ay)
+                    thumbB.press (ax - XposB + XposA, ay)
                 }
             }
 
@@ -144,13 +144,13 @@ ColumnLayout {
                 /* Finger A is closer to thumb A */
                 if (ax < bx) {
                     thumbA.press (ax, ay)
-                    thumbB.press (bx - posB + posA, by)
+                    thumbB.press (bx - XposB + XposA, by)
                 }
 
                 /* Finger B is closer to thumb A (press order matters) */
                 else {
                     thumbA.press (bx, by)
-                    thumbB.press (ax - posB + posA, ay)
+                    thumbB.press (ax - XposB + XposA, ay)
                 }
             }
 

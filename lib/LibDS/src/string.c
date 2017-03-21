@@ -28,27 +28,27 @@
 #include <stdlib.h>
 #include <string.h>
 
-int DS_StringLen (const DS_String* string)
+int DS_StrLen (const DS_String* string)
 {
     assert (string);
     return string->len;
 }
 
-int DS_StringIsEmpty (const DS_String* string)
+int DS_StrEmpty (const DS_String* string)
 {
     assert (string);
-    return DS_StringLen (string) == 0;
+    return DS_StrLen (string) == 0;
 }
 
-int DS_StringCompare (const DS_String* a, const DS_String* b)
+int DS_StrCompare (const DS_String* a, const DS_String* b)
 {
     /* Check arguments */
     assert (a);
     assert (b);
 
     /* Get length of both strings */
-    int lenA = DS_StringLen (a);
-    int lenB = DS_StringLen (b);
+    int lenA = DS_StrLen (a);
+    int lenB = DS_StrLen (b);
 
     /* Lengths are different */
     if (lenA != lenB) {
@@ -66,7 +66,7 @@ int DS_StringCompare (const DS_String* a, const DS_String* b)
     return cmp;
 }
 
-int DS_StringFreeBuffer (DS_String* string)
+int DS_StrRmBuf (DS_String* string)
 {
     /* Check parameters */
     assert (string);
@@ -82,28 +82,48 @@ int DS_StringFreeBuffer (DS_String* string)
     return DS_STR_FAILURE;
 }
 
-int DS_StringResize (DS_String* string, size_t size)
+int DS_StrResize (DS_String* string, size_t size)
 {
     /* Check arguments */
     assert (string);
     assert (string->buf);
 
-    /* Change size of the string */
-    string->len = size;
-    string->buf = (char*) realloc (string->buf, size);
+    /* Initialize variables */
+    int i;
+    int oldSize = (int) string->len;
 
-    /* Return SUCCESS if buffer is not NULL */
-    return (string->buf != NULL) ? DS_STR_SUCCESS : DS_STR_FAILURE;
+    /* Copy old buffer */
+    char* copy = calloc (oldSize, sizeof (char));
+    for (i = 0; i < oldSize; ++i)
+        copy [i] = string->buf [i];
+
+    /* Re-initialize the buffer */
+    free (string->buf);
+    string->buf = calloc (size, sizeof (char));
+
+    /* Copy old buffer into start of new buffer */
+    if (string->buf) {
+        string->len = size;
+        for (i = 0; i < oldSize; ++i)
+            string->buf [i] = copy [i];
+
+        free (copy);
+        return DS_STR_SUCCESS;
+    }
+
+    /* Could not initialize the buffer, restore data */
+    string->buf = copy;
+    return DS_STR_FAILURE;
 }
 
-int DS_StringAppend (DS_String* string, const char byte)
+int DS_StrAppend (DS_String* string, const uint8_t byte)
 {
     /* Check arguments */
     assert (string);
     assert (string->buf);
 
     /* Resize string and add extra character */
-    if (DS_StringResize (string, ++string->len)) {
+    if (DS_StrResize (string, string->len + 1)) {
         string->buf [string->len - 1] = byte;
         return DS_STR_SUCCESS;
     }
@@ -112,7 +132,7 @@ int DS_StringAppend (DS_String* string, const char byte)
     return DS_STR_FAILURE;
 }
 
-int DS_StringJoin (DS_String* string, const DS_String* last)
+int DS_StrJoin (DS_String* string, const DS_String* last)
 {
     /* Check arguments */
     assert (last);
@@ -121,12 +141,13 @@ int DS_StringJoin (DS_String* string, const DS_String* last)
     assert (string->buf);
 
     /* Get length of initial string */
+    int append_len = (int) last->len;
     int original_len = (int) string->len;
 
     /* Resize the string and append the other string */
-    if (DS_StringResize (string, original_len + (int) last->len)) {
+    if (DS_StrResize (string, original_len + append_len)) {
         int i;
-        for (i = 0; i < (int) string->len; ++i)
+        for (i = 0; i < append_len; ++i)
             string->buf [original_len + i] = last->buf [i];
 
         return DS_STR_SUCCESS;
@@ -136,7 +157,7 @@ int DS_StringJoin (DS_String* string, const DS_String* last)
     return DS_STR_FAILURE;
 }
 
-int DS_StringSetChar (DS_String* string, const int pos, const char byte)
+int DS_StrSetChar (DS_String* string, const int pos, const char byte)
 {
     /* Check arguments */
     assert (string);
@@ -152,7 +173,7 @@ int DS_StringSetChar (DS_String* string, const int pos, const char byte)
     return DS_STR_FAILURE;
 }
 
-char* DS_StringToCString (const DS_String* string)
+char* DS_StrToChar (const DS_String* string)
 {
     /* Check arguments */
     assert (string);
@@ -170,7 +191,7 @@ char* DS_StringToCString (const DS_String* string)
     return cstr;
 }
 
-char DS_StringCharAt (const DS_String* string, const int pos)
+char DS_StrCharAt (const DS_String* string, const int pos)
 {
     /* Check arguments */
     assert (string);
@@ -183,7 +204,24 @@ char DS_StringCharAt (const DS_String* string, const int pos)
     return '\0';
 }
 
-DS_String DS_StringEmpty (const int length)
+DS_String DS_StrNew (const char* string)
+{
+    /* Check arguments */
+    assert (string);
+
+    /* Create new empty string */
+    DS_String str = DS_StrNewLen (strlen (string));
+
+    /* Copy c-string data into buffer */
+    int i;
+    for (i = 0; i < (int) str.len; ++i)
+        str.buf [i] = string [i];
+
+    /* Return obtained string */
+    return str;
+}
+
+DS_String DS_StrNewLen (const int length)
 {
     DS_String string;
     string.len = abs (length);
@@ -191,13 +229,13 @@ DS_String DS_StringEmpty (const int length)
     return string;
 }
 
-DS_String DS_StringCopy (const DS_String* source)
+DS_String DS_StrCopy (const DS_String* source)
 {
     /* Check arguments */
     assert (source);
 
     /* Create new empty string */
-    DS_String string = DS_StringEmpty (source->len);
+    DS_String string = DS_StrNewLen (source->len);
 
     /* Copy each character to the new string */
     int i;
@@ -208,27 +246,10 @@ DS_String DS_StringCopy (const DS_String* source)
     return string;
 }
 
-DS_String DS_StringFormat (const char* format, ...)
+DS_String DS_StrFormat (const char* format, ...)
 {
     /* Check arguments */
     assert (format);
-    return DS_StringFromCString (format);
-}
-
-DS_String DS_StringFromCString (const char* string)
-{
-    /* Check arguments */
-    assert (string);
-
-    /* Create new empty string */
-    DS_String str = DS_StringEmpty (strlen (string));
-
-    /* Copy c-string data into buffer */
-    int i;
-    for (i = 0; i < (int) str.len; ++i)
-        str.buf [i] = string [i];
-
-    /* Return obtained string */
-    return str;
+    return DS_StrNew (format);
 }
 

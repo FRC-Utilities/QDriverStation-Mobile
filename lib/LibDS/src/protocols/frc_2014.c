@@ -212,13 +212,13 @@ static DS_String get_joystick_data (void)
     /* Initialize variables */
     int i = 0;
     int j = 0;
-    DS_String buf = DS_StringEmpty (0);
+    DS_String buf = DS_StrNewLen (0);
 
     /* Add data for every joystick */
     for (i = 0; i < max_joysticks; ++i) {
         /* Add axis data */
         for (j = 0; j < max_axes; ++j)
-            DS_StringAppend (&buf, DS_FloatToByte (DS_GetJoystickAxis (i, j), 1));
+            DS_StrAppend (&buf, DS_FloatToByte (DS_GetJoystickAxis (i, j), 1));
 
         /* Generate button data */
         uint16_t button_flags = 0;
@@ -226,8 +226,8 @@ static DS_String get_joystick_data (void)
             button_flags += DS_GetJoystickButton (i, j) ? pow (2, j) : 0;
 
         /* Add button data */
-        DS_StringAppend (&buf, (button_flags & 0xff00) >> 8);
-        DS_StringAppend (&buf, (button_flags & 0xff));
+        DS_StrAppend (&buf, (button_flags & 0xff00) >> 8);
+        DS_StrAppend (&buf, (button_flags & 0xff));
     }
 
     return buf;
@@ -239,7 +239,7 @@ static DS_String get_joystick_data (void)
  */
 static DS_String fms_address (void)
 {
-    return DS_StringFromCString (DS_FallBackAddress);
+    return DS_StrNew (DS_FallBackAddress);
 }
 
 /**
@@ -263,7 +263,7 @@ static DS_String robot_address (void)
  */
 static DS_String create_fms_packet (void)
 {
-    return  DS_StringEmpty (0);
+    return  DS_StrNewLen (0);
 }
 
 /**
@@ -271,7 +271,7 @@ static DS_String create_fms_packet (void)
  */
 static DS_String create_radio_packet (void)
 {
-    return  DS_StringEmpty (0);
+    return  DS_StrNewLen (0);
 }
 
 /**
@@ -289,47 +289,47 @@ static DS_String create_radio_packet (void)
 static DS_String create_robot_packet (void)
 {
     /* Create initial packet */
-    DS_String data = DS_StringEmpty (8);
+    DS_String data = DS_StrNewLen (8);
 
     /* Add packet index */
-    DS_StringSetChar (&data, 0, (sent_robot_packets & 0xff00) >> 8);
-    DS_StringSetChar (&data, 1, (sent_robot_packets & 0xff));
+    DS_StrSetChar (&data, 0, (sent_robot_packets & 0xff00) >> 8);
+    DS_StrSetChar (&data, 1, (sent_robot_packets & 0xff));
 
     /* Add control code and digital inputs */
-    DS_StringSetChar (&data, 2, get_control_code());
-    DS_StringSetChar (&data, 3,  get_digital_inputs());
+    DS_StrSetChar (&data, 2, get_control_code());
+    DS_StrSetChar (&data, 3,  get_digital_inputs());
 
     /* Add team number */
-    DS_StringSetChar (&data, 4, (CFG_GetTeamNumber() & 0xff00) >> 8);
-    DS_StringSetChar (&data, 5, (CFG_GetTeamNumber() & 0xff));
+    DS_StrSetChar (&data, 4, (CFG_GetTeamNumber() & 0xff00) >> 8);
+    DS_StrSetChar (&data, 5, (CFG_GetTeamNumber() & 0xff));
 
     /* Add alliance and position */
-    DS_StringSetChar (&data, 6, get_alliance_code());
-    DS_StringSetChar (&data, 7, get_position_code());
+    DS_StrSetChar (&data, 6, get_alliance_code());
+    DS_StrSetChar (&data, 7, get_position_code());
 
     /* Add joystick data */
     DS_String jsData = get_joystick_data();
-    DS_StringJoin (&data, &jsData);
+    DS_StrJoin (&data, &jsData);
 
     /* Now resize the datagram to 1024 bytes */
-    DS_StringResize (&data, 1024);
+    DS_StrResize (&data, 1024);
 
     /* Add FRC Driver Station version (same as the one sent by 16.0.1) */
-    DS_StringSetChar (&data, 72, (uint8_t) 0x30);
-    DS_StringSetChar (&data, 73, (uint8_t) 0x34);
-    DS_StringSetChar (&data, 74, (uint8_t) 0x30);
-    DS_StringSetChar (&data, 75, (uint8_t) 0x31);
-    DS_StringSetChar (&data, 76, (uint8_t) 0x31);
-    DS_StringSetChar (&data, 77, (uint8_t) 0x36);
-    DS_StringSetChar (&data, 78, (uint8_t) 0x30);
-    DS_StringSetChar (&data, 79, (uint8_t) 0x30);
+    DS_StrSetChar (&data, 72, (uint8_t) 0x30);
+    DS_StrSetChar (&data, 73, (uint8_t) 0x34);
+    DS_StrSetChar (&data, 74, (uint8_t) 0x30);
+    DS_StrSetChar (&data, 75, (uint8_t) 0x31);
+    DS_StrSetChar (&data, 76, (uint8_t) 0x31);
+    DS_StrSetChar (&data, 77, (uint8_t) 0x36);
+    DS_StrSetChar (&data, 78, (uint8_t) 0x30);
+    DS_StrSetChar (&data, 79, (uint8_t) 0x30);
 
     /* Add CRC32 checksum */
     uint32_t checksum = DS_CRC32 (data.buf, sizeof (data));
-    DS_StringSetChar (&data, 1020, (checksum & 0xff000000) >> 24);
-    DS_StringSetChar (&data, 1021, (checksum & 0xff0000) >> 16);
-    DS_StringSetChar (&data, 1022, (checksum & 0xff00) >> 8);
-    DS_StringSetChar (&data, 1023, (checksum & 0xff));
+    DS_StrSetChar (&data, 1020, (checksum & 0xff000000) >> 24);
+    DS_StrSetChar (&data, 1021, (checksum & 0xff0000) >> 16);
+    DS_StrSetChar (&data, 1022, (checksum & 0xff00) >> 8);
+    DS_StrSetChar (&data, 1023, (checksum & 0xff));
 
     /* Increase sent robot packets */
     ++sent_robot_packets;
@@ -348,13 +348,13 @@ static int read_fms_packet (const DS_String* data)
         return 0;
 
     /* Packet is too small */
-    if (DS_StringLen (data) < 5)
+    if (DS_StrLen (data) < 5)
         return 0;
 
     /* Read FMS packet */
-    uint8_t robotmod = (uint8_t) DS_StringCharAt (data, 2);
-    uint8_t alliance = (uint8_t) DS_StringCharAt (data, 3);
-    uint8_t position = (uint8_t) DS_StringCharAt (data, 4);
+    uint8_t robotmod = (uint8_t) DS_StrCharAt (data, 2);
+    uint8_t alliance = (uint8_t) DS_StrCharAt (data, 3);
+    uint8_t position = (uint8_t) DS_StrCharAt (data, 4);
 
     /* Switch to autonomous */
     if (robotmod & cFMSAutonomous)
@@ -395,19 +395,19 @@ int read_robot_packet (const DS_String* data)
         return 0;
 
     /* Packet is too small */
-    if (DS_StringLen (data) < 1024)
+    if (DS_StrLen (data) < 1024)
         return 0;
 
     /* Calculate voltage using the rule of three */
-    uint8_t upper = ((uint8_t) DS_StringCharAt (data, 1) * 12) / 0x12;
-    uint8_t lower = ((uint8_t) DS_StringCharAt (data, 2) * 12) / 0x12;
+    uint8_t upper = ((uint8_t) DS_StrCharAt (data, 1) * 12) / 0x12;
+    uint8_t lower = ((uint8_t) DS_StrCharAt (data, 2) * 12) / 0x12;
 
     /* Construct the voltage float */
     float voltage = ((float) upper) + ((float) lower / 0xff);
     CFG_SetRobotVoltage (voltage);
 
     /* Check if robot is e-stopped */
-    CFG_SetEmergencyStopped ((uint8_t) DS_StringCharAt (data, 0) == cEmergencyStopOn);
+    CFG_SetEmergencyStopped ((uint8_t) DS_StrCharAt (data, 0) == cEmergencyStopOn);
 
     /* Assume that robot code is present (issue #31 in QDriverStation) */
     CFG_SetRobotCode (1);
@@ -470,7 +470,7 @@ DS_Protocol* DS_GetProtocolFRC_2014 (void)
     DS_Protocol* protocol = (DS_Protocol*) malloc (sizeof (DS_Protocol));
 
     /* Set protocol name */
-    protocol->name = DS_StringFromCString ("FRC 2014 Communication Protocol");
+    protocol->name = DS_StrNew ("FRC 2014 Communication Protocol");
 
     /* Set address functions */
     protocol->fms_address = &fms_address;

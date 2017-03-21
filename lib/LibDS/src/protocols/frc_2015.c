@@ -276,7 +276,7 @@ static uint8_t get_joystick_size (const int joystick)
  */
 static DS_String get_timezone_data (void)
 {
-    DS_String data = DS_StringEmpty (14);
+    DS_String data = DS_StrNewLen (14);
 
     /* Get current time */
     time_t rt = 0;
@@ -301,29 +301,29 @@ static DS_String get_timezone_data (void)
     ms = (uint32_t) info.StandardDate.wMilliseconds;
 #else
     /* Timezone is stored directly in time_t structure */
-    DS_String tz = DS_StringFromCString (timeinfo->tm_zone);
+    DS_String tz = DS_StrNew (timeinfo->tm_zone);
 #endif
 
     /* Encode date/time in datagram */
-    DS_StringSetChar (&data, 0,  (uint8_t) 0x0b);
-    DS_StringSetChar (&data, 1,  (uint8_t) cTagDate);
-    DS_StringSetChar (&data, 2,  (uint8_t) (ms & 0xff000000) >> 24);
-    DS_StringSetChar (&data, 3,  (uint8_t) (ms & 0xff0000) >> 16);
-    DS_StringSetChar (&data, 4,  (uint8_t) (ms & 0xff00) >> 8);
-    DS_StringSetChar (&data, 5,  (uint8_t) (ms & 0xff));
-    DS_StringSetChar (&data, 6,  (uint8_t) timeinfo->tm_sec);
-    DS_StringSetChar (&data, 7,  (uint8_t) timeinfo->tm_min);
-    DS_StringSetChar (&data, 8,  (uint8_t) timeinfo->tm_hour);
-    DS_StringSetChar (&data, 9,  (uint8_t) timeinfo->tm_yday);
-    DS_StringSetChar (&data, 10, (uint8_t) timeinfo->tm_mon);
-    DS_StringSetChar (&data, 11, (uint8_t) timeinfo->tm_year);
+    DS_StrSetChar (&data, 0,  (uint8_t) 0x0b);
+    DS_StrSetChar (&data, 1,  (uint8_t) cTagDate);
+    DS_StrSetChar (&data, 2,  (uint8_t) (ms & 0xff000000) >> 24);
+    DS_StrSetChar (&data, 3,  (uint8_t) (ms & 0xff0000) >> 16);
+    DS_StrSetChar (&data, 4,  (uint8_t) (ms & 0xff00) >> 8);
+    DS_StrSetChar (&data, 5,  (uint8_t) (ms & 0xff));
+    DS_StrSetChar (&data, 6,  (uint8_t) timeinfo->tm_sec);
+    DS_StrSetChar (&data, 7,  (uint8_t) timeinfo->tm_min);
+    DS_StrSetChar (&data, 8,  (uint8_t) timeinfo->tm_hour);
+    DS_StrSetChar (&data, 9,  (uint8_t) timeinfo->tm_yday);
+    DS_StrSetChar (&data, 10, (uint8_t) timeinfo->tm_mon);
+    DS_StrSetChar (&data, 11, (uint8_t) timeinfo->tm_year);
 
     /* Add timezone length and tag */
-    DS_StringSetChar (&data, 12, DS_StringLen (&tz));
-    DS_StringSetChar (&data, 13, cTagTimezone);
+    DS_StrSetChar (&data, 12, DS_StrLen (&tz));
+    DS_StrSetChar (&data, 13, cTagTimezone);
 
     /* Add timezone string */
-    DS_StringJoin (&data, &tz);
+    DS_StrJoin (&data, &tz);
 
     /* Return the obtained data */
     return data;
@@ -339,17 +339,17 @@ static DS_String get_joystick_data (void)
     /* Initialize the variables */
     int i = 0;
     int j = 0;
-    DS_String data = DS_StringEmpty (0);
+    DS_String data = DS_StrNewLen (0);
 
     /* Generate data for each joystick */
     for (i = 0; i < DS_GetJoystickCount(); ++i) {
-        DS_StringAppend (&data, get_joystick_size (i));
-        DS_StringAppend (&data, cTagJoystick);
+        DS_StrAppend (&data, get_joystick_size (i));
+        DS_StrAppend (&data, cTagJoystick);
 
         /* Add axis data */
-        DS_StringAppend (&data, DS_GetJoystickNumAxes (i));
+        DS_StrAppend (&data, DS_GetJoystickNumAxes (i));
         for (j = 0; j < DS_GetJoystickNumAxes (i); ++j)
-            DS_StringAppend (&data, DS_FloatToByte (DS_GetJoystickAxis (i, j), 1));
+            DS_StrAppend (&data, DS_FloatToByte (DS_GetJoystickAxis (i, j), 1));
 
         /* Generate button data */
         uint16_t button_flags = 0;
@@ -357,15 +357,15 @@ static DS_String get_joystick_data (void)
             button_flags += DS_GetJoystickButton (i, j) ? (int) pow (2, j) : 0;
 
         /* Add button data */
-        DS_StringAppend (&data, DS_GetJoystickNumButtons (i));
-        DS_StringAppend (&data, (button_flags & 0xff00) >> 8);
-        DS_StringAppend (&data, (button_flags & 0xff));
+        DS_StrAppend (&data, DS_GetJoystickNumButtons (i));
+        DS_StrAppend (&data, (button_flags & 0xff00) >> 8);
+        DS_StrAppend (&data, (button_flags & 0xff));
 
         /* Add hat data */
-        DS_StringAppend (&data, DS_GetJoystickNumHats (i));
+        DS_StrAppend (&data, DS_GetJoystickNumHats (i));
         for (j = 0; j < DS_GetJoystickNumHats (i); ++j) {
-            DS_StringAppend (&data, (DS_GetJoystickHat (i, j) & 0xff00) >> 8);
-            DS_StringAppend (&data, (DS_GetJoystickHat (i, j) & 0xff));
+            DS_StrAppend (&data, (DS_GetJoystickHat (i, j) & 0xff00) >> 8);
+            DS_StrAppend (&data, (DS_GetJoystickHat (i, j) & 0xff));
         }
     }
 
@@ -383,23 +383,23 @@ static void read_extended (const DS_String* data, const int offset)
         return;
 
     /* Get header tag */
-    uint8_t tag = (uint8_t) DS_StringCharAt (data, offset + 1);
+    uint8_t tag = (uint8_t) DS_StrCharAt (data, offset + 1);
 
     /* Get CAN information */
     if (tag == cRTagCANInfo)
-        CFG_SetCANUtilization ((uint8_t) DS_StringCharAt (data, 10));
+        CFG_SetCANUtilization ((uint8_t) DS_StrCharAt (data, 10));
 
     /* Get CPU usage */
     else if (tag == cRTagCPUInfo)
-        CFG_SetRobotCPUUsage ((uint8_t) DS_StringCharAt (data, 3));
+        CFG_SetRobotCPUUsage ((uint8_t) DS_StrCharAt (data, 3));
 
     /* Get RAM usage */
     else if (tag == cRTagRAMInfo)
-        CFG_SetRobotRAMUsage ((uint8_t) DS_StringCharAt (data, 4));
+        CFG_SetRobotRAMUsage ((uint8_t) DS_StrCharAt (data, 4));
 
     /* Get disk usage */
     else if (tag == cRTagDiskInfo)
-        CFG_SetRobotDiskUsage ((uint8_t)  DS_StringCharAt (data, 4));
+        CFG_SetRobotDiskUsage ((uint8_t)  DS_StrCharAt (data, 4));
 }
 
 /**
@@ -440,7 +440,7 @@ static DS_Position get_position (const uint8_t byte)
  */
 static DS_String fms_address (void)
 {
-    return DS_StringFromCString (DS_FallBackAddress);
+    return DS_StrNew (DS_FallBackAddress);
 }
 
 /**
@@ -456,7 +456,7 @@ static DS_String radio_address (void)
  */
 static DS_String robot_address (void)
 {
-    return DS_StringFormat ("roboRIO-%d.local", CFG_GetTeamNumber());
+    return DS_StrFormat ("roboRIO-%d.local", CFG_GetTeamNumber());
 }
 
 /**
@@ -471,7 +471,7 @@ static DS_String robot_address (void)
 static DS_String create_fms_packet (void)
 {
     /* Create an 8-byte long packet */
-    DS_String data = DS_StringEmpty (8);
+    DS_String data = DS_StrNewLen (8);
 
     /* Get voltage bytes */
     uint8_t integer = 0;
@@ -479,20 +479,20 @@ static DS_String create_fms_packet (void)
     encode_voltage (CFG_GetRobotVoltage(), &integer, &decimal);
 
     /* Add FMS packet count */
-    DS_StringSetChar (&data, 0, (sent_fms_packets & 0xff00) >> 8);
-    DS_StringSetChar (&data, 1, (sent_fms_packets & 0xff));
+    DS_StrSetChar (&data, 0, (sent_fms_packets & 0xff00) >> 8);
+    DS_StrSetChar (&data, 1, (sent_fms_packets & 0xff));
 
     /* Add DS version and FMS control code */
-    DS_StringSetChar (&data, 2, cFMS_DS_Version);
-    DS_StringSetChar (&data, 3, fms_control_code());
+    DS_StrSetChar (&data, 2, cFMS_DS_Version);
+    DS_StrSetChar (&data, 3, fms_control_code());
 
     /* Add team number */
-    DS_StringSetChar (&data, 4, (CFG_GetTeamNumber() & 0xff00) >> 8);
-    DS_StringSetChar (&data, 5, (CFG_GetTeamNumber() & 0xff));
+    DS_StrSetChar (&data, 4, (CFG_GetTeamNumber() & 0xff00) >> 8);
+    DS_StrSetChar (&data, 5, (CFG_GetTeamNumber() & 0xff));
 
     /* Add robot voltage */
-    DS_StringSetChar (&data, 6, integer);
-    DS_StringSetChar (&data, 7, decimal);
+    DS_StrSetChar (&data, 6, integer);
+    DS_StrSetChar (&data, 7, decimal);
 
     /* Increase FMS packet counter */
     ++sent_fms_packets;
@@ -507,7 +507,7 @@ static DS_String create_fms_packet (void)
  */
 static DS_String create_radio_packet (void)
 {
-    return  DS_StringEmpty (0);
+    return  DS_StrNewLen (0);
 }
 
 /**
@@ -522,30 +522,30 @@ static DS_String create_radio_packet (void)
  */
 static DS_String create_robot_packet (void)
 {
-    DS_String data = DS_StringEmpty (6);
+    DS_String data = DS_StrNewLen (6);
 
     /* Add packet index */
-    DS_StringSetChar (&data, 0, (sent_robot_packets & 0xff00) >> 8);
-    DS_StringSetChar (&data, 1, (sent_robot_packets & 0xff));
+    DS_StrSetChar (&data, 0, (sent_robot_packets & 0xff00) >> 8);
+    DS_StrSetChar (&data, 1, (sent_robot_packets & 0xff));
 
     /* Add packet header */
-    DS_StringSetChar (&data, 2, cTagGeneral);
+    DS_StrSetChar (&data, 2, cTagGeneral);
 
     /* Add control code, request flags and team station */
-    DS_StringSetChar (&data, 3, get_control_code());
-    DS_StringSetChar (&data, 4, get_request_code());
-    DS_StringSetChar (&data, 5, get_station_code());
+    DS_StrSetChar (&data, 3, get_control_code());
+    DS_StrSetChar (&data, 4, get_request_code());
+    DS_StrSetChar (&data, 5, get_station_code());
 
     /* Add timezone data (if robot wants it) */
     if (send_time_data) {
         DS_String tz = get_timezone_data();
-        DS_StringJoin (&data, &tz);
+        DS_StrJoin (&data, &tz);
     }
 
     /* Add joystick data */
     else if (sent_robot_packets > 5) {
         DS_String js = get_joystick_data();
-        DS_StringJoin (&data, &js);
+        DS_StrJoin (&data, &js);
     }
 
     /* Increase robot packet counter */
@@ -569,12 +569,12 @@ static int read_fms_packet (const DS_String* data)
         return 0;
 
     /* Packet is too small */
-    if (DS_StringLen (data) < 22)
+    if (DS_StrLen (data) < 22)
         return 0;
 
     /* Read FMS packet */
-    uint8_t control = (uint8_t) DS_StringCharAt (data, 3);
-    uint8_t station = (uint8_t) DS_StringCharAt (data, 5);
+    uint8_t control = (uint8_t) DS_StrCharAt (data, 3);
+    uint8_t station = (uint8_t) DS_StrCharAt (data, 5);
 
     /* Change robot enabled state based on what FMS tells us to do*/
     CFG_SetRobotEnabled (control & cEnabled);
@@ -623,13 +623,13 @@ static int read_robot_packet (const DS_String* data)
         return 0;
 
     /* Packet is too small */
-    if (DS_StringLen (data) < 7)
+    if (DS_StrLen (data) < 7)
         return 0;
 
     /* Read robot packet */
-    uint8_t control = (uint8_t) DS_StringCharAt (data, 3);
-    uint8_t rstatus = (uint8_t) DS_StringCharAt (data, 4);
-    uint8_t request = (uint8_t) DS_StringCharAt (data, 7);
+    uint8_t control = (uint8_t) DS_StrCharAt (data, 3);
+    uint8_t rstatus = (uint8_t) DS_StrCharAt (data, 4);
+    uint8_t request = (uint8_t) DS_StrCharAt (data, 7);
 
     /* Update client information */
     CFG_SetRobotCode (rstatus & cRobotHasCode);
@@ -639,12 +639,12 @@ static int read_robot_packet (const DS_String* data)
     send_time_data = (request == cRequestTime);
 
     /* Calculate the voltage */
-    uint8_t upper = (uint8_t) DS_StringCharAt (data, 5);
-    uint8_t lower = (uint8_t) DS_StringCharAt (data, 6);
+    uint8_t upper = (uint8_t) DS_StrCharAt (data, 5);
+    uint8_t lower = (uint8_t) DS_StrCharAt (data, 6);
     CFG_SetRobotVoltage (decode_voltage (upper, lower));
 
     /* This is an extended packet, read its extra data */
-    if (DS_StringLen (data) > 9)
+    if (DS_StrLen (data) > 9)
         read_extended (data, 8);
 
     /* Packet read, feed the watchdog some meat */
@@ -703,7 +703,7 @@ DS_Protocol* DS_GetProtocolFRC_2015 (void)
     DS_Protocol* protocol = (DS_Protocol*) malloc (sizeof (DS_Protocol));
 
     /* Set protocol name */
-    protocol->name = DS_StringFromCString ("FRC 2015 Communication Protocol");
+    protocol->name = DS_StrNew ("FRC 2015 Communication Protocol");
 
     /* Set address functions */
     protocol->fms_address = &fms_address;

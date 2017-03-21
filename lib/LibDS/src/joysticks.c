@@ -27,14 +27,13 @@
 #include "DS_Joysticks.h"
 
 #include <stdio.h>
-#include <assert.h>
 
 /**
  * Represents a joystick and its information
  */
 typedef struct _joystick {
     int* hats;       /**< An array with the hat angles */
-    float* axes;     /**< An array with the axis values */
+    float* axes;    /**< An array with the axis values */
     int* buttons;    /**< An array with the button states */
     int num_axes;    /**< The number of axes of the joystick */
     int num_hats;    /**< The number of hats of the joystick */
@@ -63,7 +62,10 @@ static void register_event()
  */
 static DS_Joystick* get_joystick (int joystick)
 {
-    return (DS_Joystick*) array.data [joystick];
+    if ((int) array.used > joystick)
+        return (DS_Joystick*) array.data [joystick];
+
+    return NULL;
 }
 
 /**
@@ -104,6 +106,7 @@ int DS_GetJoystickCount (void)
 
 /**
  * Returns the number of hats that the given \a joystick has.
+ * If the joystick does not exist, this function will return \c 0
  */
 int DS_GetJoystickNumHats (int joystick)
 {
@@ -115,6 +118,7 @@ int DS_GetJoystickNumHats (int joystick)
 
 /**
  * Returns the number of axes that the given \a joystick has.
+ * If the joystick does not exist, this function will return \c 0
  */
 int DS_GetJoystickNumAxes (int joystick)
 {
@@ -126,6 +130,7 @@ int DS_GetJoystickNumAxes (int joystick)
 
 /**
  * Returns the number of buttons that the given \a joystick has.
+ * If the joystick does not exist, this function will return \c 0
  */
 int DS_GetJoystickNumButtons (int joystick)
 {
@@ -148,10 +153,8 @@ int DS_GetJoystickHat (int joystick, int hat)
     if (CFG_GetRobotEnabled() && joystick_exists (joystick)) {
         DS_Joystick* stick = get_joystick (joystick);
 
-        if (stick) {
-            if (stick->num_hats > hat)
-                return stick->hats [hat];
-        }
+        if (stick->num_hats > hat)
+            return stick->hats [hat];
     }
 
     return 0;
@@ -170,10 +173,8 @@ float DS_GetJoystickAxis (int joystick, int axis)
     if (CFG_GetRobotEnabled() && joystick_exists (joystick)) {
         DS_Joystick* stick = get_joystick (joystick);
 
-        if (stick) {
-            if (stick->num_axes > axis)
-                return stick->axes [axis];
-        }
+        if (stick->num_axes > axis)
+            return stick->axes [axis];
     }
 
     return 0;
@@ -192,10 +193,8 @@ int DS_GetJoystickButton (int joystick, int button)
     if (CFG_GetRobotEnabled() && joystick_exists (joystick)) {
         DS_Joystick* stick = get_joystick (joystick);
 
-        if (stick) {
-            if (stick->num_buttons > button)
-                return stick->buttons [button];
-        }
+        if (stick->num_buttons > button)
+            return stick->buttons [button];
     }
 
     return 0;
@@ -219,11 +218,14 @@ void DS_JoysticksReset (void)
  */
 void DS_JoysticksAdd (const int axes, const int hats, const int buttons)
 {
-    /* Do not let the user to register an empty joystick */
-    assert (axes >= 0 || hats >= 0 || buttons >= 0);
+    /* Joystick is empty */
+    if (axes <= 0 && hats <= 0 && buttons <= 0) {
+        fprintf (stderr, "DS_JoystickAdd: Cannot register empty joystick!\n");
+        return;
+    }
 
     /* Allocate memory for a new joystick */
-    DS_Joystick* joystick = (DS_Joystick*) calloc (1, sizeof (DS_Joystick));
+    DS_Joystick* joystick = (DS_Joystick*) malloc (sizeof (DS_Joystick));
 
     /* Set joystick properties */
     joystick->num_axes = axes;
@@ -231,9 +233,9 @@ void DS_JoysticksAdd (const int axes, const int hats, const int buttons)
     joystick->num_buttons = buttons;
 
     /* Set joystick value arrays */
-    joystick->hats = (int*) calloc (hats, sizeof (int));
-    joystick->axes = (float*) calloc (axes, sizeof (float));
-    joystick->buttons = (int*) calloc (buttons, sizeof (int));
+    joystick->hats = calloc (hats, sizeof (int));
+    joystick->axes = calloc (axes, sizeof (float));
+    joystick->buttons = calloc (buttons, sizeof (int));
 
     /* Register the new joystick in the joystick list */
     DS_ArrayInsert (&array, (void*) joystick);
@@ -247,9 +249,9 @@ void DS_JoysticksAdd (const int axes, const int hats, const int buttons)
  */
 void DS_SetJoystickHat (int joystick, int hat, int angle)
 {
-    DS_Joystick* stick = get_joystick (joystick);
+    if (joystick_exists (joystick)) {
+        DS_Joystick* stick = get_joystick (joystick);
 
-    if (stick) {
         if (stick->num_hats > hat)
             stick->hats [hat] = angle;
     }
@@ -260,9 +262,9 @@ void DS_SetJoystickHat (int joystick, int hat, int angle)
  */
 void DS_SetJoystickAxis (int joystick, int axis, float value)
 {
-    DS_Joystick* stick = get_joystick (joystick);
+    if (joystick_exists (joystick)) {
+        DS_Joystick* stick = get_joystick (joystick);
 
-    if (stick) {
         if (stick->num_axes > axis)
             stick->axes [axis] = value;
     }
@@ -273,9 +275,9 @@ void DS_SetJoystickAxis (int joystick, int axis, float value)
  */
 void DS_SetJoystickButton (int joystick, int button, int pressed)
 {
-    DS_Joystick* stick = get_joystick (joystick);
+    if (joystick_exists (joystick)) {
+        DS_Joystick* stick = get_joystick (joystick);
 
-    if (stick) {
         if (stick->num_buttons > button)
             stick->buttons [button] = (pressed > 0) ? 1 : 0;
     }

@@ -36,7 +36,7 @@
  */
 static DS_String robot_address (void)
 {
-    return DS_StringFormat ("roboRIO-%d-FRC.local", CFG_GetTeamNumber());
+    return DS_StrFormat ("roboRIO-%d-FRC.local", CFG_GetTeamNumber());
 }
 
 /**
@@ -51,7 +51,7 @@ extern DS_Protocol* DS_GetProtocolFRC_2016 (void)
 
     /* Set protocol name */
     DS_SmartFree ((void**) &protocol->name);
-    protocol->name = DS_StringFromCString ("FRC 2016 Communication Protocol");
+    protocol->name = DS_StrNew ("FRC 2016 Communication Protocol");
 
     return protocol;
 }

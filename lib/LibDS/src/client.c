@@ -43,10 +43,10 @@ static DS_String custom_robot_address;
  */
 void Client_Init (void)
 {
-    status_string = DS_StringFromCString ("Loading...");
-    custom_fms_address = DS_StringFromCString (DS_FallBackAddress);
-    custom_radio_address = DS_StringFromCString (DS_FallBackAddress);
-    custom_robot_address = DS_StringFromCString (DS_FallBackAddress);
+    status_string = DS_StrNew ("Loading...");
+    custom_fms_address = DS_StrNew (DS_FallBackAddress);
+    custom_radio_address = DS_StrNew (DS_FallBackAddress);
+    custom_robot_address = DS_StrNew (DS_FallBackAddress);
 }
 
 /**
@@ -54,10 +54,10 @@ void Client_Init (void)
  */
 void Client_Close (void)
 {
-    DS_StringFreeBuffer (&status_string);
-    DS_StringFreeBuffer (&custom_fms_address);
-    DS_StringFreeBuffer (&custom_radio_address);
-    DS_StringFreeBuffer (&custom_robot_address);
+    DS_StrRmBuf (&status_string);
+    DS_StrRmBuf (&custom_fms_address);
+    DS_StrRmBuf (&custom_radio_address);
+    DS_StrRmBuf (&custom_robot_address);
 }
 
 /**
@@ -67,7 +67,7 @@ void Client_Close (void)
  */
 char* DS_GetCustomFMSAddress (void)
 {
-    return DS_StringToCString (&custom_fms_address);
+    return DS_StrToChar (&custom_fms_address);
 }
 
 /**
@@ -77,7 +77,7 @@ char* DS_GetCustomFMSAddress (void)
  */
 char* DS_GetCustomRadioAddress (void)
 {
-    return DS_StringToCString (&custom_radio_address);
+    return DS_StrToChar (&custom_radio_address);
 }
 
 /**
@@ -87,7 +87,7 @@ char* DS_GetCustomRadioAddress (void)
  */
 char* DS_GetCustomRobotAddress (void)
 {
-    return DS_StringToCString (&custom_robot_address);
+    return DS_StrToChar (&custom_robot_address);
 }
 
 /**
@@ -99,7 +99,7 @@ char* DS_GetDefaultFMSAddress (void)
 {
     if (DS_CurrentProtocol()) {
         DS_String address = DS_CurrentProtocol()->fms_address();
-        return DS_StringToCString (&address);
+        return DS_StrToChar (&address);
     }
 
     else
@@ -115,7 +115,7 @@ char* DS_GetDefaultRadioAddress (void)
 {
     if (DS_CurrentProtocol()) {
         DS_String address = DS_CurrentProtocol()->radio_address();
-        return DS_StringToCString (&address);
+        return DS_StrToChar (&address);
     }
 
     else
@@ -131,7 +131,7 @@ char* DS_GetDefaultRobotAddress (void)
 {
     if (DS_CurrentProtocol()) {
         DS_String address = DS_CurrentProtocol()->robot_address();
-        return DS_StringToCString (&address);
+        return DS_StrToChar (&address);
     }
 
     else
@@ -146,7 +146,7 @@ char* DS_GetDefaultRobotAddress (void)
  */
 char* DS_GetAppliedFMSAddress (void)
 {
-    if (DS_StringIsEmpty (&custom_fms_address))
+    if (DS_StrEmpty (&custom_fms_address))
         return DS_GetDefaultFMSAddress();
     else
         return DS_GetCustomFMSAddress();
@@ -160,7 +160,7 @@ char* DS_GetAppliedFMSAddress (void)
  */
 char* DS_GetAppliedRadioAddress (void)
 {
-    if (DS_StringIsEmpty (&custom_radio_address))
+    if (DS_StrEmpty (&custom_radio_address))
         return DS_GetDefaultRadioAddress();
     else
         return DS_GetCustomRadioAddress();
@@ -174,7 +174,7 @@ char* DS_GetAppliedRadioAddress (void)
  */
 char* DS_GetAppliedRobotAddress (void)
 {
-    if (DS_StringIsEmpty (&custom_robot_address))
+    if (DS_StrEmpty (&custom_robot_address))
         return DS_GetDefaultRobotAddress();
     else
         return DS_GetCustomRobotAddress();
@@ -443,14 +443,14 @@ void DS_SetControlMode (const DS_ControlMode mode)
 void DS_SetCustomFMSAddress (const char* address)
 {
     if (strlen (address) > 0) {
-        DS_StringFreeBuffer (&custom_fms_address);
-        custom_fms_address = DS_StringFromCString (address);
+        DS_StrRmBuf (&custom_fms_address);
+        custom_fms_address = DS_StrNew (address);
         CFG_ReconfigureAddresses (RECONFIGURE_FMS);
     }
 
     else {
-        DS_StringFreeBuffer (&custom_fms_address);
-        custom_fms_address = DS_StringEmpty (0);
+        DS_StrRmBuf (&custom_fms_address);
+        custom_fms_address = DS_StrNewLen (0);
         CFG_ReconfigureAddresses (RECONFIGURE_FMS);
     }
 }
@@ -461,14 +461,14 @@ void DS_SetCustomFMSAddress (const char* address)
 void DS_SetCustomRadioAddress (const char* address)
 {
     if (strlen (address) > 0) {
-        DS_StringFreeBuffer (&custom_radio_address);
-        custom_radio_address = DS_StringFromCString (address);
+        DS_StrRmBuf (&custom_radio_address);
+        custom_radio_address = DS_StrNew (address);
         CFG_ReconfigureAddresses (RECONFIGURE_RADIO);
     }
 
     else {
-        DS_StringFreeBuffer (&custom_radio_address);
-        custom_radio_address = DS_StringEmpty (0);
+        DS_StrRmBuf (&custom_radio_address);
+        custom_radio_address = DS_StrNewLen (0);
         CFG_ReconfigureAddresses (RECONFIGURE_RADIO);
     }
 }
@@ -479,14 +479,14 @@ void DS_SetCustomRadioAddress (const char* address)
 void DS_SetCustomRobotAddress (const char* address)
 {
     if (strlen (address) > 0) {
-        DS_StringFreeBuffer (&custom_robot_address);
-        custom_robot_address = DS_StringFromCString (address);
+        DS_StrRmBuf (&custom_robot_address);
+        custom_robot_address = DS_StrNew (address);
         CFG_ReconfigureAddresses (RECONFIGURE_ROBOT);
     }
 
     else {
-        DS_StringFreeBuffer (&custom_robot_address);
-        custom_robot_address = DS_StringEmpty (0);
+        DS_StrRmBuf (&custom_robot_address);
+        custom_robot_address = DS_StrNewLen (0);
         CFG_ReconfigureAddresses (RECONFIGURE_ROBOT);
     }
 }
@@ -497,7 +497,7 @@ void DS_SetCustomRobotAddress (const char* address)
 void DS_SendNetConsoleMessage (const char* message)
 {
     if (DS_CurrentProtocol()) {
-        DS_String data = DS_StringFromCString (message);
+        DS_String data = DS_StrNew (message);
         DS_SocketSend (&DS_CurrentProtocol()->netconsole_socket, &data);
     }
 }

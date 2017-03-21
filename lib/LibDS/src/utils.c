@@ -125,5 +125,5 @@ DS_String DS_GetStaticIP (const int net, const int team, const int host)
 {
     int te = team / 100;
     int am = team - (te * 100);
-    return DS_StringFormat ("%d.%d.%d.%d", net, te, am, host);
+    return DS_StrFormat ("%d.%d.%d.%d", net, te, am, host);
 }

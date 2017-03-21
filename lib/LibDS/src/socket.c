@@ -271,16 +271,16 @@ DS_String DS_SocketRead (DS_Socket* ptr)
 
     /* Socket is disabled or uninitialized */
     if ((ptr->info.server_init == 0) || (ptr->disabled == 1))
-        return DS_StringEmpty (0);
+        return DS_StrNewLen (0);
 
     /* Copy the current buffer and clear it */
     if (ptr->info.buffer_size > 0) {
-        DS_String buffer = DS_StringEmpty (ptr->info.buffer_size);
+        DS_String buffer = DS_StrNewLen (ptr->info.buffer_size);
 
         /* Copy buffer to string */
         int i;
         for (i = 0; i < (int) ptr->info.buffer_size; ++i)
-            DS_StringSetChar (&buffer, i, ptr->info.buffer [i]);
+            DS_StrSetChar (&buffer, i, ptr->info.buffer [i]);
 
         /* Clear buffer info */
         memset (ptr->info.buffer, 0, ptr->info.buffer_size);
@@ -290,7 +290,7 @@ DS_String DS_SocketRead (DS_Socket* ptr)
         return buffer;
     }
 
-    return DS_StringEmpty (0);
+    return DS_StrNewLen (0);
 }
 
 
@@ -313,13 +313,13 @@ int DS_SocketSend (const DS_Socket* ptr, const DS_String* data)
         return -1;
 
     /* Data is empty */
-    if (DS_StringIsEmpty (data))
+    if (DS_StrEmpty (data))
         return -1;
 
     /* Get raw data */
     int error = 0;
-    int len = DS_StringLen (data);
-    char* bytes = DS_StringToCString (data);
+    int len = DS_StrLen (data);
+    char* bytes = DS_StrToChar (data);
 
     /* Send data using TCP */
     if (ptr->type == DS_SOCKET_TCP)

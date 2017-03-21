@@ -101,7 +101,7 @@ static void send_fms_data()
     ++sent_fms_packets;
     DS_String data = protocol->create_fms_packet();
     DS_SocketSend (&protocol->fms_socket, &data);
-    DS_StringFreeBuffer (&data);
+    DS_StrRmBuf (&data);
 }
 
 /**
@@ -113,7 +113,7 @@ static void send_radio_data()
     ++sent_radio_packets;
     DS_String data = protocol->create_radio_packet();
     DS_SocketSend (&protocol->radio_socket, &data);
-    DS_StringFreeBuffer (&data);
+    DS_StrRmBuf (&data);
 }
 
 /**
@@ -125,7 +125,7 @@ static void send_robot_data()
     ++sent_robot_packets;
     DS_String data = protocol->create_robot_packet();
     DS_SocketSend (&protocol->robot_socket, &data);
-    DS_StringFreeBuffer (&data);
+    DS_StrRmBuf (&data);
 }
 
 /**
@@ -162,10 +162,10 @@ static void send_data()
  */
 static void clear_recv_data()
 {
-    DS_StringFreeBuffer (&fms_data);
-    DS_StringFreeBuffer (&radio_data);
-    DS_StringFreeBuffer (&robot_data);
-    DS_StringFreeBuffer (&netcs_data);
+    DS_StrRmBuf (&fms_data);
+    DS_StrRmBuf (&radio_data);
+    DS_StrRmBuf (&robot_data);
+    DS_StrRmBuf (&netcs_data);
 }
 
 /**
@@ -210,7 +210,7 @@ static void recv_data()
 
     /* Add NetConsole message to event system */
     if (netcs_data.len > 0)
-        CFG_AddNetConsoleMessage (DS_StringToCString (&netcs_data));
+        CFG_AddNetConsoleMessage (DS_StrToChar (&netcs_data));
 
     /* Reset the data pointers */
     clear_recv_data();
@@ -333,7 +333,7 @@ static void close_protocol()
 
     /* Create notification string */
     char notification [512];
-    char* name = DS_StringToCString (&protocol->name);
+    char* name = DS_StrToChar (&protocol->name);
     sprintf (notification, "Closed %s", name);
 
     /* Send notification string */
@@ -397,7 +397,7 @@ void DS_ConfigureProtocol (DS_Protocol* ptr)
 
     /* Create notification string */
     char notification [512];
-    char* name = DS_StringToCString (&ptr->name);
+    char* name = DS_StrToChar (&ptr->name);
     sprintf (notification, "Configured %s", name);
 
     /* Send notification string */
