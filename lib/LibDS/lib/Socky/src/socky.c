@@ -97,7 +97,7 @@ static int get_family (int flag)
         return AF_UNSPEC;
         break;
     default:
-        return AF_UNSPEC;
+        return -1;
         break;
     }
 }
@@ -120,7 +120,7 @@ static int get_socktype (int flag)
         return SOCK_DGRAM;
         break;
     default:
-        return SOCK_DGRAM;
+        return -1;
         break;
     }
 }

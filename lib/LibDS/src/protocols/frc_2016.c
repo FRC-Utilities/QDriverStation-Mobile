@@ -34,9 +34,9 @@
  * the only (DS/Comms) difference is that the robot address is found at
  * roboRIO-TEAM-FRC.local (instead of roboRIO-TEAM.local).
  */
-static bstring robot_address (void)
+static DS_String robot_address (void)
 {
-    return bformat ("roboRIO-%d-FRC.local", CFG_GetTeamNumber());
+    return DS_StringFormat ("roboRIO-%d-FRC.local", CFG_GetTeamNumber());
 }
 
 /**
@@ -50,8 +50,8 @@ extern DS_Protocol* DS_GetProtocolFRC_2016 (void)
     protocol->robot_address = &robot_address;
 
     /* Set protocol name */
-    DS_FREESTR (protocol->name);
-    protocol->name = bfromcstr ("FRC 2016 Communication Protocol");
+    DS_SmartFree ((void**) &protocol->name);
+    protocol->name = DS_StringFromCString ("FRC 2016 Communication Protocol");
 
     return protocol;
 }

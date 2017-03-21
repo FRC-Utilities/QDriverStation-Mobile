@@ -21,35 +21,55 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _LIB_DS_UTILS_H
-#define _LIB_DS_UTILS_H
+#ifndef _LIB_DS_STRING_H
+#define _LIB_DS_STRING_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <stdio.h>
+#define DS_STR_FAILURE 0
+#define DS_STR_SUCCESS 1
+
 #include <stdlib.h>
-#include <stdint.h>
-#include <pthread.h>
 
-#include "DS_String.h"
+/**
+ * Represents a string and its length
+ */
+typedef struct {
+    char* buf;  /**< String data buffer */
+    size_t len; /**< Length of the string */
+} DS_String;
 
 /*
- * You may find these useful
+ * Information functions
  */
-#define DS_Max(a,b) ((a) > (b) ? a : b)
-#define DS_Min(a,b) ((a) < (b) ? a : b)
-#define DS_FallBackAddress "0.0.0.0"
+extern int DS_StringLen (const DS_String* string);
+extern int DS_StringIsEmpty (const DS_String* string);
+extern int DS_StringCompare (const DS_String* a, const DS_String* b);
 
 /*
- * Misc functions
+ * String operations functions
  */
-extern void DS_SmartFree (void** data);
-extern int DS_StopThread (pthread_t* thread);
-extern uint8_t DS_FloatToByte (float val, float max);
-extern uint32_t DS_CRC32 (const void* buf, size_t size);
-extern DS_String DS_GetStaticIP (const int net, const int team, const int host);
+extern int DS_StringFreeBuffer (DS_String* string);
+extern int DS_StringResize (DS_String* string, size_t size);
+extern int DS_StringAppend (DS_String* string, const char byte);
+extern int DS_StringJoin (DS_String* string, const DS_String* last);
+extern int DS_StringSetChar (DS_String* string, const int pos, const char byte);
+
+/*
+ * DS_String to native string functions
+ */
+extern char* DS_StringToCString (const DS_String* string);
+extern char DS_StringCharAt (const DS_String* string, const int pos);
+
+/*
+ * String creation functions
+ */
+extern DS_String DS_StringEmpty (const int length);
+extern DS_String DS_StringCopy (const DS_String* source);
+extern DS_String DS_StringFormat (const char* format, ...);
+extern DS_String DS_StringFromCString (const char* string);
 
 #ifdef __cplusplus
 }
