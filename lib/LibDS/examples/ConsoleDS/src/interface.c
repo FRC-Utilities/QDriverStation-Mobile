@@ -71,7 +71,7 @@ static void set_checked (DS_String* label, int checked)
 {
     if (label) {
         DS_StrRmBuf (label);
-        *label = DS_StrNew (checked ? "[*]" : "[]");
+        *label = DS_StrNew (checked ? "[*]" : "[ ]");
     }
 }
 
