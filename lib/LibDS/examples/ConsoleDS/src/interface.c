@@ -70,8 +70,8 @@ static DS_String robot_check_str;
 static void set_checked (DS_String* label, int checked)
 {
     if (label) {
-        DS_StringFreeBuffer (label);
-        *label = DS_StringFromCString (checked ? "[*]" : "[]");
+        DS_StrRmBuf (label);
+        *label = DS_StrNew (checked ? "[*]" : "[]");
     }
 }
 
@@ -82,8 +82,8 @@ static void set_checked (DS_String* label, int checked)
 static void update_label (DS_String* string)
 {
     if (!DS_GetRobotCommunications() && string) {
-        DS_StringFreeBuffer (string);
-        *string = DS_StringFromCString (INVALID);
+        DS_StrRmBuf (string);
+        *string = DS_StrNew (INVALID);
     }
 }
 
@@ -96,14 +96,14 @@ static void init_strings (void)
     set_checked (&rcode_check_str, 0);
     set_checked (&stick_check_str, 0);
 
-    can_str = DS_StringFromCString (INVALID);
-    cpu_str = DS_StringFromCString (INVALID);
-    ram_str = DS_StringFromCString (INVALID);
-    disk_str = DS_StringFromCString (INVALID);
-    robot_ip = DS_StringFromCString (INVALID);
-    voltage_str = DS_StringFromCString (INVALID);
-    rstatus_str = DS_StringFromCString (INVALID);
-    console_str = DS_StringFromCString ("[INFO] Welcome to the ConsoleDS!");
+    can_str = DS_StrNew (INVALID);
+    cpu_str = DS_StrNew (INVALID);
+    ram_str = DS_StrNew (INVALID);
+    disk_str = DS_StrNew (INVALID);
+    robot_ip = DS_StrNew (INVALID);
+    voltage_str = DS_StrNew (INVALID);
+    rstatus_str = DS_StrNew (INVALID);
+    console_str = DS_StrNew ("[INFO] Welcome to the ConsoleDS!");
 }
 
 /**
@@ -146,19 +146,19 @@ static void draw_windows (void)
     wborder (bottom_window, 0, 0, 0, 0, 0, 0, 0, 0);
 
     /* Add top window elements */
-    mvwaddstr (console_win,  1, 2, DS_StringToCString (&console_str));
-    mvwaddstr (robotip_win,  1, 2, DS_StringToCString (&robot_ip));
-    mvwaddstr (robot_status, 1, 2, DS_StringToCString (&rstatus_str));
+    mvwaddstr (console_win,  1, 2, DS_StrToChar (&console_str));
+    mvwaddstr (robotip_win,  1, 2, DS_StrToChar (&robot_ip));
+    mvwaddstr (robot_status, 1, 2, DS_StrToChar (&rstatus_str));
 
     /* Add voltage elements */
     mvwaddstr (voltage_win,  1,  2, "Voltage:");
-    mvwaddstr (voltage_win,  1, 12, DS_StringToCString (&voltage_str));
+    mvwaddstr (voltage_win,  1, 12, DS_StrToChar (&voltage_str));
 
     /* Add status panel elements */
     mvwaddstr (status_info, 1, 2, "STATUS:");
-    mvwaddstr (status_info, 3, 2, DS_StringToCString (&robot_check_str));
-    mvwaddstr (status_info, 4, 2, DS_StringToCString (&rcode_check_str));
-    mvwaddstr (status_info, 5, 2, DS_StringToCString (&stick_check_str));
+    mvwaddstr (status_info, 3, 2, DS_StrToChar (&robot_check_str));
+    mvwaddstr (status_info, 4, 2, DS_StrToChar (&rcode_check_str));
+    mvwaddstr (status_info, 5, 2, DS_StrToChar (&stick_check_str));
     mvwaddstr (status_info, 3, 6, "Robot Comms");
     mvwaddstr (status_info, 4, 6, "Robot Code");
     mvwaddstr (status_info, 5, 6, "Joysticks");
@@ -169,10 +169,10 @@ static void draw_windows (void)
     mvwaddstr (status_info, 10, 2, "CPU:");
     mvwaddstr (status_info, 11, 2, "RAM:");
     mvwaddstr (status_info, 12, 2, "Disk:");
-    mvwaddstr (status_info,  9, 8, DS_StringToCString (&can_str));
-    mvwaddstr (status_info, 10, 8, DS_StringToCString (&cpu_str));
-    mvwaddstr (status_info, 11, 8, DS_StringToCString (&ram_str));
-    mvwaddstr (status_info, 12, 8, DS_StringToCString (&disk_str));
+    mvwaddstr (status_info,  9, 8, DS_StrToChar (&can_str));
+    mvwaddstr (status_info, 10, 8, DS_StrToChar (&cpu_str));
+    mvwaddstr (status_info, 11, 8, DS_StrToChar (&ram_str));
+    mvwaddstr (status_info, 12, 8, DS_StrToChar (&disk_str));
 
     /* Add bottom bar labels */
     mvwaddstr (bottom_window, 1, 2,  "Quit (q)");
@@ -200,11 +200,16 @@ static void refresh_windows (void)
  */
 void init_interface (void)
 {
+    int exit_code = 0;
+
 #if defined __WIN32
-    (void) system ("CLS");
+    exit_code = system ("CLS");
 #else
-    (void) system ("clear");
+    exit_code = system ("clear");
 #endif
+
+    if (exit_code != 0)
+        clear();
 
     init_strings();
     window = initscr();
@@ -253,8 +258,8 @@ void update_interface (void)
  */
 void update_status_label (void)
 {
-    DS_StringFreeBuffer (&rstatus_str);
-    rstatus_str = DS_StringFromCString (DS_GetStatusString());
+    DS_StrRmBuf (&rstatus_str);
+    rstatus_str = DS_StrNew (DS_GetStatusString());
 }
 
 /**
@@ -262,8 +267,8 @@ void update_status_label (void)
  */
 void set_can (const int can)
 {
-    DS_StringFreeBuffer (&can_str);
-    can_str = DS_StringFormat ("%d %%", can);
+    DS_StrRmBuf (&can_str);
+    can_str = DS_StrFormat ("%d %%", can);
     update_label (&can_str);
 }
 
@@ -272,8 +277,8 @@ void set_can (const int can)
  */
 void set_cpu (const int cpu)
 {
-    DS_StringFreeBuffer (&cpu_str);
-    cpu_str = DS_StringFormat ("%d %%", cpu);
+    DS_StrRmBuf (&cpu_str);
+    cpu_str = DS_StrFormat ("%d %%", cpu);
     update_label (&cpu_str);
 }
 
@@ -282,8 +287,8 @@ void set_cpu (const int cpu)
  */
 void set_ram (const int ram)
 {
-    DS_StringFreeBuffer (&ram_str);
-    ram_str = DS_StringFormat ("%d %%", ram);
+    DS_StrRmBuf (&ram_str);
+    ram_str = DS_StrFormat ("%d %%", ram);
     update_label (&ram_str);
 }
 
@@ -292,8 +297,8 @@ void set_ram (const int ram)
  */
 void set_disk (const int disk)
 {
-    DS_StringFreeBuffer (&disk_str);
-    disk_str = DS_StringFormat ("%d %%", disk);
+    DS_StrRmBuf (&disk_str);
+    disk_str = DS_StrFormat ("%d %%", disk);
     update_label (&disk_str);
 }
 
@@ -310,8 +315,8 @@ void set_robot_code (const int code)
  */
 void set_robot_comms (const int comms)
 {
-    DS_StringFreeBuffer (&robot_ip);
-    robot_ip = DS_StringFromCString (DS_GetAppliedRobotAddress());
+    DS_StrRmBuf (&robot_ip);
+    robot_ip = DS_StrNew (DS_GetAppliedRobotAddress());
     set_checked (&robot_check_str, comms);
 }
 
@@ -320,8 +325,8 @@ void set_robot_comms (const int comms)
  */
 void set_voltage (const double voltage)
 {
-    DS_StringFreeBuffer (&voltage_str);
-    voltage_str = DS_StringFormat ("%.2f V", voltage);
+    DS_StrRmBuf (&voltage_str);
+    voltage_str = DS_StrFormat ("%.2f V", voltage);
     update_label (&voltage_str);
 }
 
