@@ -485,6 +485,14 @@ int create_server_tcp (const char* port, const int family, const int flags)
  */
 int socket_close (const int sfd)
 {
+    /* The socket FD is not valid */
+    if (!valid_sfd (sfd))
+        return -1;
+
+    /* Disable IO operations */
+    shutdown (sfd, SOCKY_READ | SOCKY_WRITE);
+
+    /* Close the socket */
 #if defined _WIN32
     return closesocket (sfd);
 #else
