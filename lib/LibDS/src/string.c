@@ -245,13 +245,15 @@ char* DS_StrToChar (const DS_String* string)
     assert (string->buf);
 
     /* Initialize the c-string */
-    char* cstr = (char*) calloc (string->len, sizeof (char));
+    char* cstr = (char*) calloc (string->len + 1, sizeof (char));
 
     /* Copy buffer data into c-string */
     int i;
     for (i = 0; i < (int) string->len; ++i)
         cstr [i] = string->buf [i];
 
+    /* Add null terminator */
+    cstr [string->len] = '\0';
 
     /* Return obtained string */
     return cstr;

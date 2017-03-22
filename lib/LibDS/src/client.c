@@ -373,7 +373,7 @@ void DS_RebootRobot (void)
 {
     if (DS_CurrentProtocol()) {
         DS_CurrentProtocol()->reboot_robot();
-        CFG_AddNetConsoleMessage ("** LibDS: Rebooting robot...");
+        CFG_AddNotification ("Rebooting robot...");
     }
 }
 
@@ -384,7 +384,7 @@ void DS_RestartRobotCode (void)
 {
     if (DS_CurrentProtocol()) {
         DS_CurrentProtocol()->restart_robot_code();
-        CFG_AddNetConsoleMessage ("** LibDS: Restarting robot code...");
+        CFG_AddNotification ("Restarting robot code...");
     }
 }
 

@@ -126,30 +126,30 @@ static int get_socktype (int flag)
 static int set_socket_options (int sfd)
 {
     if (valid_sfd (sfd)) {
-#if defined _WIN32
-        char val = 1;
+        /* Initialize variables */
+        int err = 1;
+        int val = 1;
 
-        /* Set the SO_REUSEADDR option */
-        int err = setsockopt (sfd,
+        /* Set options according to each platform */
+        {
+#if defined _WIN32
+            err = setsockopt (sfd,
                               SOL_SOCKET,
                               SO_REUSEADDR,
                               &val, sizeof (val));
 #else
-        int err = 1;
-        int val = 1;
-
-        /* Set the SO_REUSEPORT option */
-        err *= setsockopt (sfd,
-                           SOL_SOCKET,
-                           SO_REUSEPORT,
-                           &val, sizeof (val));
-
-        /* Set the SO_REUSEADDR option */
-        err *= setsockopt (sfd,
-                           SOL_SOCKET,
-                           SO_REUSEADDR,
-                           &val, sizeof (val));
+#ifndef __ANDROID__
+            err *= setsockopt (sfd,
+                               SOL_SOCKET,
+                               SO_REUSEPORT,
+                               &val, sizeof (val));
 #endif
+            err *= setsockopt (sfd,
+                               SOL_SOCKET,
+                               SO_REUSEADDR,
+                               &val, sizeof (val));
+#endif
+        }
 
         /* Setting the options failed */
         if (err != 0) {
@@ -219,7 +219,6 @@ static int create_server (const char* port, const int family,
     if (info == NULL) {
         error (sfd, "cannot bind to any address!", GET_ERR);
         socket_close (sfd);
-        freeaddrinfo (info);
         return -1;
     }
 
