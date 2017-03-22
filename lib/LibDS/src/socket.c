@@ -236,9 +236,9 @@ void DS_SocketClose (DS_Socket* ptr)
     ptr->info.client_init = 0;
 
     /* Close sockets */
-#ifndef __ANDROID
-    socket_close_threaded (ptr->info.sock_in, NULL);
-    socket_close_threaded (ptr->info.sock_out, NULL);
+#ifdef __ANDROID__
+    socket_close_threaded (ptr->info.sock_in);
+    socket_close_threaded (ptr->info.sock_out);
 #else
     socket_close (ptr->info.sock_in);
     socket_close (ptr->info.sock_out);
@@ -317,25 +317,25 @@ int DS_SocketSend (const DS_Socket* ptr, const DS_String* data)
         return -1;
 
     /* Get raw data */
-    int error = 0;
+    int bytes_written = 0;
     int len = DS_StrLen (data);
     char* bytes = DS_StrToChar (data);
 
     /* Send data using TCP */
     if (ptr->type == DS_SOCKET_TCP)
-        error = send (ptr->info.sock_out, bytes, len, 0);
+        bytes_written = send (ptr->info.sock_out, bytes, len, 0);
 
     /* Send data using UDP */
     else if (ptr->type == DS_SOCKET_UDP) {
-        error = udp_sendto (ptr->info.sock_out, bytes, len,
-                            ptr->address, ptr->info.out_service, 0);
+        bytes_written = udp_sendto (ptr->info.sock_out, bytes, len,
+                                    ptr->address, ptr->info.out_service, 0);
     }
 
     /* Free temp. buffer */
     DS_SmartFree ((void**) &bytes);
 
     /* Return error code */
-    return error;
+    return bytes_written;
 }
 
 /**

@@ -44,7 +44,7 @@ ApplicationWindow {
     //
     Component.onCompleted: {
         DS.start()
-        //showMaximized()
+        showMaximized()
     }
 
     //

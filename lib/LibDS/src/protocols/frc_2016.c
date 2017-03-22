@@ -50,7 +50,7 @@ extern DS_Protocol* DS_GetProtocolFRC_2016 (void)
     protocol->robot_address = &robot_address;
 
     /* Set protocol name */
-    DS_SmartFree ((void**) &protocol->name);
+    DS_StrRmBuf (&protocol->name);
     protocol->name = DS_StrNew ("FRC 2016 Communication Protocol");
 
     return protocol;

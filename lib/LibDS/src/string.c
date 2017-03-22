@@ -23,23 +23,38 @@
 
 #include "DS_String.h"
 
+#include <stdio.h>
 #include <assert.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Returns the length of the given \a string
+ * \warning The program will quit if \a string is \c NULL
+ */
 int DS_StrLen (const DS_String* string)
 {
     assert (string);
     return string->len;
 }
 
+/**
+ * Returns a non-zero vaule if the given \a string is empty
+ * \warning The program will quit if \a string is \c NULL
+ */
 int DS_StrEmpty (const DS_String* string)
 {
     assert (string);
     return DS_StrLen (string) == 0;
 }
 
+/**
+ * @brief DS_StrCompare
+ * @param a
+ * @param b
+ * @return
+ */
 int DS_StrCompare (const DS_String* a, const DS_String* b)
 {
     /* Check arguments */
@@ -66,6 +81,13 @@ int DS_StrCompare (const DS_String* a, const DS_String* b)
     return cmp;
 }
 
+/**
+ * Deletes the data buffer of the given \a string.
+ * If the data buffer is already freed, then this function
+ * shall have no effect.
+ *
+ * \warning The program will quit if \a string is \c NULL
+ */
 int DS_StrRmBuf (DS_String* string)
 {
     /* Check parameters */
@@ -73,6 +95,7 @@ int DS_StrRmBuf (DS_String* string)
 
     /* Delete the buffer */
     if (string->buf != NULL) {
+        string->len = 0;
         free (string->buf);
         string->buf = NULL;
         return DS_STR_SUCCESS;
@@ -82,6 +105,15 @@ int DS_StrRmBuf (DS_String* string)
     return DS_STR_FAILURE;
 }
 
+/**
+ * Resizes the given \a string to the given \a size
+ *
+ * \param string the original string structure
+ * \param size the new size to apply to the string
+ *
+ * \warning The program will quit if \a string is \c NULL
+ * \warning The program will quit if buffer of the \a string is \c NULL
+ */
 int DS_StrResize (DS_String* string, size_t size)
 {
     /* Check arguments */
@@ -99,11 +131,11 @@ int DS_StrResize (DS_String* string, size_t size)
 
     /* Re-initialize the buffer */
     free (string->buf);
-    string->buf = calloc (size, sizeof (char));
+    string->buf = calloc (abs (size), sizeof (char));
 
     /* Copy old buffer into start of new buffer */
     if (string->buf) {
-        string->len = size;
+        string->len = abs (size);
         for (i = 0; i < oldSize; ++i)
             string->buf [i] = copy [i];
 
@@ -116,6 +148,15 @@ int DS_StrResize (DS_String* string, size_t size)
     return DS_STR_FAILURE;
 }
 
+/**
+ * Appends the given \a byte to the end of the given \a string
+ *
+ * \param string the original string
+ * \param byte the value to append at the end of the string
+ *
+ * \warning The program will quit if \a string is \c NULL
+ * \warning The program will quit if buffer of the \a string is \c NULL
+ */
 int DS_StrAppend (DS_String* string, const uint8_t byte)
 {
     /* Check arguments */
@@ -132,23 +173,31 @@ int DS_StrAppend (DS_String* string, const uint8_t byte)
     return DS_STR_FAILURE;
 }
 
-int DS_StrJoin (DS_String* string, const DS_String* last)
+/**
+ * Appends the \a second string to the \a first string
+ *
+ * \param first the original string
+ * \param second the string to append at the end of the \a first string
+ *
+ * \warning The program will quit if either \a first or \a second are \c NULL
+ */
+int DS_StrJoin (DS_String* first, const DS_String* second)
 {
     /* Check arguments */
-    assert (last);
-    assert (string);
-    assert (last->buf);
-    assert (string->buf);
+    assert (second);
+    assert (first);
+    assert (second->buf);
+    assert (first->buf);
 
     /* Get length of initial string */
-    int append_len = (int) last->len;
-    int original_len = (int) string->len;
+    int append_len = (int) second->len;
+    int original_len = (int) first->len;
 
     /* Resize the string and append the other string */
-    if (DS_StrResize (string, original_len + append_len)) {
+    if (DS_StrResize (first, original_len + append_len)) {
         int i;
         for (i = 0; i < append_len; ++i)
-            string->buf [original_len + i] = last->buf [i];
+            first->buf [original_len + i] = second->buf [i];
 
         return DS_STR_SUCCESS;
     }
@@ -157,6 +206,16 @@ int DS_StrJoin (DS_String* string, const DS_String* last)
     return DS_STR_FAILURE;
 }
 
+/**
+ * Changes the character of the \a string at the given \a pos to \a byte
+ *
+ * \param string the string structure
+ * \param pos the position of the byte to replace
+ * \param byte the new value to write at the given position
+ *
+ * \warning The program will quit if \a string is \c NULL
+ * \warning The program will quit if buffer of the \a string is \c NULL
+ */
 int DS_StrSetChar (DS_String* string, const int pos, const char byte)
 {
     /* Check arguments */
@@ -173,6 +232,12 @@ int DS_StrSetChar (DS_String* string, const int pos, const char byte)
     return DS_STR_FAILURE;
 }
 
+/**
+ * Creates a C string from the data buffer of the given \a string
+ *
+ * \warning The program will quit if \a string is \c NULL
+ * \warning The program will quit if buffer of the \a string is \c NULL
+ */
 char* DS_StrToChar (const DS_String* string)
 {
     /* Check arguments */
@@ -187,10 +252,22 @@ char* DS_StrToChar (const DS_String* string)
     for (i = 0; i < (int) string->len; ++i)
         cstr [i] = string->buf [i];
 
+
     /* Return obtained string */
     return cstr;
 }
 
+/**
+ * Returns the byte at the given position of \a string
+ *
+ * \param pos the position of the byte to get
+ * \param string the string from which to get the byte
+ *
+ * \note This function will return \c '\0' if the position
+ *       does not fit to the length of the given \a string
+ *
+ * \warning The program will quit if \a string is \c NULL
+ */
 char DS_StrCharAt (const DS_String* string, const int pos)
 {
     /* Check arguments */
@@ -204,6 +281,15 @@ char DS_StrCharAt (const DS_String* string, const int pos)
     return '\0';
 }
 
+/**
+ * Returns a new string structure with a copy of the given
+ * \a string
+ *
+ * \note This function creates a copy of the given \c string
+ *       and assigns it to the buffer of the \c DS_String.
+ *
+ * \warning The program will quit if \a string is \c NULL
+ */
 DS_String DS_StrNew (const char* string)
 {
     /* Check arguments */
@@ -212,7 +298,7 @@ DS_String DS_StrNew (const char* string)
     /* Create new empty string */
     DS_String str = DS_StrNewLen (strlen (string));
 
-    /* Copy c-string data into buffer */
+    /* Copy C string data into buffer */
     int i;
     for (i = 0; i < (int) str.len; ++i)
         str.buf [i] = string [i];
@@ -221,6 +307,9 @@ DS_String DS_StrNew (const char* string)
     return str;
 }
 
+/**
+ * Returns a 0-filled string with the given \a length
+ */
 DS_String DS_StrNewLen (const int length)
 {
     DS_String string;
@@ -229,6 +318,11 @@ DS_String DS_StrNewLen (const int length)
     return string;
 }
 
+/**
+ * Returns an independent copy of the given \a source string
+ *
+ * \warning The program will quit if \a source is \c NULL
+ */
 DS_String DS_StrCopy (const DS_String* source)
 {
     /* Check arguments */
@@ -246,10 +340,79 @@ DS_String DS_StrCopy (const DS_String* source)
     return string;
 }
 
+/**
+ * Constructs a string with the given \a format and arguments
+ *
+ * Accepted formats specifiers are:
+ *     - %s C String
+ *     - %c character
+ *     - %d signed int
+ *     - %u unsigned int
+ *     - %f floating point number
+ *     - Any other format specifier will be ignored
+ *
+ * \warning The program will quit if \a format is \c NULL
+ */
 DS_String DS_StrFormat (const char* format, ...)
 {
     /* Check arguments */
     assert (format);
-    return DS_StrNew (format);
+
+    /* Initialize variables */
+    int i = 0;
+    int init_len = 0;
+    const char* f = format;
+
+    /* Initialize string */
+    DS_String string = DS_StrNewLen (init_len);
+
+    /* Initialize argument list */
+    va_list args;
+    va_start (args, format);
+
+    /* Get next byte specifier */
+    f = format;
+    i = init_len;
+
+    while (*f) {
+        char* str;
+        char next;
+
+        /* This is a format specifier, let's do some magic */
+        if (*f == '%') {
+            next = * (f + 1);
+            f++;
+
+            /* Get format type and perform operations */
+            switch (next) {
+            case 'c':    /* Handle characters */
+                break;
+            case 'd':    /* Handle signed ints */
+                break;
+            case 'u':    /* Handle unsigned ints */
+                break;
+            case 'f':    /* Handle floats */
+                break;
+            case 's':    /* Handle strings */
+                break;
+            default:     /* Handle %% and unknown formats */
+                DS_StrAppend (&string, next);
+                break;
+            }
+        }
+
+        /* This is not a specifier, just append the data to the string */
+        else
+            DS_StrAppend (&string, *f);
+
+        /* Go to next byte */
+        f++;
+    }
+
+    /* End argument list */
+    va_end (args);
+
+    /* Return string structure */
+    return string;
 }
 

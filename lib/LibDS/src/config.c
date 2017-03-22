@@ -108,8 +108,8 @@ void CFG_AddNotification (const char* msg)
         return;
 
     /* Create notification string */
-    char notification [512];
-    sprintf (notification, "<font color=#888>** LibDS: %s</font><br>", msg);
+    char notification [strlen (msg) + 40];
+    sprintf (notification, "<font color=#888>** LibDS: %s</font> ", msg);
 
     /* Send notification */
     CFG_AddNetConsoleMessage (notification);

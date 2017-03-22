@@ -188,21 +188,21 @@ static void recv_data()
     netcs_data = DS_SocketRead (&protocol->netconsole_socket);
 
     /* Read FMS packet */
-    if (fms_data.len > 0) {
+    if (DS_StrLen (&fms_data) > 0) {
         ++received_fms_packets;
         fms_read = protocol->read_fms_packet (&fms_data);
         CFG_SetFMSCommunications (fms_read);
     }
 
     /* Read radio packet */
-    if (radio_data.len > 0) {
+    if (DS_StrLen (&radio_data) > 0) {
         ++received_radio_packets;
         radio_read = protocol->read_radio_packet (&radio_data);
         CFG_SetRadioCommunications (radio_read);
     }
 
     /* Read robot packet */
-    if (robot_data.len > 0) {
+    if (DS_StrLen (&robot_data) > 0) {
         ++received_robot_packets;
         robot_read = protocol->read_robot_packet (&robot_data);
         CFG_SetRobotCommunications (robot_read);
@@ -332,7 +332,7 @@ static void close_protocol()
     DS_SocketClose (&protocol->netconsole_socket);
 
     /* Create notification string */
-    char notification [512];
+    char notification [protocol->name.len + 7];
     char* name = DS_StrToChar (&protocol->name);
     sprintf (notification, "Closed %s", name);
 
