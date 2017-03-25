@@ -92,16 +92,16 @@ static void process_events()
             set_voltage (event.robot.voltage);
             break;
         case DS_ROBOT_CAN_UTIL_CHANGED:
-            //set_can (event.robot.can_util);
+            set_can (event.robot.can_util);
             break;
         case DS_ROBOT_CPU_INFO_CHANGED:
-            // set_cpu (event.robot.cpu_usage);
+            set_cpu (event.robot.cpu_usage);
             break;
         case DS_ROBOT_RAM_INFO_CHANGED:
-            //set_ram (event.robot.ram_usage);
+            set_ram (event.robot.ram_usage);
             break;
         case DS_ROBOT_DISK_INFO_CHANGED:
-            //set_disk (event.robot.disk_usage);
+            set_disk (event.robot.disk_usage);
             break;
         case DS_STATUS_STRING_CHANGED:
             update_status_label();

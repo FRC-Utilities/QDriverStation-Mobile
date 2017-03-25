@@ -1,6 +1,6 @@
 /*
  * The Driver Station Library (LibDS)
- * Copyright (C) 2015-2016 Alex Spataru <alex_spataru@outlook>
+ * Copyright (c) 2015-2017 Alex Spataru <alex_spataru@outlook>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -118,7 +118,7 @@ static void* create_socket (void* data)
 
     /* Assign fallback address if socket address is empty */
     if (strlen (ptr->address) <= 0)
-        strcpy (ptr->address, DS_FallBackAddress);;
+        strcpy (ptr->address, DS_FallBackAddress);
 
     /* Set service strings */
     sprintf (ptr->info.in_service, "%d", ptr->in_port);

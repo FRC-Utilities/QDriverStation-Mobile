@@ -1,6 +1,6 @@
 /*
  * The Driver Station Library (LibDS)
- * Copyright (C) 2015-2016 Alex Spataru <alex_spataru@outlook>
+ * Copyright (c) 2015-2017 Alex Spataru <alex_spataru@outlook>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -28,6 +28,8 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+
+#define MAGIC_SIZE 21
 
 /**
  * Returns the length of the given \a string
@@ -325,7 +327,7 @@ DS_String DS_StrNewLen (const int length)
  *
  * \warning The program will quit if \a source is \c NULL
  */
-DS_String DS_StrCopy (const DS_String* source)
+DS_String DS_StrDup (const DS_String* source)
 {
     /* Check arguments */
     assert (source);
@@ -361,7 +363,6 @@ DS_String DS_StrFormat (const char* format, ...)
     assert (format);
 
     /* Initialize variables */
-    int i = 0;
     int init_len = 0;
     const char* f = format;
 
@@ -374,10 +375,8 @@ DS_String DS_StrFormat (const char* format, ...)
 
     /* Get next byte specifier */
     f = format;
-    i = init_len;
 
     while (*f) {
-        char* str;
         char next;
 
         /* This is a format specifier, let's do some magic */
@@ -385,22 +384,43 @@ DS_String DS_StrFormat (const char* format, ...)
             next = * (f + 1);
             f++;
 
-            /* Get format type and perform operations */
-            switch (next) {
-            case 'c':    /* Handle characters */
-                break;
-            case 'd':    /* Handle signed ints */
-                break;
-            case 'u':    /* Handle unsigned ints */
-                break;
-            case 'f':    /* Handle floats */
-                break;
-            case 's':    /* Handle strings */
-                break;
-            default:     /* Handle %% and unknown formats */
-                DS_StrAppend (&string, next);
-                break;
+            /* Handle number values */
+            if (next == 'u' || next == 'd' || next == 'f') {
+                char str [sizeof (double) * 2];
+
+                /* Get the representation of the number */
+                if (next == 'u')
+                    sprintf (str, "%u", (unsigned int) va_arg (args, unsigned int));
+                else if (next == 'd')
+                    sprintf (str, "%d", (int) va_arg (args, int));
+                else if (next == 'f')
+                    sprintf (str, "%.2f", (double) va_arg (args, double));
+
+                /* Append every character to the string */
+                int i = 0;
+                int len = strlen (str);
+                for (i = 0; i < len; ++i)
+                    DS_StrAppend (&string, str [i]);
             }
+
+            /* Handle characters */
+            else if (next == 'c')
+                DS_StrAppend (&string, (char) va_arg (args, int));
+
+            /* Handle strings */
+            else if (next == 's') {
+                char* str = (char*) va_arg (args, char*);
+                int len = strlen (str);
+
+                /* Append every character to the string */
+                int i = 0;
+                for (i = 0; i < len; ++i)
+                    DS_StrAppend (&string, str [i]);
+            }
+
+            /* Handle everything else */
+            else
+                DS_StrAppend (&string, next);
         }
 
         /* This is not a specifier, just append the data to the string */

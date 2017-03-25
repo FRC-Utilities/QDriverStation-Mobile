@@ -1,6 +1,6 @@
 /*
  * The Driver Station Library (LibDS)
- * Copyright (C) 2015-2016 Alex Spataru <alex_spataru@outlook>
+ * Copyright (c) 2015-2017 Alex Spataru <alex_spataru@outlook>
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the "Software"),
@@ -69,7 +69,7 @@ extern char DS_StrCharAt (const DS_String* string, const int pos);
  */
 extern DS_String DS_StrNew (const char* string);
 extern DS_String DS_StrNewLen (const int length);
-extern DS_String DS_StrCopy (const DS_String* source);
+extern DS_String DS_StrDup (const DS_String* source);
 extern DS_String DS_StrFormat (const char* format, ...);
 
 #ifdef __cplusplus

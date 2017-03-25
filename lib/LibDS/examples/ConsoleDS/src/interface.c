@@ -152,7 +152,7 @@ static void draw_windows (void)
 
     /* Add voltage elements */
     mvwaddstr (voltage_win,  1,  2, "Voltage:");
-    mvwaddstr (voltage_win,  1, 12, DS_StrToChar (&voltage_str));
+    mvwaddstr (voltage_win,  1, 11, DS_StrToChar (&voltage_str));
 
     /* Add status panel elements */
     mvwaddstr (status_info, 1, 2, "STATUS:");
@@ -326,7 +326,7 @@ void set_robot_comms (const int comms)
 void set_voltage (const double voltage)
 {
     DS_StrRmBuf (&voltage_str);
-    voltage_str = DS_StrFormat ("%.2f V", voltage);
+    voltage_str = DS_StrFormat ("%f V", voltage);
     update_label (&voltage_str);
 }
 
