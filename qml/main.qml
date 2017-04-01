@@ -42,10 +42,7 @@ ApplicationWindow {
     //
     // Initialize the DS
     //
-    Component.onCompleted: {
-        DS.start()
-        showMaximized()
-    }
+    Component.onCompleted: DS.start()
 
     //
     // Style options
