@@ -46,6 +46,15 @@ Pane {
     }
 
     //
+    // Disable robot when communications state is changed
+    //
+    Connections {
+        target: DS
+        onEmergencyStoppedChanged: enableBt.checked = false
+        onRobotCommunicationsChanged: enableBt.checked = false
+    }
+
+    //
     // Holds all the widgets
     //
     ColumnLayout {
