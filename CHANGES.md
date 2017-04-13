@@ -5,6 +5,7 @@
 - Integrate LibDS-C
 - Allow using real joysticks to operate the robot (non-mobile systems only)
 - Visual overhaul of the navigation drawer
+- Fix issues with incorrect displacement when user touches both thumbs in virtual joystick
 
 ### QDriverStation 16.07.2
 
