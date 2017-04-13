@@ -25,6 +25,8 @@ This application implements a virtual joystick with the following features:
 
 The joystick mappings are the same as an Xbox 360 controller, so there should be no need to change your robot code for the QDriverStation to work.
 
+**Note:** Starting with version 17.04, QDriverStation mobile also supports operating your robots with real joysticks.
+
 #### User Interface
 
 This application implements two user interfaces:

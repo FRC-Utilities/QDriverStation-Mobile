@@ -30,7 +30,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-const QString APP_VERSION = "17.03";
+const QString APP_VERSION = "17.04";
 const QString APP_COMPANY = "Alex Spataru";
 const QString APP_DSPNAME = "QDriverStation";
 const QString APP_WEBSITE = "http://frc-utilities.github.io/";

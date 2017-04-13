@@ -1,5 +1,11 @@
 # Changes
 
+### QDriverStation 17.04
+
+- Integrate LibDS-C
+- Allow using real joysticks to operate the robot (non-mobile systems only)
+- Visual overhaul of the navigation drawer
+
 ### QDriverStation 16.07.2
 
 - Minor UI fixes
