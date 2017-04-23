@@ -73,7 +73,7 @@ SDL_Joysticks::SDL_Joysticks (QObject* parent) : QObject (parent)
         genericMappings.close();
     }
 
-    QTimer::singleShot (100, Qt::PreciseTimer, this, &SDL_Joysticks::update);
+    QTimer::singleShot (100, Qt::PreciseTimer, this, SLOT (update()));
 #endif
 }
 
@@ -150,7 +150,7 @@ void SDL_Joysticks::update()
         }
     }
 
-    QTimer::singleShot (10, Qt::PreciseTimer, this, &SDL_Joysticks::update);
+    QTimer::singleShot (10, Qt::PreciseTimer, this, SLOT (update()));
 #endif
 }
 
@@ -224,10 +224,24 @@ QJoystickDevice* SDL_Joysticks::getJoystick (int id)
 
     if (sdl_joystick) {
         joystick->blacklisted = false;
-        joystick->name        = SDL_JoystickName (sdl_joystick);
-        joystick->numPOVs     = SDL_JoystickNumHats (sdl_joystick);
-        joystick->numAxes     = SDL_JoystickNumAxes (sdl_joystick);
-        joystick->numButtons  = SDL_JoystickNumButtons (sdl_joystick);
+        joystick->name = SDL_JoystickName (sdl_joystick);
+
+        /* Get joystick properties */
+        int povs = SDL_JoystickNumHats (sdl_joystick);
+        int axes = SDL_JoystickNumAxes (sdl_joystick);
+        int buttons = SDL_JoystickNumButtons (sdl_joystick);
+
+        /* Initialize POVs */
+        for (int i = 0; i < povs; ++i)
+            joystick->povs.append (0);
+
+        /* Initialize axes */
+        for (int i = 0; i < axes; ++i)
+            joystick->axes.append (0);
+
+        /* Initialize buttons */
+        for (int i = 0; i < buttons; ++i)
+            joystick->buttons.append (false);
     }
 
     else

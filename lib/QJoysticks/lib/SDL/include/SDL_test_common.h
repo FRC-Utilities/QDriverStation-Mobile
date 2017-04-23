@@ -165,7 +165,8 @@ SDL_bool SDLTest_CommonInit (SDLTest_CommonState* state);
  * \param done Flag indicating we are done.
  *
  */
-void SDLTest_CommonEvent (SDLTest_CommonState* state, SDL_Event* event, int* done);
+void SDLTest_CommonEvent (SDLTest_CommonState* state, SDL_Event* event,
+                          int* done);
 
 /**
  * \brief Close test window.

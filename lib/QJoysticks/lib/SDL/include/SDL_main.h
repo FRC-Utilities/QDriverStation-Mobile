@@ -146,7 +146,8 @@ extern DECLSPEC void SDLCALL SDL_UnregisterApp (void);
  *  \return 0 on success, -1 on failure.  On failure, use SDL_GetError to retrieve more
  *      information on the failure.
  */
-extern DECLSPEC int SDLCALL SDL_WinRTRunApp (int (*mainFunction) (int, char**), void* reserved);
+extern DECLSPEC int SDLCALL SDL_WinRTRunApp (int (*mainFunction) (int, char**),
+                                             void* reserved);
 
 #endif /* __WINRT__ */
 

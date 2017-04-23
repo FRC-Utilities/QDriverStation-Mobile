@@ -336,7 +336,8 @@ extern DECLSPEC void* SDLCALL SDL_realloc (void* mem, size_t size);
 extern DECLSPEC void SDLCALL SDL_free (void* mem);
 
 extern DECLSPEC char* SDLCALL SDL_getenv (const char* name);
-extern DECLSPEC int SDLCALL SDL_setenv (const char* name, const char* value, int overwrite);
+extern DECLSPEC int SDLCALL SDL_setenv (const char* name, const char* value,
+                                        int overwrite);
 
 extern DECLSPEC void SDLCALL SDL_qsort (void* base, size_t nmemb, size_t size,
                                         int (*compare) (const void*, const void*));
@@ -353,7 +354,8 @@ extern DECLSPEC int SDLCALL SDL_isspace (int x);
 extern DECLSPEC int SDLCALL SDL_toupper (int x);
 extern DECLSPEC int SDLCALL SDL_tolower (int x);
 
-extern DECLSPEC void* SDLCALL SDL_memset (SDL_OUT_BYTECAP (len) void* dst, int c, size_t len);
+extern DECLSPEC void* SDLCALL SDL_memset (SDL_OUT_BYTECAP (len) void* dst,
+                                          int c, size_t len);
 
 #define SDL_zero(x) SDL_memset(&(x), 0, sizeof((x)))
 #define SDL_zerop(x) SDL_memset((x), 0, sizeof(*(x)))
@@ -397,20 +399,26 @@ extern DECLSPEC void* SDLCALL SDL_memcpy (SDL_OUT_BYTECAP (len) void* dst,
 
 extern DECLSPEC void* SDLCALL SDL_memmove (SDL_OUT_BYTECAP (len) void* dst,
                                            SDL_IN_BYTECAP (len) const void* src, size_t len);
-extern DECLSPEC int SDLCALL SDL_memcmp (const void* s1, const void* s2, size_t len);
+extern DECLSPEC int SDLCALL SDL_memcmp (const void* s1, const void* s2,
+                                        size_t len);
 
 extern DECLSPEC size_t SDLCALL SDL_wcslen (const wchar_t* wstr);
-extern DECLSPEC size_t SDLCALL SDL_wcslcpy (SDL_OUT_Z_CAP (maxlen) wchar_t* dst, const wchar_t* src,
+extern DECLSPEC size_t SDLCALL SDL_wcslcpy (SDL_OUT_Z_CAP (maxlen) wchar_t* dst,
+                                            const wchar_t* src,
                                             size_t maxlen);
-extern DECLSPEC size_t SDLCALL SDL_wcslcat (SDL_INOUT_Z_CAP (maxlen) wchar_t* dst,
+extern DECLSPEC size_t SDLCALL SDL_wcslcat (SDL_INOUT_Z_CAP (
+                                                maxlen) wchar_t* dst,
                                             const wchar_t* src, size_t maxlen);
 
 extern DECLSPEC size_t SDLCALL SDL_strlen (const char* str);
-extern DECLSPEC size_t SDLCALL SDL_strlcpy (SDL_OUT_Z_CAP (maxlen) char* dst, const char* src,
+extern DECLSPEC size_t SDLCALL SDL_strlcpy (SDL_OUT_Z_CAP (maxlen) char* dst,
+                                            const char* src,
                                             size_t maxlen);
-extern DECLSPEC size_t SDLCALL SDL_utf8strlcpy (SDL_OUT_Z_CAP (dst_bytes) char* dst,
+extern DECLSPEC size_t SDLCALL SDL_utf8strlcpy (SDL_OUT_Z_CAP (
+        dst_bytes) char* dst,
                                                 const char* src, size_t dst_bytes);
-extern DECLSPEC size_t SDLCALL SDL_strlcat (SDL_INOUT_Z_CAP (maxlen) char* dst, const char* src,
+extern DECLSPEC size_t SDLCALL SDL_strlcat (SDL_INOUT_Z_CAP (maxlen) char* dst,
+                                            const char* src,
                                             size_t maxlen);
 extern DECLSPEC char* SDLCALL SDL_strdup (const char* str);
 extern DECLSPEC char* SDLCALL SDL_strrev (char* str);
@@ -418,34 +426,47 @@ extern DECLSPEC char* SDLCALL SDL_strupr (char* str);
 extern DECLSPEC char* SDLCALL SDL_strlwr (char* str);
 extern DECLSPEC char* SDLCALL SDL_strchr (const char* str, int c);
 extern DECLSPEC char* SDLCALL SDL_strrchr (const char* str, int c);
-extern DECLSPEC char* SDLCALL SDL_strstr (const char* haystack, const char* needle);
+extern DECLSPEC char* SDLCALL SDL_strstr (const char* haystack,
+                                          const char* needle);
 
 extern DECLSPEC char* SDLCALL SDL_itoa (int value, char* str, int radix);
-extern DECLSPEC char* SDLCALL SDL_uitoa (unsigned int value, char* str, int radix);
+extern DECLSPEC char* SDLCALL SDL_uitoa (unsigned int value, char* str,
+                                         int radix);
 extern DECLSPEC char* SDLCALL SDL_ltoa (long value, char* str, int radix);
-extern DECLSPEC char* SDLCALL SDL_ultoa (unsigned long value, char* str, int radix);
+extern DECLSPEC char* SDLCALL SDL_ultoa (unsigned long value, char* str,
+                                         int radix);
 extern DECLSPEC char* SDLCALL SDL_lltoa (Sint64 value, char* str, int radix);
 extern DECLSPEC char* SDLCALL SDL_ulltoa (Uint64 value, char* str, int radix);
 
 extern DECLSPEC int SDLCALL SDL_atoi (const char* str);
 extern DECLSPEC double SDLCALL SDL_atof (const char* str);
-extern DECLSPEC long SDLCALL SDL_strtol (const char* str, char** endp, int base);
-extern DECLSPEC unsigned long SDLCALL SDL_strtoul (const char* str, char** endp, int base);
-extern DECLSPEC Sint64 SDLCALL SDL_strtoll (const char* str, char** endp, int base);
-extern DECLSPEC Uint64 SDLCALL SDL_strtoull (const char* str, char** endp, int base);
+extern DECLSPEC long SDLCALL SDL_strtol (const char* str, char** endp,
+                                         int base);
+extern DECLSPEC unsigned long SDLCALL SDL_strtoul (const char* str, char** endp,
+        int base);
+extern DECLSPEC Sint64 SDLCALL SDL_strtoll (const char* str, char** endp,
+                                            int base);
+extern DECLSPEC Uint64 SDLCALL SDL_strtoull (const char* str, char** endp,
+                                             int base);
 extern DECLSPEC double SDLCALL SDL_strtod (const char* str, char** endp);
 
 extern DECLSPEC int SDLCALL SDL_strcmp (const char* str1, const char* str2);
-extern DECLSPEC int SDLCALL SDL_strncmp (const char* str1, const char* str2, size_t maxlen);
+extern DECLSPEC int SDLCALL SDL_strncmp (const char* str1, const char* str2,
+                                         size_t maxlen);
 extern DECLSPEC int SDLCALL SDL_strcasecmp (const char* str1, const char* str2);
-extern DECLSPEC int SDLCALL SDL_strncasecmp (const char* str1, const char* str2, size_t len);
+extern DECLSPEC int SDLCALL SDL_strncasecmp (const char* str1, const char* str2,
+                                             size_t len);
 
-extern DECLSPEC int SDLCALL SDL_sscanf (const char* text, SDL_SCANF_FORMAT_STRING const char* fmt,
+extern DECLSPEC int SDLCALL SDL_sscanf (const char* text,
+                                        SDL_SCANF_FORMAT_STRING const char* fmt,
                                         ...) SDL_SCANF_VARARG_FUNC (2);
-extern DECLSPEC int SDLCALL SDL_vsscanf (const char* text, const char* fmt, va_list ap);
-extern DECLSPEC int SDLCALL SDL_snprintf (SDL_OUT_Z_CAP (maxlen) char* text, size_t maxlen,
+extern DECLSPEC int SDLCALL SDL_vsscanf (const char* text, const char* fmt,
+                                         va_list ap);
+extern DECLSPEC int SDLCALL SDL_snprintf (SDL_OUT_Z_CAP (maxlen) char* text,
+                                          size_t maxlen,
                                           SDL_PRINTF_FORMAT_STRING const char* fmt, ... ) SDL_PRINTF_VARARG_FUNC (3);
-extern DECLSPEC int SDLCALL SDL_vsnprintf (SDL_OUT_Z_CAP (maxlen) char* text, size_t maxlen,
+extern DECLSPEC int SDLCALL SDL_vsnprintf (SDL_OUT_Z_CAP (maxlen) char* text,
+                                           size_t maxlen,
                                            const char* fmt, va_list ap);
 
 #ifndef HAVE_M_PI
