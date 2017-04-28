@@ -30,7 +30,6 @@ TARGET = QDriverStation
 QT += svg
 QT += core
 QT += quick
-QT += network
 QT += quickcontrols2
 
 #-------------------------------------------------------------------------------
