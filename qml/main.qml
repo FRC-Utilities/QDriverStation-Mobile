@@ -299,6 +299,12 @@ ApplicationWindow {
                         icon: "settings.svg"
                         title: qsTr ("Preferences")
                     }
+
+                    ListElement {
+                        color: "#ff3232"
+                        icon: "donate.svg"
+                        title: qsTr ("Donate")
+                    }
                 }
 
                 //
@@ -333,6 +339,10 @@ ApplicationWindow {
                     }
 
                     Preferences {
+                        visible: false
+                    }
+
+                    Donate {
                         visible: false
                     }
                 }

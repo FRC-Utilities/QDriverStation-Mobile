@@ -15,6 +15,7 @@
         <file>Widgets/Controls.qml</file>
         <file>Widgets/SDLJoystick.qml</file>
         <file>Pages/Joysticks.qml</file>
+        <file>Pages/Donate.qml</file>
     </qresource>
     <qresource prefix="/">
         <file>qt.conf</file>

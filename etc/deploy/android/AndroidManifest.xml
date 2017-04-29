@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<manifest package="org.frcutilties.qdriverstation" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="17.03" android:versionCode="17" android:installLocation="auto">
+<manifest package="org.frcutilities.qdriverstation" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="17.04" android:versionCode="1704" android:installLocation="auto">
     <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:icon="@mipmap/ic_launcher" android:label="QDriverStation">
         <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:icon="@mipmap/ic_launcher" android:label="QDriverStation" android:screenOrientation="portrait" android:clearTaskOnLaunch="true" android:launchMode="singleInstance">
             <intent-filter>
@@ -32,6 +32,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="com.android.vending.BILLING"/>
     <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
     <uses-feature android:name="android.hardware.gamepad" android:required="true"/>
     <uses-feature android:name="android.hardware.usb.host" android:required="true"/>

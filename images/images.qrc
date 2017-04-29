@@ -29,5 +29,6 @@
         <file>pages/operator.svg</file>
         <file>pages/settings.svg</file>
         <file>pages/joysticks.svg</file>
+        <file>pages/donate.svg</file>
     </qresource>
 </RCC>
