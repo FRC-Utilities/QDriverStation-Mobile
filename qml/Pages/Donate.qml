@@ -37,8 +37,8 @@ Pane {
     Product {
         store: store
         id: oneTimeDonation
-        type: Product.Managed
-        identifier: "org.qdriverstation.one_time_donation"
+        type: Product.Unlockable
+        identifier: "org.qdriverstation.donation_one_time"
 
         onPurchaseSucceeded: {
             transaction.finalize()
@@ -57,7 +57,7 @@ Pane {
         store: store
         id: monthlyDonation
         type: Product.Consumable
-        identifier: "org.qdriverstation.monthly_donation"
+        identifier: "org.qdriverstation.donation_monthly"
 
         onPurchaseSucceeded: {
             transaction.finalize()
