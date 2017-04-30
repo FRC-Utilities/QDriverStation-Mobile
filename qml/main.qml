@@ -314,6 +314,7 @@ ApplicationWindow {
                     id: pages
 
                     Operator {
+                        id: operator
                         visible: false
                     }
 
@@ -359,5 +360,25 @@ ApplicationWindow {
         id: stackView
         anchors.fill: parent
         anchors.margins: Globals.spacing
+    }
+
+    //
+    // React on back key
+    //
+    onClosing: {
+        if (Qt.platform.os == "android") {
+            if (listView.currentIndex != 0) {
+                listView.currentIndex = 0
+                close.accepted = false
+            }
+
+            else if (operator.showingJoysticks) {
+                operator.hideJoysticks()
+                close.accepted = false
+            }
+
+            else
+                close.accepted = true
+        }
     }
 }

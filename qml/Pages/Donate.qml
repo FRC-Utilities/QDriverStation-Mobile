@@ -31,44 +31,40 @@ import "../Globals.js" as Globals
 
 Pane {
     Store {
-        id: store
-    }
+        Product {
+            id: oneTimeDonation
+            type: Product.Unlockable
+            identifier: "org.qdriverstation.donation_one_time"
 
-    Product {
-        store: store
-        id: oneTimeDonation
-        type: Product.Unlockable
-        identifier: "org.qdriverstation.donation_one_time"
+            onPurchaseSucceeded: {
+                transaction.finalize()
+                messageBox.text = qsTr ("Thanks for your donation!")
+                messageBox.open()
+            }
 
-        onPurchaseSucceeded: {
-            transaction.finalize()
-            messageBox.text = qsTr ("Thanks for your donation!")
-            messageBox.open()
+            onPurchaseFailed: {
+                transition.finalize()
+                messageBox.text = qsTr ("Failed to perform transaction")
+                messageBox.open()
+            }
         }
 
-        onPurchaseFailed: {
-            transition.finalize()
-            messageBox.text = qsTr ("Failed to perform transaction")
-            messageBox.open()
-        }
-    }
+        Product {
+            id: monthlyDonation
+            type: Product.Consumable
+            identifier: "org.qdriverstation.donation_monthly"
 
-    Product {
-        store: store
-        id: monthlyDonation
-        type: Product.Consumable
-        identifier: "org.qdriverstation.donation_monthly"
+            onPurchaseSucceeded: {
+                transaction.finalize()
+                messageBox.text = qsTr ("Thanks for your donation!")
+                messageBox.open()
+            }
 
-        onPurchaseSucceeded: {
-            transaction.finalize()
-            messageBox.text = qsTr ("Thanks for your donation!")
-            messageBox.open()
-        }
-
-        onPurchaseFailed: {
-            transition.finalize()
-            messageBox.text = qsTr ("Failed to perform transaction")
-            messageBox.open()
+            onPurchaseFailed: {
+                transition.finalize()
+                messageBox.text = qsTr ("Failed to perform transaction")
+                messageBox.open()
+            }
         }
     }
 
@@ -98,11 +94,6 @@ Pane {
                         "Sincerely,\nAlex Spataru :)")
         }
 
-        Label {
-            font.italic: true
-            font.pixelSize: 12
-        }
-
         Item {
             Layout.fillHeight: true
         }
@@ -120,15 +111,15 @@ Pane {
 
                     else {
                         oneTimeBt.enabled = false
-                        oneTimeBt.text = qsTr ("One-time Donation (disabled)")
+                        oneTimeBt.text = qsTr ("One-time Donation (unavailable)")
                     }
                 }
             }
 
             enabled: false
             Layout.fillWidth: true
-            text: qsTr ("One-time Donation (disabled)")
             onClicked: oneTimeDonation.purchase()
+            text: qsTr ("One-time Donation (unavailable)")
         }
 
         Button {
@@ -144,15 +135,15 @@ Pane {
 
                     else {
                         monthlyDonationBt.enabled = false
-                        monthlyDonationBt.text = qsTr ("Monthly Donation (disabled)")
+                        monthlyDonationBt.text = qsTr ("Monthly Donation (unavailable)")
                     }
                 }
             }
 
             enabled: false
             Layout.fillWidth: true
-            text: qsTr ("Monthly Donation (disabled)")
             onClicked: monthlyDonation.purchase()
+            text: qsTr ("Monthly Donation (unavailable)")
         }
 
         Button {

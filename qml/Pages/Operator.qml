@@ -38,6 +38,13 @@ Pane {
     onVisibleChanged: enableBt.checked = false
 
     //
+    // Functions to control the visibility of the joystick controls
+    // from main.qml, used when users press the back button on Android
+    //
+    function hideJoysticks() { enableBt.checked = false }
+    readonly property alias showingJoysticks: joysticks.visible
+
+    //
     // Disable the robot when joystick count changes
     //
     Connections {
@@ -65,7 +72,7 @@ Pane {
         // Operator and Joystick selector
         //
         StackView {
-            id: stackView
+            id: stack
             initialItem: controls
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -114,14 +121,18 @@ Pane {
                 //
                 // Show joysticks if robot is in teleop and enabled
                 //
-                if (DS.isTeleoperated && enabled)
-                    stackView.push (joysticks)
+                if (DS.isTeleoperated && enabled) {
+                    stack.push (joysticks)
+                    joysticks.visible = true
+                }
 
                 //
                 // Robot is not in teleop, hide joysticks
                 //
-                else
-                    stackView.pop()
+                else {
+                    stack.pop()
+                    joysticks.visible = false
+                }
 
                 //
                 // Finally, enable or disable the robot
