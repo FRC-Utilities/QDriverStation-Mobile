@@ -47,6 +47,7 @@ int main (int argc, char* argv[])
     /* Initialize application and DS */
     QGuiApplication app (argc, argv);
     DriverStation* driverstation = DriverStation::getInstance();
+    DriverStation::getInstance()->start();
     DriverStation::declareQML();
 
     /* Use Universal style on Windows Phone */

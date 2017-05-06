@@ -35,14 +35,7 @@ ApplicationWindow {
     id: app
     visible: true
     title: AppDspName + " " + AppVersion
-
-    //
-    // Initialize the DS
-    //
-    Component.onCompleted:{
-        showMaximized()
-        DS.start()
-    }
+    Component.onCompleted: showMaximized()
 
     //
     // Style options
