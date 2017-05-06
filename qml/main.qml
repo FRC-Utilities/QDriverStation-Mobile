@@ -24,7 +24,6 @@ import QtQuick 2.0
 import QtQml.Models 2.2
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.0
-import QtGraphicalEffects 1.0
 import QtQuick.Controls.Material 2.0
 import QtQuick.Controls.Universal 2.0
 
@@ -34,15 +33,16 @@ import "Globals.js" as Globals
 
 ApplicationWindow {
     id: app
-    width: 340
-    height: 520
     visible: true
     title: AppDspName + " " + AppVersion
 
     //
     // Initialize the DS
     //
-    Component.onCompleted: DS.start()
+    Component.onCompleted:{
+        showMaximized()
+        DS.start()
+    }
 
     //
     // Style options
@@ -228,20 +228,13 @@ ApplicationWindow {
 
                         Image {
                             smooth: true
-                            opacity: 0.72
+                            opacity: 0.82
                             fillMode: Image.Pad
                             sourceSize: Qt.size (24, 24)
                             verticalAlignment: Image.AlignVCenter
                             horizontalAlignment: Image.AlignHCenter
                             source: "qrc:/images/pages/" + model.icon
                             anchors.verticalCenter: parent.verticalCenter
-
-                            ColorOverlay {
-                                cached: true
-                                source: parent
-                                color: model.color
-                                anchors.fill: parent
-                            }
                         }
 
                         Label {
@@ -265,43 +258,36 @@ ApplicationWindow {
                     id: titles
 
                     ListElement {
-                        color: "#2196f4"
                         icon: "operator.svg"
                         title: qsTr ("Operator")
                     }
 
                     ListElement {
-                        color: "#F44336"
                         icon: "diagnostics.svg"
                         title: qsTr ("Diagnostics")
                     }
 
                     ListElement {
-                        color: "#00bcd4"
                         icon: "monitor.svg"
                         title: qsTr ("System Monitor")
                     }
 
                     ListElement {
-                        color: "#8bc43a"
                         icon: "netconsole.svg"
                         title: qsTr ("NetConsole")
                     }
 
                     ListElement {
-                        color: "#9c27b0"
                         icon: "joysticks.svg"
                         title: qsTr ("Joysticks")
                     }
 
                     ListElement {
-                        color: "#ff9800"
                         icon: "settings.svg"
                         title: qsTr ("Preferences")
                     }
 
                     ListElement {
-                        color: "#ff3232"
                         icon: "donate.svg"
                         title: qsTr ("Donate")
                     }
