@@ -35,6 +35,7 @@ Pane {
         property alias material: useMaterial.checked
         property alias robotAddress: robotAddress.text
         property alias protocol: protocols.currentIndex
+        property alias enableTriggers: triggers.checked
     }
 
     Connections {
@@ -107,7 +108,15 @@ Pane {
         Switch {
             id: useMaterial
             checked: IsMaterial
-            text: qsTr ("Use Material Style") + " *"
+            text: qsTr ("Use Material style") + " *"
+        }
+
+        Switch {
+            id: triggers
+            checked: false
+            onCheckedChanged: app.jsTriggersEnabled = checked
+            text: qsTr ("Enable triggers in virtual joystick")
+            Component.onCompleted: app.jsTriggersEnabled = checked
         }
 
         Item {

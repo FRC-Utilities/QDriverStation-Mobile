@@ -33,10 +33,15 @@ import "Globals.js" as Globals
 
 ApplicationWindow {
     id: app
-    width: 340
-    height: 480
+    width: 320
+    height: 520
     visible: true
     title: AppDspName + " " + AppVersion
+
+    //
+    // Enables/disables triggers in joysticks
+    //
+    property bool jsTriggersEnabled: false
 
     //
     // Style options

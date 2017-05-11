@@ -48,6 +48,38 @@ ColumnLayout {
     }
 
     //
+    // Enable/disable triggers automatically
+    //
+    Connections {
+        target: app
+        onWidthChanged: updateSizes()
+        onJsTriggersEnabledChanged: updateSizes()
+    }
+
+    //
+    // Enables/disables triggers and changes thumb size
+    //
+    function updateSizes() {
+        triggerA.enabled = app.jsTriggersEnabled
+        triggerB.enabled = app.jsTriggersEnabled
+        triggerA.visible = app.jsTriggersEnabled
+        triggerB.visible = app.jsTriggersEnabled
+
+        var thumbW = app.jsTriggersEnabled ? Math.min (app.width * 0.26, 156) :
+                                             Math.min (app.width * 0.41, 156)
+
+        thumbA.width = thumbW
+        thumbB.width = thumbW
+        thumbA.height = thumbW
+        thumbB.height = thumbW
+    }
+
+    //
+    // Set initial size
+    //
+    Component.onCompleted: updateSizes()
+
+    //
     // Buttons title
     //
     TitleLabel {
@@ -96,7 +128,7 @@ ColumnLayout {
     RowLayout {
         Layout.fillWidth: true
         Layout.fillHeight: true
-        spacing: app.spacing * 2
+        spacing: Globals.spacing
 
         //
         // First slider
@@ -220,10 +252,8 @@ ColumnLayout {
             //
             VirtualJoystickAxis {
                 id: thumbA
-                height: width
                 anchors.right: center.left
-                anchors.rightMargin: app.width * 0.05
-                width: Math.min (app.width * 0.26, 156)
+                anchors.rightMargin: app.width * 0.05              
                 anchors.verticalCenter: parent.verticalCenter
 
                 onXValueChanged: {
@@ -239,7 +269,6 @@ ColumnLayout {
 
             Item {
                 id: center
-                Layout.fillWidth: true
                 anchors.centerIn: parent
             }
 
@@ -248,8 +277,6 @@ ColumnLayout {
             //
             VirtualJoystickAxis {
                 id: thumbB
-                height: width
-                width: thumbA.width
                 anchors.left: center.right
                 anchors.leftMargin: app.width * 0.05
                 anchors.verticalCenter: parent.verticalCenter
