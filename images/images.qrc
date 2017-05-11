@@ -30,5 +30,9 @@
         <file>pages/settings.svg</file>
         <file>pages/joysticks.svg</file>
         <file>pages/donate.svg</file>
+        <file>dark/robot.svg</file>
+        <file>dark/fms.svg</file>
+        <file>light/robot.svg</file>
+        <file>light/fms.svg</file>
     </qresource>
 </RCC>

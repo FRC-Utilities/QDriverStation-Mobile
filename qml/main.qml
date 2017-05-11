@@ -33,9 +33,10 @@ import "Globals.js" as Globals
 
 ApplicationWindow {
     id: app
+    width: 340
+    height: 480
     visible: true
     title: AppDspName + " " + AppVersion
-    Component.onCompleted: showMaximized()
 
     //
     // Style options
@@ -54,6 +55,14 @@ ApplicationWindow {
             return "qrc:/images/dark/" + image
 
         return "qrc:/images/light/" + image
+    }
+
+    //
+    // Maximize the window on mobile devices
+    //
+    Component.onCompleted: {
+        if (IsMobile)
+            showMaximized()
     }
 
     //

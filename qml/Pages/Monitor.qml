@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015-2017 Alex Spataru <alex_spataru@outlook.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,123 +31,255 @@ import "../Widgets"
 import "../Globals.js" as Globals
 
 Pane {
-    ColumnLayout {
+    //
+    // Updates the text of the sent/recv labels
+    //
+    function updateNetworkUsage() {
+        fmsBytes.text = labelText (DS.sentFMSBytes(), DS.receivedFMSBytes())
+        robotBytes.text = labelText (DS.sentRobotBytes(), DS.receivedRobotBytes())
+    }
+
+    //
+    // Returns a formatted string containing the given data
+    //
+    function labelText (sent, received) {
+        return qsTr ("Sent") + ": " + formatLen (sent) + "<br/>" +
+                qsTr ("Received") + ": " + formatLen (received)
+    }
+
+    //
+    // Obtains the appropiate format for the given size in bytes
+    //
+    function formatLen (bytes) {
+        if (bytes < 1024)
+            return bytes + " bytes"
+
+        else if (bytes < 1024 * 1024)
+            return Math.round ((bytes / 1024)) + " KB"
+
+        var mbytes = bytes / (1024 * 1024)
+        return mbytes.toFixed (2) + " MB"
+    }
+
+    //
+    // Update the network usage labels every second
+    //
+    Timer {
+        repeat: true
+        interval: 1000
+        onTriggered: updateNetworkUsage()
+        Component.onCompleted: {
+            start()
+            updateNetworkUsage()
+        }
+    }
+
+    //
+    // Layout definition
+    //
+    Flickable
+    {
+        clip: true
         anchors.fill: parent
-        spacing: Globals.spacing * 2
+        ScrollBar.vertical: ScrollBar {}
+        contentHeight: column.implicitHeight
+        Keys.onUpPressed: scrollBar.decrease()
+        Keys.onDownPressed: scrollBar.increase()
 
-        //
-        // Robot Voltage
-        //
-        RowLayout {
+        ColumnLayout {
+            id: column
+            anchors.fill: parent
             spacing: Globals.spacing * 2
 
-            Image {
-                fillMode: Image.Pad
-                verticalAlignment: Image.AlignVCenter
-                horizontalAlignment: Image.AlignHCenter
-                source: app.getImage ("battery.svg", false)
+            //
+            // Sent/recv bytes title
+            //
+            TitleLabel {
+                spacer: false
+                text: qsTr ("Robot Status")
             }
 
-            ColumnLayout {
-                spacing: Globals.spacing / 5
+            //
+            // Robot Voltage
+            //
+            RowLayout {
+                spacing: Globals.spacing * 2
 
-                Label {
-                    text: qsTr ("Robot Voltage")
+                Image {
+                    fillMode: Image.Pad
+                    sourceSize: Qt.size (24, 24)
+                    verticalAlignment: Image.AlignVCenter
+                    horizontalAlignment: Image.AlignHCenter
+                    source: app.getImage ("battery.svg", false)
                 }
 
-                Label {
-                    text: DS.connectedToRobot ?
-                              DS.voltageString : Globals.invalidStr
-                }
-            }
-        }
+                ColumnLayout {
+                    spacing: Globals.spacing / 5
 
-        //
-        // CPU Usage
-        //
-        RowLayout {
-            spacing: Globals.spacing * 2
+                    Label {
+                        text: qsTr ("Robot Voltage")
+                    }
 
-            Image {
-                fillMode: Image.Pad
-                verticalAlignment: Image.AlignVCenter
-                horizontalAlignment: Image.AlignHCenter
-                source: app.getImage ("cpu.svg", false)
-            }
-
-            ColumnLayout {
-                spacing: Globals.spacing / 5
-
-                Label {
-                    text: qsTr ("CPU Usage")
-                }
-
-                Label {
-                    text: DS.connectedToRobot ?
-                              DS.cpuUsage + " %": Globals.invalidStr
+                    Label {
+                        font.pixelSize: 11
+                        text: DS.connectedToRobot ?
+                                  DS.voltageString : Globals.invalidStr
+                    }
                 }
             }
-        }
 
-        //
-        // RAM usage
-        //
-        RowLayout {
-            spacing: Globals.spacing * 2
+            //
+            // CPU Usage
+            //
+            RowLayout {
+                spacing: Globals.spacing * 2
 
-            Image {
-                fillMode: Image.Pad
-                verticalAlignment: Image.AlignVCenter
-                horizontalAlignment: Image.AlignHCenter
-                source: app.getImage ("memory.svg", false)
-            }
-
-            ColumnLayout {
-                spacing: Globals.spacing / 5
-
-                Label {
-                    text: qsTr ("RAM Usage")
+                Image {
+                    fillMode: Image.Pad
+                    verticalAlignment: Image.AlignVCenter
+                    horizontalAlignment: Image.AlignHCenter
+                    source: app.getImage ("cpu.svg", false)
                 }
 
-                Label {
-                    text: DS.connectedToRobot ?
-                              DS.ramUsage + " %": Globals.invalidStr
+                ColumnLayout {
+                    spacing: Globals.spacing / 5
+
+                    Label {
+                        text: qsTr ("CPU Usage")
+                    }
+
+                    Label {
+                        font.pixelSize: 11
+                        text: DS.connectedToRobot ?
+                                  DS.cpuUsage + " %": Globals.invalidStr
+                    }
                 }
             }
-        }
 
-        //
-        // Disk usage
-        //
-        RowLayout {
-            spacing: Globals.spacing * 2
+            //
+            // RAM usage
+            //
+            RowLayout {
+                spacing: Globals.spacing * 2
 
-            Image {
-                fillMode: Image.Pad
-                verticalAlignment: Image.AlignVCenter
-                horizontalAlignment: Image.AlignHCenter
-                source: app.getImage ("storage.svg", false)
-            }
-
-            ColumnLayout {
-                spacing: Globals.spacing / 5
-
-                Label {
-                    text: qsTr ("Disk Usage")
+                Image {
+                    fillMode: Image.Pad
+                    verticalAlignment: Image.AlignVCenter
+                    horizontalAlignment: Image.AlignHCenter
+                    source: app.getImage ("memory.svg", false)
                 }
 
-                Label {
-                    text: DS.connectedToRobot ?
-                              DS.diskUsage + " %" : Globals.invalidStr
+                ColumnLayout {
+                    spacing: Globals.spacing / 5
+
+                    Label {
+                        text: qsTr ("RAM Usage")
+                    }
+
+                    Label {
+                        font.pixelSize: 11
+                        text: DS.connectedToRobot ?
+                                  DS.ramUsage + " %": Globals.invalidStr
+                    }
                 }
             }
-        }
 
-        //
-        // Vertical spacer
-        //
-        Item {
-            Layout.fillHeight: true
+            //
+            // Disk usage
+            //
+            RowLayout {
+                spacing: Globals.spacing * 2
+
+                Image {
+                    fillMode: Image.Pad
+                    verticalAlignment: Image.AlignVCenter
+                    horizontalAlignment: Image.AlignHCenter
+                    source: app.getImage ("storage.svg", false)
+                }
+
+                ColumnLayout {
+                    spacing: Globals.spacing / 5
+
+                    Label {
+                        text: qsTr ("Disk Usage")
+                    }
+
+                    Label {
+                        font.pixelSize: 11
+                        text: DS.connectedToRobot ?
+                                  DS.diskUsage + " %" : Globals.invalidStr
+                    }
+                }
+            }
+
+            //
+            // Sent/recv bytes title
+            //
+            TitleLabel {
+                spacer: false
+                text: qsTr ("Network usage")
+            }
+
+            //
+            // FMS network usage
+            //
+            RowLayout {
+                spacing: Globals.spacing * 2
+
+                Image {
+                    fillMode: Image.Pad
+                    verticalAlignment: Image.AlignVCenter
+                    horizontalAlignment: Image.AlignHCenter
+                    source: app.getImage ("fms.svg", false)
+                }
+
+                ColumnLayout {
+                    spacing: Globals.spacing / 5
+
+                    Label {
+                        text: qsTr ("FMS")
+                    }
+
+                    Label {
+                        id: fmsBytes
+                        font.pixelSize: 10
+                    }
+                }
+            }
+
+            //
+            // Robot network usage
+            //
+            RowLayout {
+                spacing: Globals.spacing * 2
+
+                Image {
+                    fillMode: Image.Pad
+                    verticalAlignment: Image.AlignVCenter
+                    horizontalAlignment: Image.AlignHCenter
+                    source: app.getImage ("robot.svg", false)
+                }
+
+                ColumnLayout {
+                    spacing: Globals.spacing / 5
+
+                    Label {
+                        text: qsTr ("Robot")
+                    }
+
+                    Label {
+                        id: robotBytes
+                        font.pixelSize: 10
+                    }
+                }
+            }
+
+            //
+            // Vertical spacer
+            //
+            Item {
+                Layout.fillHeight: true
+            }
         }
     }
 }

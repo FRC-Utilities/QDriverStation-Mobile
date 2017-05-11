@@ -30,7 +30,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 
-const QString APP_VERSION = "17.05.1";
+const QString APP_VERSION = "17.05.2";
 const QString APP_COMPANY = "Alex Spataru";
 const QString APP_DSPNAME = "QDriverStation";
 const QString APP_WEBSITE = "http://frc-utilities.github.io/";
@@ -57,6 +57,13 @@ int main (int argc, char* argv[])
     bool material = true;
 #endif
 
+    /* Define if we are working with a mobile OS */
+#if defined Q_OS_ANDROID || defined Q_OS_WINRT || defined Q_OS_IOS
+    bool mobile = true;
+#else
+    bool mobile = false;
+#endif
+
     /* Set application style (based on saved settings) */
     QSettings settings;
     material = settings.value ("material", material).toBool();
@@ -65,6 +72,7 @@ int main (int argc, char* argv[])
     /* Load QML interface */
     QQmlApplicationEngine engine;
     engine.rootContext()->setContextProperty ("DS", driverstation);
+    engine.rootContext()->setContextProperty ("IsMobile", mobile);
     engine.rootContext()->setContextProperty ("IsMaterial", material);
     engine.rootContext()->setContextProperty ("AppDspName", APP_DSPNAME);
     engine.rootContext()->setContextProperty ("AppVersion", APP_VERSION);

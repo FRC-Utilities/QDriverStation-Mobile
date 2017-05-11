@@ -42,6 +42,8 @@ Pane {
         onProtocolChanged: DS.customRobotAddress = robotAddress.text
     }
 
+    Component.onCompleted: DS.setProtocol (protocols.currentIndex)
+
     ColumnLayout {
         anchors.fill: parent
         spacing: Globals.spacing
