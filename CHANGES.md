@@ -1,5 +1,14 @@
 # Changes
 
+### QDriverStation 17.04.2
+
+- Allow enabling/disabling triggers
+- Implement network usage monitor
+
+### QDriverStation 17.04.1
+
+- Fix crash on launch
+
 ### QDriverStation 17.04
 
 - Integrate LibDS-C
