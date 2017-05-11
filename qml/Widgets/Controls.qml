@@ -135,11 +135,11 @@ ColumnLayout {
     Label {
         text: DS.status
         font.bold: true
-        font.pixelSize: 18
         Layout.fillWidth: true
         Layout.fillHeight: true
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        font.pixelSize: Math.max (app.height / 26, 20)
     }
 }
